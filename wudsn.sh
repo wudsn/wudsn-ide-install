@@ -1,17 +1,12 @@
 #!/bin/bash
 #
+# WUDSN IDE Installer
+# Visit https://www.wudsn.com for the latest version.
 #
 
 #
-#
-#
-error(){
-  echo ERROR: See messages above.
-  exit /b 1
-}
-
-#
-#
+# Download a .zip file and unpack to target folder.
+# Usage: download repo <filename> <url> <folder> <target_folder> <FAIL|IGNORE>
 #
 download(){
   FILE=$1
@@ -61,9 +56,14 @@ download_repo(){
   rm -rf $REPO_BRANCH
 }
 
-#set -v
+#
+# Main script
+#
+set -v
 set -e
 
+
+echo Defining installation paths.
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 WUDSN_FOLDER=$SCRIPT_DIR
 INSTALL_FOLDER=$WUDSN_FOLDER/Install
@@ -101,7 +101,7 @@ hdiutil detach $ECLIPSE_MOUNT_FOLDER -force -quiet
 # Check for JDK
 if [ ! -d $JRE_TARGET_FOLDER ]; then
   download $JRE_FILE $JRE_URL $JRE_FOLDER_NAME $INSTALL_FOLDER FAIL
-  echo Enter your password to install Java version $JRE_FOLDER_NAME in $JRE_TARGET_FOLDER.
+  echo Enter the admin password to install Java version $JRE_FOLDER_NAME in $JRE_TARGET_FOLDER.
   sudo mv $JRE_FOLDER_NAME $JRE_JVM_FOLDER
 else
   echo Java version $JRE_FOLDER_NAME is already installed in $JRE_TARGET_FOLDER.
