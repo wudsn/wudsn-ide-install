@@ -1,0 +1,1 @@
+@call wudsn.bat --install
