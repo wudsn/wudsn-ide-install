@@ -19,7 +19,8 @@ In addition you can choose for which platform you want to import the same projec
 The path to the assemblers/compilers/emulators in the Tools folder must be set once manually.
 I plan to improve this in future releases of the IDE.
 
-In case of problems you can run wudsn.exe com from the command line with the parameter --install.
+In case of problems check the wudsn.log file in the folder.
+You can also run wudsn.exe com from the command line with the parameter --install.
 This will display the installer menu with options to reinstall or update the IDE.
 
 Visit https://www.wudsn.com to learn more.
