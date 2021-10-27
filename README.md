@@ -6,7 +6,7 @@ Make sure the folder path contains no spaces or whitespaces.
 On Windows, download wudsn.exe the folder run it.
 - https://github.com/peterdell/wudsn-ide-install/wudsn.exe
  
-Not yet: On Linux or macOS, double click "wudsn.sh" to install WUDSN IDE.
+Versions for macOS and Linux are in the making.
 
 The file will create and populate the following subfolders via downloads:
 - Install - the cache folder where all downloads are stored
@@ -16,7 +16,7 @@ The file will create and populate the following subfolders via downloads:
 
 Upon the first start you'll be propted with the Eclipse Welcome screen.
 In addition you can choose for which platform you want to import the same projects.
-The path to the assemblers/compilers/emulators must be set once manually.
+The path to the assemblers/compilers/emulators in the Tools folder must be set once manually.
 I plan to improve this in future releases of the IDE.
 
 In case of problems you can run wudsn.exe com from the command line with the parameter --install.
