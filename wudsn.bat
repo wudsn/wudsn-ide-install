@@ -300,7 +300,7 @@ popd
 :start_eclipse
 if "%INSTALL_MODE%"=="--install-all-from-server" (
   call :begin_progress "Starting WUDSN IDE for import projects from %PROJECTS_FOLDER%."
-  start %ECLIPSE_RUNTIME_FOLDER%\eclipse.exe -data %WORKSPACE_FOLDER% %PROJECTS_FOLDER%
+  start %ECLIPSE_RUNTIME_FOLDER%\eclipse.exe %PROJECTS_FOLDER%
 ) else (
   call :begin_progress "Starting WUDSN IDE."
   start %ECLIPSE_RUNTIME_FOLDER%\eclipse.exe -data %WORKSPACE_FOLDER%
