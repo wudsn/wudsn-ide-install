@@ -1,1 +1,3 @@
-@call wudsn.bat --install
+@echo off
+cd ..
+call wudsn.bat --install

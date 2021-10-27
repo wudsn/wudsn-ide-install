@@ -1,1 +1,3 @@
-@call wudsn.bat nonsense
+@echo off
+cd ..
+call wudsn.bat nonsense

@@ -14,5 +14,3 @@ set COPYRIGHT="(c) %FILE_YEAR% Peter Dell"
 build\bat2exe /bat %BAT_FILE% /exe %EXE_FILE% /icon build\wudsn.ico ^
               /x64 /workdir 0 /overwrite ^
               /fileversion %FILE_VERSION%  /productname "WUDSN IDE" /productversion %PRODUCT_VERSION% /copyright %COPYRIGHT% /company WUDSN 
-
-pause

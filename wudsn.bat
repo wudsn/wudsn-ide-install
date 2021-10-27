@@ -166,13 +166,13 @@ set ID=""
 set /p ID="Your choice: "
 if "%ID%"=="1" (
   set INSTALL_MODE=--install-ide-from-cache
-  goto :begin_install
+  goto :install_mode_selected
 ) else if "%ID%"=="2" (
   set INSTALL_MODE=--install-ide-from-server
-  goto :begin_install
+  goto :install_mode_selected
 ) else if "%ID%"=="3" (
   set INSTALL_MODE=--install-all-from-server
-  goto :begin_install
+  goto :install_mode_selected
 ) else goto :choose_install_mode
 
 :install_mode_selected
@@ -185,16 +185,16 @@ rem
 
 rem Use current folder when running from .exe
 rem Use scipt folder when running .bat
-set SCRIPT_FOLDER=%CD%\
-set LOG=%SCRIPT_FOLDER%wudsn.log
+set SCRIPT_FOLDER=%CD%
+set LOG=%SCRIPT_FOLDER%\wudsn.log
 date /T >%LOG%
 call :begin_progress "Checking installation in %SCRIPT_FOLDER%."
 
 set WUDSN_FOLDER=%SCRIPT_FOLDER%
-set INSTALL_FOLDER=%WUDSN_FOLDER%Install
-set TOOLS_FOLDER=%WUDSN_FOLDER%Tools
-set PROJECTS_FOLDER=%WUDSN_FOLDER%Projects
-set WORKSPACE_FOLDER=%WUDSN_FOLDER%Workspace
+set INSTALL_FOLDER=%WUDSN_FOLDER%\Install
+set TOOLS_FOLDER=%WUDSN_FOLDER%\Tools
+set PROJECTS_FOLDER=%WUDSN_FOLDER%\Projects
+set WORKSPACE_FOLDER=%WUDSN_FOLDER%\Workspace
 
 set TOOLS_FILE=wudsn-ide-tools-main.zip
 set TOOLS_URL=https://github.com/peterdell/wudsn-ide-tools/archive/refs/heads/main.zip
@@ -204,9 +204,10 @@ set DOWNLOADS_URL=https://www.wudsn.com/productions/java/ide/downloads
 set ECLIPSE_FILE=eclipse-platform-4.19-win32-x86_64.zip
 set ECLIPSE_URL=%DOWNLOADS_URL%/%ECLIPSE_FILE%
 set ECLIPSE_FOLDER_NAME=eclipse
-set ECLIPSE_FOLDER=%WUDSN_FOLDER%\Tools\IDE\Eclipse
-set ECLIPSE_RUNTIME_FOLDER=%ECLIPSE_FOLDER%\eclipse
+set ECLIPSE_FOLDER=%TOOLS_FOLDER%\IDE\Eclipse
+set ECLIPSE_RUNTIME_FOLDER=%ECLIPSE_FOLDER%\%ECLIPSE_FOLDER_NAME%
 set ECLIPSE_APP=%ECLIPSE_RUNTIME_FOLDER%\eclipse.exe
+set ECLIPSE_SPLASH_FOLDER=%ECLIPSE_RUNTIME_FOLDER%\plugins\org.eclipse.platform_4.19.0.v20210303-1800
 
 set JRE_FILE=openjdk-16.0.2_windows-x64_bin.zip
 set JRE_URL=%DOWNLOADS_URL%/%JRE_FILE%
@@ -247,6 +248,9 @@ rem if ERRORLEVEL 1 goto :error
 call :begin_progress "Installing Eclipse."
 call :download %ECLIPSE_FILE% %ECLIPSE_URL% %ECLIPSE_FOLDER_NAME% %ECLIPSE_FOLDER% FAIL
 if ERRORLEVEL 1 goto :error
+rem call :display_progress "Installing branding."
+rem copy %WUDSN_FOLDER%\wudsn.bmp %ECLIPSE_SPLASH_FOLDER%\splash.bmp >>%LOG%
+rem if ERRORLEVEL 1 goto :error
 
 call :begin_progress "Installing Java Runtime."
 call :download %JRE_FILE%     %JRE_URL%     %JRE_FOLDER_NAME%     %ECLIPSE_RUNTIME_FOLDER% FAIL
