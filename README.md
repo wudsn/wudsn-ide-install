@@ -8,13 +8,13 @@ On Windows, download wudsn.exe the folder run it.
  
 Not yet: On Linux or macOS, double click "wudsn.sh" to install WUDSN IDE.
 
-The file will create and populate the following subfolders:
-- Install - the cache folder where all download are stored
+The file will create and populate the following subfolders via downloads:
+- Install - the cache folder where all downloads are stored
 - Tools - the IDE and all related command line programs
 - Projects - the platform specific project folders with sample source code
-- Workspace - the workspace here the IDE stores data that is no source code
+- Workspace - the workspace where the IDE stores data that is no source code
 
-In case of problems you can run wudsn.exe com the command line with the parameter --install.
-This will display the installer menu with option to reinstall or update the IDE.
+In case of problems you can run wudsn.exe com from the command line with the parameter --install.
+This will display the installer menu with options to reinstall or update the IDE.
 
 Visit https://www.wudsn.com to learn more.
