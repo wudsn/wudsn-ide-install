@@ -2,7 +2,7 @@
 setlocal enableextensions enabledelayedexpansion
 
 rem
-rem WUDSN IDE Installer - Version 2021-10-26
+rem WUDSN IDE Installer - Version 2021-10-27
 rem Visit https://www.wudsn.com for the latest version.
 rem
 call :main %1
@@ -186,7 +186,6 @@ rem
 rem Use current folder when running from .exe
 rem Use scipt folder when running .bat
 set SCRIPT_FOLDER=%CD%\
-if not exist %SCRIPT_FOLDER%\wudsn.bat set SCRIPT_FOLDER=%~dp0
 set LOG=%SCRIPT_FOLDER%wudsn.log
 date /T >%LOG%
 call :begin_progress "Checking installation in %SCRIPT_FOLDER%."
@@ -296,10 +295,10 @@ popd
 
 :start_eclipse
 if "%INSTALL_MODE%"=="--install-all-from-server" (
-  call :begin_progress "Starting WUDSN IDE for imprt of projects from %PROJECTS_FOLDER%."
-  start %ECLIPSE_RUNTIME_FOLDER%\eclipse.exe %PROJECTS_FOLDER%
+  call :begin_progress "Starting WUDSN IDE for import projects from %PROJECTS_FOLDER%."
+  start %ECLIPSE_RUNTIME_FOLDER%\eclipse.exe -data %WORKSPACE_FOLDER% %PROJECTS_FOLDER%
 ) else (
   call :begin_progress "Starting WUDSN IDE."
-  start %ECLIPSE_RUNTIME_FOLDER%\eclipse.exe
+  start %ECLIPSE_RUNTIME_FOLDER%\eclipse.exe -data %WORKSPACE_FOLDER%
 )
 

@@ -1,18 +1,20 @@
 # WUDSN IDE Installer
 
-Download the ZIP file from the following URL and unzip it to a folder of your choice.
-- https://github.com/peterdell/wudsn-ide-install/archive/refs/heads/main.zip
+Create a folder where you want to put the IDE.
+Make sure the folder path contains no spaced or whitespaces.
+
+On Windows, download wudsn.exe the folder run it.
+- https://github.com/peterdell/wudsn-ide-install/wudsn.exe
  
-On Windows, double click "wudsn.bat" to install WUDSN IDE.  
-On Linux or macOS, double click "wudsn.sh" to install WUDSN IDE.
+Not yet: On Linux or macOS, double click "wudsn.sh" to install WUDSN IDE.
 
-After the installation, clicking the script again will start the IDE.
+The file will create and populate the following subfolders
+- Install - the cache folder where all download are stored
+- Tools - the actual IDE and all required command line program
+- Projects - the platform specific project folder with source code
+- Workspace - the workspace here the IDE stores data that is no source code
 
-In case of problems you can run:
-- "install-wudsn..." to reinstall the IDE while keeping project and the workspace.
-- "install-wudsn-with-projects..." to reinstall the IDE after deleting projects and workspace. 
-
-In either case you'll be can use the already downloaded version
-or choose the latest version from the the internet.
+In case of problems you can run wudsn.exe com the command line with the parameter --install.
+This will display the installer menu with option to reinstall or update the IDE.
 
 Visit https://www.wudsn.com to learn more.
