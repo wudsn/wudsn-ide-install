@@ -1,4 +1,4 @@
-#!/bin/bash
+ #!/bin/bash
 #
 # WUDSN IDE Installer
 # Visit https://www.wudsn.com for the latest version.
@@ -6,7 +6,7 @@
 
 #
 # Download a .zip file and unpack to target folder.
-# Usage: download repo <filename> <url> <folder> <target_folder> <FAIL|IGNORE>
+# Usage: download <filename> <url> <folder> <target_folder> <FAIL|IGNORE>
 #
 download(){
   FILE=$1
