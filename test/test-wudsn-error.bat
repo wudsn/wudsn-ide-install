@@ -1,3 +1,2 @@
 @echo off
-cd ..
-call wudsn.bat nonsense
+call test-wudsn.bat nonsense
