@@ -1,5 +1,6 @@
 # WUDSN IDE Installer
 
+The WUDSN IDE installer is the simplest way to install [WUDSN IDE](https://github.com/peterdell/wudsn-ide).
 Create a folder where you want to put the IDE.
 Make sure the folder path contains no spaces or whitespaces.
 
