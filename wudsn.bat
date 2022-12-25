@@ -1,4 +1,5 @@
 @echo off
+setlocal
 setlocal enableextensions enabledelayedexpansion
 
 rem
@@ -135,13 +136,15 @@ set INSTALL_MODE=%1
 if not exist %PROJECTS_FOLDER%. set INSTALL_MODE=--install-all-from-server
 if "%INSTALL_MODE%"=="--install-all-from-server" goto :install_mode_selected
 
-if not exist %INSTALL_FOLDER%. set INSTALL_MODE=install
+if not exist %INSTALL_FOLDER%. set INSTALL_MODE=--install
 if "%INSTALL_MODE%"=="--install-ide-from-cache"  goto :install_mode_selected
 if "%INSTALL_MODE%"=="--install-ide-from-server" goto :install_mode_selected
+if "%INSTALL_MODE%"=="--install-workspace"       goto :install_mode_selected
 
 if "%INSTALL_MODE%"=="--install" goto :display_install_menu
 if not "%INSTALL_MODE%"=="" (
-   echo ERROR: Invalid install mode %INSTALL_MODE%. Use on of these options.
+   echo ERROR: Invalid install mode "%INSTALL_MODE%". Use on of these options.
+   echo wudsn.exe --install-ide-from-cache^|--install-ide-from-server^|--install-all-from-server^|-install-workspace
    echo.
    goto :display_install_menu
 )
@@ -162,6 +165,7 @@ echo Select your option to reinstall the stable version of WUDSN IDE in %WUDSN_F
 echo 1) Delete IDE, then install IDE from local cache
 echo 2) Delete local cache and IDE, then install IDE from server
 echo 3) Delete local cache, IDE, projects and workspace, then install everything from server
+echo x) Exit installer
 set ID=""
 set /p ID="Your choice: "
 if "%ID%"=="1" (
@@ -173,9 +177,43 @@ if "%ID%"=="1" (
 ) else if "%ID%"=="3" (
   set INSTALL_MODE=--install-all-from-server
   goto :install_mode_selected
-) else goto :choose_install_mode
+) else if "%ID%"=="x" (
+  goto :eof
+)else goto :choose_install_mode
 
 :install_mode_selected
+goto :eof
+
+rem
+rem Create the workspace folder and initialize its preferences
+rem
+:create_workspace_folder
+echo Creating workspace folder
+call :display_progress "Installing WUDSN defaults for workspace %WORKSPACE_FOLDER%."
+mkdir %WORKSPACE_FOLDER%
+
+set SETTINGS_FOLDER=%WORKSPACE_FOLDER%\.metadata\.plugins\org.eclipse.core.runtime\.settings
+if not exist %SETTINGS_FOLDER%. (
+  mkdir %SETTINGS_FOLDER%
+)
+
+set PREFS=%SETTINGS_FOLDER%\org.eclipse.ui.ide.prefs
+set RECENT_WORKSPACES=%WORKSPACE_FOLDER:\=\\%
+echo eclipse.preferences.version=^1>%PREFS%
+echo MAX_RECENT_WORKSPACES=10>>%PREFS%
+echo RECENT_WORKSPACES=%RECENT_WORKSPACES% >>%PREFS%
+echo RECENT_WORKSPACES_PROTOCOL=^3>>%PREFS%
+echo SHOW_RECENT_WORKSPACES=false>>%PREFS%
+echo SHOW_WORKSPACE_SELECTION_DIALOG=false>>%PREFS%
+
+set PREFS=%SETTINGS_FOLDER%\org.eclipse.ui.editors.prefs
+echo eclipse.preferences.version=^1>%PREFS%
+echo tabWidth=^8>>%PREFS%
+
+set PREFS=%SETTINGS_FOLDER%\org.eclipse.ui.prefs
+echo eclipse.preferences.version=^1>%PREFS%
+echo showIntro=false>>%PREFS%
+
 goto :eof
 
 rem
@@ -199,7 +237,11 @@ set WORKSPACE_FOLDER=%WUDSN_FOLDER%\Workspace
 set TOOLS_FILE=wudsn-ide-tools-main.zip
 set TOOLS_URL=https://github.com/peterdell/wudsn-ide-tools/archive/refs/heads/main.zip
 
-set DOWNLOADS_URL=https://www.wudsn.com/productions/java/ide/downloads
+if "%SITE_URL%" == "" (
+  set SITE_URL=https://www.wudsn.com
+)
+set DOWNLOADS_URL=%SITE_URL%/productions/java/ide/downloads
+set UPDATE_URL=%SITE_URL%/update
 
 set ECLIPSE_FILE=eclipse-platform-4.19-win32-x86_64.zip
 set ECLIPSE_URL=%DOWNLOADS_URL%/%ECLIPSE_FILE%
@@ -219,18 +261,22 @@ call :select_install_mode %1
 if "%INSTALL_MODE%"=="--start-eclipse" (
     goto :start_eclipse
 ) else if "%INSTALL_MODE%"=="--install-all-from-server" (
-    call :begin_progress "Starting full installation from server."
+    call :begin_progress "Starting full installation from server %SITE_URL%."
     call :remove_folder %WORKSPACE_FOLDER%
     call :remove_folder %PROJECTS_FOLDER%
     call :remove_folder %INSTALL_FOLDER%
     call :remove_folder %TOOLS_FOLDER%
 ) else if "%INSTALL_MODE%"=="--install-ide-from-server" (
-    call :begin_progress "Starting IDE installation from server."
+    call :begin_progress "Starting IDE installation from server %SITE_URL%."
     call :remove_folder %INSTALL_FOLDER%
     call :remove_folder %TOOLS_FOLDER%
 ) else if "%INSTALL_MODE%"=="--install-ide-from-cache" (
     call :begin_progress "Starting IDE installation from local cache."
     call :remove_folder %TOOLS_FOLDER%
+) else if "%INSTALL_MODE%"=="--install-workspace" (
+    call :begin_progress "Starting IDE installation from local cache."
+    call :remove_folder %WORKSPACE_FOLDER%
+    call :remove_folder %PROJECTS_FOLDER%
 ) else (
   call :display_progress "ERROR: Invalid install mode %INSTALL_MODE%.".
   exit /b
@@ -253,7 +299,7 @@ rem copy %WUDSN_FOLDER%\wudsn.bmp %ECLIPSE_SPLASH_FOLDER%\splash.bmp >>%LOG%
 rem if ERRORLEVEL 1 goto :error
 
 call :begin_progress "Installing Java Runtime."
-call :download %JRE_FILE%     %JRE_URL%     %JRE_FOLDER_NAME%     %ECLIPSE_RUNTIME_FOLDER% FAIL
+call :download %JRE_FILE% %JRE_URL% %JRE_FOLDER_NAME% %ECLIPSE_RUNTIME_FOLDER% FAIL
 if ERRORLEVEL 1 goto :error
 if exist %ECLIPSE_RUNTIME_FOLDER%\jre. rmdir /S/Q %ECLIPSE_RUNTIME_FOLDER%\jre
 move %ECLIPSE_RUNTIME_FOLDER%\%JRE_FOLDER_NAME% %ECLIPSE_RUNTIME_FOLDER%\jre >>%LOG%
@@ -261,48 +307,29 @@ move %ECLIPSE_RUNTIME_FOLDER%\%JRE_FOLDER_NAME% %ECLIPSE_RUNTIME_FOLDER%\jre >>%
 call :begin_progress "Installing WUDSN IDE feature."
 call :display_progress "Downloading and installing feature"
 rem See http://help.eclipse.org/latest/index.jsp?topic=/org.eclipse.platform.doc.isv/guide/p2_director.html
-%ECLIPSE_RUNTIME_FOLDER%\eclipsec.exe -nosplash -application org.eclipse.equinox.p2.director -repository https://www.wudsn.com/update -installIU com.wudsn.ide.feature.feature.group -destination %ECLIPSE_RUNTIME_FOLDER% 2>>%LOG% >>%LOG%.tmp
+%ECLIPSE_RUNTIME_FOLDER%\eclipsec.exe -nosplash -application org.eclipse.equinox.p2.director -repository %UPDATE_URL% -installIU com.wudsn.ide.feature.feature.group -destination %ECLIPSE_RUNTIME_FOLDER% 2>>%LOG% >>%LOG%.tmp
 type %LOG%.tmp >>%LOG%
 del /Q %LOG%.tmp
 
-if exist %PROJECTS_FOLDER%. goto :keep_projects
+if not exist %PROJECTS_FOLDER%. (
+  call :begin_progress "Installing Projects and Workspace."
+  call :download_repo wudsn-ide-projects %PROJECTS_FOLDER%
+  if ERRORLEVEL 1 goto :error
+)
 
-call :begin_progress "Installing Projects and Workspace."
-call :download_repo wudsn-ide-projects %PROJECTS_FOLDER%
-if ERRORLEVEL 1 goto :error
-
-:keep_projects
-
-if exist %WORKSPACE_FOLDER%. goto :keep_workspace
-call :display_progress "Installing WUDSN defaults for workspace %WORKSPACE_FOLDER%."
-mkdir %WORKSPACE_FOLDER%
-set SETTINGS_FOLDER=%ECLIPSE_RUNTIME_FOLDER%\configuration\.settings
-
-if not exist %SETTINGS_FOLDER%. mkdir %SETTINGS_FOLDER%
-
-set PREFS=%SETTINGS_FOLDER%\org.eclipse.ui.ide.prefs
-set RECENT_WORKSPACES=%WORKSPACE_FOLDER:\=\\%
-echo eclipse.preferences.version=^1>%PREFS%
-echo MAX_RECENT_WORKSPACES=10>>%PREFS%
-echo RECENT_WORKSPACES=%RECENT_WORKSPACES%>>%PREFS%
-echo RECENT_WORKSPACES_PROTOCOL=^3>>%PREFS%
-echo SHOW_RECENT_WORKSPACES=false>>%PREFS%
-echo SHOW_WORKSPACE_SELECTION_DIALOG=false>>%PREFS%
-
-set PREFS=%SETTINGS_FOLDER%\org.eclipse.ui.editors.prefs.prefs
-echo eclipse.preferences.version=^1>%PREFS%
-echo tabWidth=^8>>%PREFS%
-
-:keep_workspace
+if not exist %WORKSPACE_FOLDER%. (
+  call :create_workspace_folder
+  set WORKSPACE_CREATED=1
+)
 
 popd
 
 :start_eclipse
-if "%INSTALL_MODE%"=="--install-all-from-server" (
+if "%WORKSPACE_CREATED%"=="2" (
   call :begin_progress "Starting WUDSN IDE for import projects from %PROJECTS_FOLDER%."
-  start %ECLIPSE_RUNTIME_FOLDER%\eclipse.exe -data %WORKSPACE_FOLDER% %PROJECTS_FOLDER%
+  start %ECLIPSE_RUNTIME_FOLDER%\eclipse.exe -noSplash -import %PROJECTS_FOLDER%
 ) else (
   call :begin_progress "Starting WUDSN IDE."
-  start %ECLIPSE_RUNTIME_FOLDER%\eclipse.exe -data %WORKSPACE_FOLDER%
+  start %ECLIPSE_RUNTIME_FOLDER%\eclipse.exe -noSplash -data %WORKSPACE_FOLDER%
 )
 
