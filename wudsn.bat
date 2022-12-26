@@ -1,11 +1,11 @@
 @echo off
-setlocal
-setlocal enableextensions enabledelayedexpansion
-
 rem
 rem WUDSN IDE Installer - Version 2022-12-26
 rem Visit https://www.wudsn.com for the latest version.
 rem
+
+setlocal
+setlocal enableextensions enabledelayedexpansion
 call :main %1
 goto :eof
 

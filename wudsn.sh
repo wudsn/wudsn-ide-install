@@ -1,4 +1,4 @@
- #!/bin/bash
+#!/bin/bash
 #
 # WUDSN IDE Installer
 # Visit https://www.wudsn.com for the latest version.
