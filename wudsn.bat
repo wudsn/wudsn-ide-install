@@ -241,7 +241,7 @@ if "%SITE_URL%" == "" (
   set SITE_URL=https://www.wudsn.com
 )
 set DOWNLOADS_URL=%SITE_URL%/productions/java/ide/downloads
-set UPDATE_URL=%SITE_URL%/update
+set UPDATE_URL=%SITE_URL%/update/stable
 
 set ECLIPSE_FILE=eclipse-platform-4.19-win32-x86_64.zip
 set ECLIPSE_URL=%DOWNLOADS_URL%/%ECLIPSE_FILE%

@@ -7,6 +7,7 @@ Make sure the folder path contains no spaces or whitespaces.
 On Windows, download wudsn.exe to the folder and run it.
 - https://github.com/peterdell/wudsn-ide-install/raw/main/wudsn.exe
  
+Note: Windows Defender may complain upon the first launch.
 Versions for macOS and Linux are in the making.
 
 The file will create and populate the following subfolders via downloads:
