@@ -3,7 +3,7 @@ setlocal
 setlocal enableextensions enabledelayedexpansion
 
 rem
-rem WUDSN IDE Installer - Version 2021-10-27
+rem WUDSN IDE Installer - Version 2022-12-26
 rem Visit https://www.wudsn.com for the latest version.
 rem
 call :main %1
