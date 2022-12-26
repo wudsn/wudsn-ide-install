@@ -5,7 +5,7 @@ Create a folder where you want to put the IDE.
 Make sure the folder path contains no spaces or whitespaces.
 
 On Windows, download wudsn.exe to the folder and run it.
-- https://github.com/peterdell/wudsn-ide-install/wudsn.exe
+- https://github.com/peterdell/wudsn-ide-install/blob/main/wudsn.exe
  
 Versions for macOS and Linux are in the making.
 
