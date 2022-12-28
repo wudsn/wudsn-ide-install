@@ -74,83 +74,6 @@ download(){
   fi
 }
 
-# 
-# Check that the workspace is unlocked.
-#
-check_workspace_lock(){
-  WORKSPACE_LOCK=$WORKSPACE_FOLDER/.metadata/.lock
-  if [ -f $WORKSPACE_LOCK. del $WORKSPACE_LOCK$ 2>>$LOG
-    workspace_locked
-  if [ -f $WORKSPACE_LOCK {
-    echo ERROR: Workspace $WORKSPACE_FOLDER$ is locked. Close Eclipse first.
-    pause
-    goto workspace_locked
-  }
-}
-
-#
-# Select install mode.
-#
-select_install_mode
-INSTALL_MODE=$1
-
-if "$WUDSN_VERSION$" == "" {
-  WUDSN_VERSION=stable
-}
-
-if [ ! -f $PROJECTS_FOLDER. INSTALL_MODE=--install-all-from-server
-if "$INSTALL_MODE$"=="--install-all-from-server" goto install_mode_selected
-
-if [ ! -f $INSTALL_FOLDER. INSTALL_MODE=--install
-if "$INSTALL_MODE$"=="--install-ide-from-cache"  goto install_mode_selected
-if "$INSTALL_MODE$"=="--install-ide-from-server" goto install_mode_selected
-if "$INSTALL_MODE$"=="--install-workspace"       goto install_mode_selected
-
-if "$INSTALL_MODE$"=="--install" goto display_install_menu
-if not "$INSTALL_MODE$"=="" {
-   echo ERROR: Invalid install mode "$INSTALL_MODE$". Use on of these options.
-   echo wudsn.exe --install-ide-from-cache^|--install-ide-from-server^|--install-all-from-server^|-install-workspace
-   echo.
-   goto display_install_menu
-}
-
-if [ -f $ECLIPSE_APP {
-  INSTALL_MODE=--start-eclipse
-  goto install_mode_selected
-}
-
-display_install_menu(){
-echo WUDSN IDE Installer
-echo ===================
-echo.
-echo Close all open Eclipse processes.
-echo Select your option to reinstall the $WUDSN_VERSION$ version of WUDSN IDE in $WUDSN_FOLDER
-
-choose_install_mode
-echo 1} Delete IDE, then install IDE from local cache
-echo 2} Delete local cache and IDE, then install IDE from server
-echo 3} Delete local cache, IDE, projects and workspace, then install everything from server
-echo s} Start WUDSN IDE
-echo x} Exit installer
-ID=""
-/p ID="Your choice: "
-if "$ID$"=="1" {
-  INSTALL_MODE=--install-ide-from-cache
-  goto install_mode_selected
-} else if "$ID$"=="2" {
-  INSTALL_MODE=--install-ide-from-server
-  goto install_mode_selected
-} else if "$ID$"=="3" {
-  INSTALL_MODE=--install-all-from-server
-  goto install_mode_selected
-} else if "$ID$"=="s" {
-  goto start_eclipse
-} else if "$ID$"=="x" {
-  }
-} else goto choose_install_mode
-
-install_mode_selected
-}
 
 #
 # Download a git repo main branch and unpack to target folder.
@@ -173,6 +96,104 @@ download_repo(){
   fi
   cp -p -R $REPO_BRANCH/* $REPO_TARGET_FOLDER
   remove_folder $REPO_BRANCH
+}
+
+# 
+# Check that the workspace is unlocked.
+#
+check_workspace_lock(){
+  WORKSPACE_LOCK=$WORKSPACE_FOLDER/.metadata/.lock
+  if [ -f $WORKSPACE_LOCK ];
+  then rm $WORKSPACE_LOCK$ 2>>$LOG
+  fi
+
+  while [ -f $WORKSPACE_LOCK {
+  do
+    echo ERROR: Workspace $WORKSPACE_FOLDER$ is locked. Close Eclipse first.
+    read -r key
+  done
+}
+
+#
+# Select install mode.
+#
+select_install_mode
+INSTALL_MODE=$1
+
+if "$WUDSN_VERSION$" == "" {
+  WUDSN_VERSION=stable
+}
+
+if [ ! -f $PROJECTS_FOLDER. INSTALL_MODE=--install-all-from-server
+if "$INSTALL_MODE$"=="--install-all-from-server" goto install_mode_selected
+
+if [ ! -f $INSTALL_FOLDER ];
+then INSTALL_MODE=--install
+fi
+
+if "$INSTALL_MODE$"=="--install-ide-from-cache"  goto install_mode_selected
+if "$INSTALL_MODE$"=="--install-ide-from-server" goto install_mode_selected
+if "$INSTALL_MODE$"=="--install-workspace"       goto install_mode_selected
+
+if "$INSTALL_MODE$"=="--install" goto display_install_menu
+if [ "$INSTALL_MODE = "" ]; then
+   echo "ERROR: Invalid install mode \"$INSTALL_MODE\". Use on of these options."
+   echo "wudsn.exe --install-ide-from-cache|--install-ide-from-server|--install-all-from-server|-install-workspace"
+   echo 
+   goto display_install_menu
+fi
+
+if [ -f $ECLIPSE_APP {
+  INSTALL_MODE=--start-eclipse
+  goto install_mode_selected
+}
+
+display_install_menu(){
+  echo WUDSN IDE Installer
+  echo ===================
+  echo
+  echo "Close all open Eclipse processes."
+  echo "Select your option to reinstall the $WUDSN_VERSION version of WUDSN IDE in $WUDSN_FOLDER"
+  
+  choose_install_mode
+  echo "1) Delete IDE, then install IDE from local cache"
+  echo "2) Delete local cache and IDE, then install IDE from server"
+  echo "3) Delete local cache, IDE, projects and workspace, then install everything from server"
+  echo "s) Start WUDSN IDE"
+  echo "x) Exit installer"
+  ID=""
+  /p ID="Your choice: "
+  while(true)
+  do
+    case $ID in
+    
+      "1")
+      INSTALL_MODE=--install-ide-from-cache
+      install_mode_selected
+      return;;
+      
+      "2")
+      INSTALL_MODE=--install-ide-from-server
+      install_mode_selected
+      return;;
+    
+      "3")
+      INSTALL_MODE=--install-all-from-server
+      install_mode_selected
+      return ;;
+      
+      "s")
+      start_eclipse
+      return ;;
+    
+      "x")
+      return;;
+    esac
+  done
+}
+
+install_mode_selected(){
+
 }
 
 install_tools(){
