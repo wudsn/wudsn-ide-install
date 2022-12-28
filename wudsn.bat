@@ -1,6 +1,6 @@
 @echo off
 rem
-rem WUDSN IDE Installer - Version 2022-12-26
+rem WUDSN IDE Installer - Version 2022-12-28
 rem Visit https://www.wudsn.com for the latest version.
 rem
 
@@ -73,7 +73,7 @@ set MODE=%5
 
 if not exist %FILE% (
   call :display_progress "Downloading %FILE% from %URL%."
-  curl -silent --show-error -L %URL% --output %FILE%
+  curl --silent --show-error --location %URL% --output %FILE%
 ) else (
   call :display_progress "File %FILE% is present."
 )
@@ -115,7 +115,6 @@ goto :eof
 rem 
 rem Check that the workspace is unlocked.
 rem
-echo on
 :check_workspace_lock
 set WORKSPACE_LOCK=%WORKSPACE_FOLDER%\.metadata\.lock
 if exist %WORKSPACE_LOCK%. del %WORKSPACE_LOCK% 2>>%LOG%
@@ -132,6 +131,10 @@ rem Select install mode.
 rem
 :select_install_mode
 set INSTALL_MODE=%1
+
+if "%WUDSN_VERSION%" == "" (
+  set WUDSN_VERSION=stable
+)
 
 if not exist %PROJECTS_FOLDER%. set INSTALL_MODE=--install-all-from-server
 if "%INSTALL_MODE%"=="--install-all-from-server" goto :install_mode_selected
@@ -159,12 +162,13 @@ echo WUDSN IDE Installer
 echo ===================
 echo.
 echo Close all open Eclipse processes.
-echo Select your option to reinstall the stable version of WUDSN IDE in %WUDSN_FOLDER%
+echo Select your option to reinstall the %WUDSN_VERSION% version of WUDSN IDE in %WUDSN_FOLDER%
 
 :choose_install_mode
 echo 1) Delete IDE, then install IDE from local cache
 echo 2) Delete local cache and IDE, then install IDE from server
 echo 3) Delete local cache, IDE, projects and workspace, then install everything from server
+echo s) Start WUDSN IDE
 echo x) Exit installer
 set ID=""
 set /p ID="Your choice: "
@@ -177,9 +181,11 @@ if "%ID%"=="1" (
 ) else if "%ID%"=="3" (
   set INSTALL_MODE=--install-all-from-server
   goto :install_mode_selected
+) else if "%ID%"=="s" (
+  goto :start_eclipse
 ) else if "%ID%"=="x" (
   goto :eof
-)else goto :choose_install_mode
+) else goto :choose_install_mode
 
 :install_mode_selected
 goto :eof
@@ -241,7 +247,7 @@ if "%SITE_URL%" == "" (
   set SITE_URL=https://www.wudsn.com
 )
 set DOWNLOADS_URL=%SITE_URL%/productions/java/ide/downloads
-set UPDATE_URL=%SITE_URL%/update/stable
+set UPDATE_URL=%SITE_URL%/update/%WUDSN_VERSION%
 
 set ECLIPSE_FILE=eclipse-platform-4.19-win32-x86_64.zip
 set ECLIPSE_URL=%DOWNLOADS_URL%/%ECLIPSE_FILE%
@@ -261,13 +267,13 @@ call :select_install_mode %1
 if "%INSTALL_MODE%"=="--start-eclipse" (
     goto :start_eclipse
 ) else if "%INSTALL_MODE%"=="--install-all-from-server" (
-    call :begin_progress "Starting full installation from server %SITE_URL%."
+    call :begin_progress "Starting full installation of %WUDSN_VERSION% version from server %SITE_URL%."
     call :remove_folder %WORKSPACE_FOLDER%
     call :remove_folder %PROJECTS_FOLDER%
     call :remove_folder %INSTALL_FOLDER%
     call :remove_folder %TOOLS_FOLDER%
 ) else if "%INSTALL_MODE%"=="--install-ide-from-server" (
-    call :begin_progress "Starting IDE installation from server %SITE_URL%."
+    call :begin_progress "Starting IDE installation %WUDSN_VERSION% version from server %SITE_URL%."
     call :remove_folder %INSTALL_FOLDER%
     call :remove_folder %TOOLS_FOLDER%
 ) else if "%INSTALL_MODE%"=="--install-ide-from-cache" (
