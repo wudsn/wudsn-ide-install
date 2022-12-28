@@ -1,0 +1,1 @@
+./test-wudsn.sh --install-all-from-server
