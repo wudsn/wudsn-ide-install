@@ -1,12 +1,52 @@
 #!/bin/bash
 #
-# WUDSN IDE Installer
+# WUDSN IDE Installer - Version 2022-12-28
 # Visit https://www.wudsn.com for the latest version.
 #
 
 #
+# Display error message and exit current call stack frame.
+#
+error(){
+  echo ERROR: See messages above and in $LOG.
+  exit 1
+}
+
+#
+# Append message to log
+#
+log_message(){
+  echo $1 >>$LOG
+}
+
+#
+# Display progress activity.
+#
+begin_progress(){
+  echo $1
+  log_message $1
+}
+
+#
+# Display progress message
+#
+display_progress(){
+log_message $1
+}
+
+#
+# Remove a folder and its contents if it exists.
+#
+remove_folder(){
+  if [ ! -f $1 ]; then
+    display_progress "Removing folder $1."
+    rm -rf $1
+  fi
+}
+
+#
 # Download a .zip file and unpack to target folder.
-# Usage: download <filename> <url> <folder> <target_folder> <FAIL|IGNORE>
+# Usage: download repo <filename> <url> <folder> <target_folder> <FAIL|IGNORE>
 #
 download(){
   FILE=$1
@@ -17,26 +57,104 @@ download(){
   MODE=$5
 
   if [ ! -f $FILE ]; then
-    echo Downloading $FILE from $URL.
-    curl -L $URL --output $FILE
+    display_progress "Downloading $FILE from $URL."
+    curl --silent --show-error  --location $URL --output $FILE
   else
-    echo File $FILE is present.
+    display_progress "File $FILE is present."
   fi
 
   if [ -d $TARGET ]; then
-    echo Removing target folder $TARGET.
-    rm -rf $TARGET
+    remove_folder $TARGET
   fi
   mkdir -p $TARGET_FOLDER
 
   if [[ $FILE == *.zip ]] || [[ $FILE == *.tar.gz ]]; then
-    echo Unpacking $FILE to $TARGET_FOLDER.
+    display_progress "Unpacking $FILE to $TARGET_FOLDER."
     tar -xf $FILE -C $TARGET_FOLDER
   fi
 }
 
+# 
+# Check that the workspace is unlocked.
 #
+check_workspace_lock(){
+  WORKSPACE_LOCK=$WORKSPACE_FOLDER/.metadata/.lock
+  if [ -f $WORKSPACE_LOCK. del $WORKSPACE_LOCK$ 2>>$LOG
+    workspace_locked
+  if [ -f $WORKSPACE_LOCK {
+    echo ERROR: Workspace $WORKSPACE_FOLDER$ is locked. Close Eclipse first.
+    pause
+    goto workspace_locked
+  }
+}
+
 #
+# Select install mode.
+#
+select_install_mode
+INSTALL_MODE=$1
+
+if "$WUDSN_VERSION$" == "" {
+  WUDSN_VERSION=stable
+}
+
+if [ ! -f $PROJECTS_FOLDER. INSTALL_MODE=--install-all-from-server
+if "$INSTALL_MODE$"=="--install-all-from-server" goto install_mode_selected
+
+if [ ! -f $INSTALL_FOLDER. INSTALL_MODE=--install
+if "$INSTALL_MODE$"=="--install-ide-from-cache"  goto install_mode_selected
+if "$INSTALL_MODE$"=="--install-ide-from-server" goto install_mode_selected
+if "$INSTALL_MODE$"=="--install-workspace"       goto install_mode_selected
+
+if "$INSTALL_MODE$"=="--install" goto display_install_menu
+if not "$INSTALL_MODE$"=="" {
+   echo ERROR: Invalid install mode "$INSTALL_MODE$". Use on of these options.
+   echo wudsn.exe --install-ide-from-cache^|--install-ide-from-server^|--install-all-from-server^|-install-workspace
+   echo.
+   goto display_install_menu
+}
+
+if [ -f $ECLIPSE_APP {
+  INSTALL_MODE=--start-eclipse
+  goto install_mode_selected
+}
+
+display_install_menu(){
+echo WUDSN IDE Installer
+echo ===================
+echo.
+echo Close all open Eclipse processes.
+echo Select your option to reinstall the $WUDSN_VERSION$ version of WUDSN IDE in $WUDSN_FOLDER
+
+choose_install_mode
+echo 1} Delete IDE, then install IDE from local cache
+echo 2} Delete local cache and IDE, then install IDE from server
+echo 3} Delete local cache, IDE, projects and workspace, then install everything from server
+echo s} Start WUDSN IDE
+echo x} Exit installer
+ID=""
+/p ID="Your choice: "
+if "$ID$"=="1" {
+  INSTALL_MODE=--install-ide-from-cache
+  goto install_mode_selected
+} else if "$ID$"=="2" {
+  INSTALL_MODE=--install-ide-from-server
+  goto install_mode_selected
+} else if "$ID$"=="3" {
+  INSTALL_MODE=--install-all-from-server
+  goto install_mode_selected
+} else if "$ID$"=="s" {
+  goto start_eclipse
+} else if "$ID$"=="x" {
+  }
+} else goto choose_install_mode
+
+install_mode_selected
+}
+
+#
+# Download a git repo main branch and unpack to target folder.
+# Usage: download repo <repo> <target_folder>
 #
 download_repo(){
   REPO=$1
@@ -46,16 +164,15 @@ download_repo(){
   REPO_URL=https://github.com/peterdell/$REPO/archive/refs/heads/$BRANCH.zip
   REPO_TARGET_FOLDER=$2
   
-  echo Installing Eclipse.
-  echo Download repo $REPO to $REPO_TARGET_FOLDER.
+  display_progress "Downloading repo $REPO to $REPO_TARGET_FOLDER."
   download $REPO_FILE $REPO_URL $REPO_BRANCH $INSTALL_FOLDER IGNORE
 
-  echo Copying files to $REPO_TARGET_FOLDER.
+  display_progress Copying files to $REPO_TARGET_FOLDER.
   if [ ! -d $REPO_TARGET_FOLDER ]; then
     mkdir -p $REPO_TARGET_FOLDER
   fi
   cp -p -R $REPO_BRANCH/* $REPO_TARGET_FOLDER
-  rm -rf $REPO_BRANCH
+  remove_folder $REPO_BRANCH
 }
 
 install_tools(){
@@ -134,7 +251,7 @@ install_wudsn_defaults(){
   echo eclipse.preferences.version=1>>$PREFS
 }
 
-function install_wudsn_feature(){
+install_wudsn_feature(){
   ECLIPSE_CONTENTS=$1
   echo Installing WUDSN IDE feature.
   # See http://help.eclipse.org/latest/index.jsp?topic=/org.eclipse.platform.doc.isv/guide/p2_director.html
