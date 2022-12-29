@@ -4,7 +4,7 @@
 # Visit https://www.wudsn.com for the latest version.
 # Use https://www.shellcheck.net to validate the script source.
 #
-
+# TODO Check reads
 #
 # Display error message and exit current call stack frame.
 #
@@ -103,12 +103,12 @@ download_repo(){
 check_workspace_lock(){
   WORKSPACE_LOCK=$WORKSPACE_FOLDER/.metadata/.lock
   if [ -f $WORKSPACE_LOCK ];
-  then rm $WORKSPACE_LOCK$ 2>>$LOG
+  then rm $WORKSPACE_LOCK 2>>"$LOG"
   fi
 
-  while [ -f $WORKSPACE_LOCK
+  while [ -f $WORKSPACE_LOCK ]
   do
-    echo "ERROR: Workspace $WORKSPACE_FOLDER$ is locked. Close Eclipse first."
+    echo "ERROR: Workspace $WORKSPACE_FOLDER is locked. Close Eclipse first."
     read -r key
   done
 }
@@ -119,7 +119,7 @@ check_workspace_lock(){
 select_install_mode(){
   INSTALL_MODE=$1
   
-  if [ "$WUDSN_VERSION$" = "" ];
+  if [ "$WUDSN_VERSION" = "" ];
   then
     WUDSN_VERSION=stable
   fi
@@ -153,10 +153,11 @@ select_install_mode(){
   
     "--install")
     display_install_menu
-    return
+    return;;
   esac
   
-  if [ "$INSTALL_MODE" = "" ]; then
+  if [ "$INSTALL_MODE" = "" ];
+  then
      echo "ERROR: Invalid install mode \"$INSTALL_MODE\". Use on of these options."
      echo "wudsn.exe --install-ide-from-cache|--install-ide-from-server|--install-all-from-server|-install-workspace"
      echo 
@@ -188,7 +189,7 @@ display_install_menu(){
     echo "s) Start WUDSN IDE"
     echo "x) Exit installer"
     ID=""
-    /p ID="Your choice: "
+    TODO read/p ID="Your choice: "
     case $ID in
     
       "1")
@@ -247,7 +248,7 @@ install_eclipse(){
   set -e
   rsync -az $ECLIPSE_MOUNT_FOLDER/$ECLIPSE_APP_NAME $ECLIPSE_FOLDER/..
 
-  echo "Unounting $ECLIPSE_FILE."
+  echo "Unmounting $ECLIPSE_FILE."
   set +e
   hdiutil detach $ECLIPSE_MOUNT_FOLDER -force -quiet
   if [ $? -ne 0 ]
