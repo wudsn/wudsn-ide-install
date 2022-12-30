@@ -35,7 +35,7 @@ log_message(){
 #
 begin_progress(){
   echo "$1"
-  log_message $1
+  log_message "$1"
 }
 
 
@@ -43,7 +43,7 @@ begin_progress(){
 # Display progress message
 #
 display_progress(){
-  log_message $1
+  log_message "$1"
 }
 
 #
@@ -57,10 +57,10 @@ create_folder(){
 # Remove a folder and its contents if it exists.
 #
 remove_folder(){
-  if [ ! -f $1 ]; then
+  if [ -d $1 ]; then
     display_progress "Removing folder $1."
     rm -rf $1
-   if [ -d $1 {
+    if [ -d $1 ]; then
       display_progress "ERROR: Cannot remove folder $1"
       error
     fi
@@ -247,7 +247,11 @@ install_eclipse(){
   ECLIPSE_MOUNT_FOLDER=$4
   ECLIPSE_APP_NAME=$5
   ECLIPSE_FOLDER=$6
-    
+
+  if [ -d $ECLIPSE_FOLDER ]; then
+    return
+  fi
+
   begin_progress "Installing Eclipse."
   download $ECLIPSE_FILE $ECLIPSE_URL eclipse $ECLIPSE_FOLDER FAIL
 
@@ -269,6 +273,8 @@ install_eclipse(){
     exit
   fi
   set -e
+
+  install_wudsn_ide_feature
 }
 
 #
@@ -299,7 +305,7 @@ fi
 install_wudsn_ide_feature(){
   begin_progress "Installing WUDSN IDE feature."
   # See http://help.eclipse.org/latest/index.jsp?topic=/org.eclipse.platform.doc.isv/guide/p2_director.html
-  $ECLIPSE_RUNTIME_FOLDER/MacOS/eclipse -nosplash -application org.eclipse.equinox.p2.director -repository $UPDATE_URL -installIU com.wudsn.ide.feature.feature.group -destination $ECLIPSE_RUNTIME_FOLDER/Eclipse
+  $ECLIPSE_RUNTIME_FOLDER/MacOS/eclipse -nosplash -application org.eclipse.equinox.p2.director -repository $UPDATE_URL -installIU com.wudsn.ide.feature.feature.group -destination $ECLIPSE_RUNTIME_FOLDER/Eclipse >>$LOG
 }
 
 
@@ -309,10 +315,18 @@ install_wudsn_ide_feature(){
 #
 install_projects(){
   PROJECTS_FOLDER=$1
-  if [ ! -d $PROJECTS_FOLDER {
+  if [ ! -d $PROJECTS_FOLDER ]; then
     begin_progress "Installing Projects."
     download_repo wudsn-ide-projects $PROJECTS_FOLDER
   fi
+}
+
+#
+# Create an Eclipse preferences file.
+#
+begin_prefs(){
+  PREFS=$SETTINGS_FOLDER/$1
+  echo eclipse.preferences.version=1>$PREFS
 }
 
 #
@@ -320,30 +334,27 @@ install_projects(){
 #
 create_workspace_folder(){
   WORKSPACE_FOLDER=$1
-  if [ -d $WORKSPACE_FOLDER {
+  if [ -d $WORKSPACE_FOLDER ]; then
     return
-  }
+  fi
   display_progress "Installing WUDSN defaults for workspace $WORKSPACE_FOLDER."
   create_folder $WORKSPACE_FOLDER
 
   SETTINGS_FOLDER=$WORKSPACE_FOLDER/.metadata/.plugins/org.eclipse.core.runtime/.settings
   create_folder $SETTINGS_FOLDER
-  PREFS=$SETTINGS_FOLDER/org.eclipse.ui.ide.prefs
 
+  begin_prefs org.eclipse.ui.ide.prefs
   RECENT_WORKSPACES=$WORKSPACE_FOLDER
-  echo "eclipse.preferences.version=1">$PREFS
   echo "MAX_RECENT_WORKSPACES=10">>$PREFS
   echo "RECENT_WORKSPACES=$RECENT_WORKSPACES">>$PREFS
   echo "RECENT_WORKSPACES_PROTOCOL=3">>$PREFS
   echo "SHOW_RECENT_WORKSPACES=false">>$PREFS
   echo "SHOW_WORKSPACE_SELECTION_DIALOG=false">>$PREFS
   
-  PREFS=$SETTINGS_FOLDER/org.eclipse.ui.editors.prefs
-  echo "eclipse.preferences.version=1">$PREFS
+  begin_prefs org.eclipse.ui.editors.prefs
   echo "tabWidth=8">>$PREFS
   
-  PREFS=$SETTINGS_FOLDER/org.eclipse.ui.prefs
-  echo "eclipse.preferences.version=1">$PREFS
+  begin_prefs org.eclipse.ui.prefs
   echo "showIntro=false">>$PREFS
 
   WORKSPACE_CREATED=1
@@ -355,7 +366,7 @@ create_workspace_folder(){
 #
 start_eclipse(){
   begin_progress "Starting WUDSN IDE."
-  open -a $ECLIPSE_APP_FOLDER -noSplash -data $WORKSPACE_FOLDER
+  open -a $ECLIPSE_APP_FOLDER --args -noSplash -data $WORKSPACE_FOLDER
 }
 
 
@@ -370,20 +381,20 @@ handle_install_mode(){
   if [ "$INSTALL_MODE" == "--start-eclipse" ]; then
       start_eclipse
       exit 0
-  else if [ "$INSTALL_MODE" == "--install-all-from-server" ]; then
-      begin_progress "Starting full installation of $WUDSN_VERSION$ version from server $SITE_URL."
+  elif [ "$INSTALL_MODE" == "--install-all-from-server" ]; then
+      begin_progress "Starting full installation of $WUDSN_VERSION version from server $SITE_URL."
       remove_folder $WORKSPACE_FOLDER
       remove_folder $PROJECTS_FOLDER
       remove_folder $INSTALL_FOLDER
       remove_folder $TOOLS_FOLDER
-  else if [ "$INSTALL_MODE" == "--install-ide-from-server" ]; then
-      begin_progress "Starting IDE installation $WUDSN_VERSION$ version from server $SITE_URL."
+  elif [ "$INSTALL_MODE" == "--install-ide-from-server" ]; then
+      begin_progress "Starting IDE installation $WUDSN_VERSION version from server $SITE_URL."
       remove_folder $INSTALL_FOLDER
       remove_folder $TOOLS_FOLDER
-  else if [ "$INSTALL_MODE" == "--install-ide-from-cache" ]; then
+  elif [ "$INSTALL_MODE" == "--install-ide-from-cache" ]; then
       begin_progress "Starting IDE installation from local cache."
       remove_folder $TOOLS_FOLDER
-  else if [ "$INSTALL_MODE" == "--install-workspace" ]; then
+  elif [ "$INSTALL_MODE" == "--install-workspace" ]; then
       begin_progress "Starting workspace installation."
       remove_folder $WORKSPACE_FOLDER
       remove_folder $PROJECTS_FOLDER
@@ -444,13 +455,11 @@ main(){
   env >>$LOG
   
   create_folder $INSTALL_FOLDER
-  pushd $INSTALL_FOLDER
+  pushd $INSTALL_FOLDER >>$LOG
 
   install_tools $TOOLS_FOLDER
-  install_eclipse $ECLIPSE_FILE $ECLIPSE_URL $ECLIPSE_FOLDER $ECLIPSE_MOUNT_FOLDER $ECLIPSE_APP_NAME $ECLIPSE_APP_FOLDER
   install_java $JRE_FILE $JRE_URL $JRE_FOLDER_NAME $INSTALL_FOLDER
-  install_wudsn_ide_feature
-
+  install_eclipse $ECLIPSE_FILE $ECLIPSE_URL $ECLIPSE_FOLDER $ECLIPSE_MOUNT_FOLDER $ECLIPSE_APP_NAME $ECLIPSE_APP_FOLDER
   install_projects $PROJECTS_FOLDER
   create_workspace_folder $WORKSPACE_FOLDER
   
@@ -465,4 +474,4 @@ main(){
 
 #set -v
 set -e
-main
+main $@

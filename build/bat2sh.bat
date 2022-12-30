@@ -17,7 +17,7 @@ fart.exe %FILE% "%%." "."
 fart.exe %FILE% "%%" "$"
 fart.exe %FILE% ". (" " ("
 fart.exe %FILE% " (" " {"
-fart.exe %FILE% ") else if" "else if"
+fart.exe %FILE% ") else if" "elif"
 fart.exe %FILE% "  )" "  fi"
 
 fart.exe %FILE% ":a" "a"

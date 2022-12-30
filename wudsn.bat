@@ -111,6 +111,7 @@ rem
   set REPO_FILE=%REPO_BRANCH%.zip
   set REPO_URL=https://github.com/peterdell/%REPO%/archive/refs/heads/%BRANCH%.zip
   set REPO_TARGET_FOLDER=%2
+
   call :display_progress "Downloading repo %REPO% to %REPO_TARGET_FOLDER%."
   call :download %REPO_FILE% %REPO_URL% %REPO_BRANCH% %INSTALL_FOLDER% IGNORE
 
@@ -329,7 +330,7 @@ rem
 rem Create an Eclipse preferences file.
 rem
 :begin_prefs
-  set PREFS=%1
+  set PREFS=%SETTINGS_FOLDER%\%1
   echo eclipse.preferences.version=^1>%PREFS%
   goto :eof
 
@@ -347,7 +348,7 @@ rem
   set SETTINGS_FOLDER=%WORKSPACE_FOLDER%\.metadata\.plugins\org.eclipse.core.runtime\.settings
   call :create_folder %SETTINGS_FOLDER%
 
-  call :begin_prefs %SETTINGS_FOLDER%\org.eclipse.ui.ide.prefs
+  call :begin_prefs org.eclipse.ui.ide.prefs
   set RECENT_WORKSPACES=%WORKSPACE_FOLDER:\=\\%
   echo MAX_RECENT_WORKSPACES=10>>%PREFS%
   echo RECENT_WORKSPACES=%RECENT_WORKSPACES% >>%PREFS%
@@ -355,10 +356,10 @@ rem
   echo SHOW_RECENT_WORKSPACES=false>>%PREFS%
   echo SHOW_WORKSPACE_SELECTION_DIALOG=false>>%PREFS%
   
-  call :begin_prefs %SETTINGS_FOLDER%\org.eclipse.ui.editors.prefs
+  call :begin_prefs org.eclipse.ui.editors.prefs
   echo tabWidth=^8>>%PREFS%
   
-  call :begin_prefs %SETTINGS_FOLDER%\org.eclipse.ui.prefs
+  call :begin_prefs org.eclipse.ui.prefs
   echo showIntro=false>>%PREFS%
 
   set WORKSPACE_CREATED=1
