@@ -2,14 +2,23 @@
 #
 # WUDSN IDE Installer - Version 2022-12-28
 # Visit https://www.wudsn.com for the latest version.
-# Use https://www.shellcheck.net to validate the script source.
+# Use https://www.shellcheck.net to validate the .sh script source.
 #
 
+
 #
-# Display error message and exit current call stack frame.
+# Print a quoted string on the screen.
+#
+print(){
+  echo $1
+}
+
+#
+# Display error message and exit the shell.
 #
 error(){
   echo "ERROR: See messages above and in $LOG."
+  read
   exit 1
 }
 
@@ -18,6 +27,7 @@ error(){
 #
 log_message(){
   echo "$1" >>"$LOG"
+
 }
 
 #
@@ -28,11 +38,19 @@ begin_progress(){
   log_message $1
 }
 
+
 #
 # Display progress message
 #
 display_progress(){
-log_message $1
+  log_message $1
+}
+
+#
+# Create a folder including intermediate folders.
+#
+create_folder(){
+  mkdir -p $1
 }
 
 #
@@ -42,6 +60,10 @@ remove_folder(){
   if [ ! -f $1 ]; then
     display_progress "Removing folder $1."
     rm -rf $1
+   if [ -d $1 {
+      display_progress "ERROR: Cannot remove folder $1"
+      error
+    fi
   fi
 }
 
@@ -67,13 +89,15 @@ download(){
   if [ -d $TARGET ]; then
     remove_folder $TARGET
   fi
-  mkdir -p $TARGET_FOLDER
+  create_folder $TARGET_FOLDER
 
   if [[ $FILE == *.zip ]] || [[ $FILE == *.tar.gz ]]; then
     display_progress "Unpacking $FILE to $TARGET_FOLDER."
     tar -xf $FILE -C $TARGET_FOLDER
   fi
 }
+
+
 
 
 #
@@ -91,8 +115,8 @@ download_repo(){
   display_progress "Downloading repo $REPO to $REPO_TARGET_FOLDER."
   download $REPO_FILE $REPO_URL $REPO_BRANCH $INSTALL_FOLDER IGNORE
 
-  display_progress Copying files to $REPO_TARGET_FOLDER.
-  mkdir -p $REPO_TARGET_FOLDER
+  display_progress "Copying files to $REPO_TARGET_FOLDER."
+  create_folder $REPO_TARGET_FOLDER
   cp -p -R $REPO_BRANCH/* $REPO_TARGET_FOLDER
   remove_folder $REPO_BRANCH
 }
@@ -119,61 +143,56 @@ check_workspace_lock(){
 select_install_mode(){
   INSTALL_MODE=$1
   
-  if [ "$WUDSN_VERSION" = "" ];
-  then
-    WUDSN_VERSION=stable
+  if [ ! -d $PROJECTS_FOLDER ]; then
+    INSTALL_MODE="--install-all-from-server"
   fi
   
-  if [ ! -d $PROJECTS_FOLDER ];
-  then INSTALL_MODE=--install-all-from-server
+  if [ "$INSTALL_MODE" == "--install-all-from-server" ]; then
+    return
   fi
   
-  if [ "$INSTALL_MODE" = "--install-all-from-server" ];
-  then return
+  if [ ! -d $INSTALL_FOLDER ]; then
+    INSTALL_MODE="--install"
+    return
   fi
   
-  if [ ! -d $INSTALL_FOLDER ];
-  then INSTALL_MODE=--install
+  if [ "$INSTALL_MODE" == "--install-ide-from-cache" ]; then
+    return
+  fi
+  if [ "$INSTALL_MODE" == "--install-ide-from-server" ]; then
+    return
+  fi
+  if [ "$INSTALL_MODE" == "--install-workspace" ]; then
+    return
+  fi
+
+  if [ "$INSTALL_MODE" == "--install" ]; then
+    display_install_menu
+    return
   fi
   
-  case $INSTALL_MODE in
-  
-    "--install-ide-from-cache")
-    return;;
-   
-    "--install-ide-from-server")
-    return;;
-    
-    "--install-workspace")
-    return;;
-  
-    "--install")
-    return;;
-  esac
-  
-  if [ ! "$INSTALL_MODE" = "" ];
-  then
-     echo "ERROR: Invalid install mode \"$INSTALL_MODE\". Use on of these options."
-     echo "wudsn.exe --install-ide-from-cache|--install-ide-from-server|--install-all-from-server|-install-workspace"
+  if [ ! "$INSTALL_MODE" == "" ]; then
+     echo "ERROR: Invalid install mode '$INSTALL_MODE'. Use on of these options."
+     echo "wudsn.sh --install-ide-from-cache|--install-ide-from-server|--install-all-from-server|-install-workspace"
      echo 
      display_install_menu
      return
   fi
   
-  if [ -d $ECLIPSE_APP ];
-  then
-    INSTALL_MODE=--start-eclipse
+  if [ -d $ECLIPSE_APP_FOLDER ]; then
+    INSTALL_MODE="--start-eclipse"
   fi
 }
 
-
+#
+# Display the installer menu and prompt the user for selection.
+#
 display_install_menu(){
   echo "WUDSN IDE Installer"
   echo "==================="
   echo
   echo "Close all open Eclipse processes."
   echo "Select your option to reinstall the $WUDSN_VERSION version of WUDSN IDE in $WUDSN_FOLDER"
-  
 
   while(true)
   do
@@ -188,41 +207,39 @@ display_install_menu(){
     case $ID in
     
       "1")
-      INSTALL_MODE=--install-ide-from-cache
-      install_mode_selected
+      INSTALL_MODE="--install-ide-from-cache"
       return;;
       
       "2")
-      INSTALL_MODE=--install-ide-from-server
-      install_mode_selected
+      INSTALL_MODE="--install-ide-from-server"
       return;;
     
       "3")
-      INSTALL_MODE=--install-all-from-server
-      install_mode_selected
+      INSTALL_MODE="--install-all-from-server"
       return ;;
       
       "s")
-      INSTALL_MODE=--start-eclipse
+      INSTALL_MODE="--start-eclipse"
       return ;;
     
       "x")
       exit 0
-      return;;
     esac
   done
 }
 
-install_mode_selected(){
-  echo "Install mode $INSTALL_MODE."
-  echo "TODO: Not implemented"
-}
-
+#
+# Install tools.
+#
 install_tools(){
+  begin_progress "Installing Tools."
   TOOLS_FOLDER=$1
   download_repo wudsn-ide-tools $TOOLS_FOLDER
 }
-  
+
+#
+# Install Eclipse.
+#
 install_eclipse(){
   ECLIPSE_FILE=$1
   ECLIPSE_URL=$2
@@ -231,31 +248,32 @@ install_eclipse(){
   ECLIPSE_APP_NAME=$5
   ECLIPSE_FOLDER=$6
     
-  
+  begin_progress "Installing Eclipse."
   download $ECLIPSE_FILE $ECLIPSE_URL eclipse $ECLIPSE_FOLDER FAIL
 
-  echo "Mounting $ECLIPSE_FILE."
+  display_progress "Mounting $ECLIPSE_FILE."
   set +e
   hdiutil mount $ECLIPSE_FILE -quiet
-  if [ $? -ne 0 ]
-  then
+  if [ $? -ne 0 ]; then
     hdiutil mount $ECLIPSE_FILE
     exit
   fi
   set -e
   rsync -az $ECLIPSE_MOUNT_FOLDER/$ECLIPSE_APP_NAME $ECLIPSE_FOLDER/..
 
-  echo "Unmounting $ECLIPSE_FILE."
+  display_progress "Unmounting $ECLIPSE_FILE."
   set +e
   hdiutil detach $ECLIPSE_MOUNT_FOLDER -force -quiet
-  if [ $? -ne 0 ]
-  then
+  if [ $? -ne 0 ]; then
     hdiutil detach $ECLIPSE_MOUNT_FOLDER -force
     exit
   fi
   set -e
 }
 
+#
+# Install Java.
+#
 install_java(){
   JRE_FILE=$1
   JRE_URL=$2
@@ -275,34 +293,111 @@ install_java(){
 fi
 }
 
-install_wudsn_defaults(){
+#
+# Install WUDSN IDE feature.
+#
+install_wudsn_ide_feature(){
+  begin_progress "Installing WUDSN IDE feature."
+  # See http://help.eclipse.org/latest/index.jsp?topic=/org.eclipse.platform.doc.isv/guide/p2_director.html
+  $ECLIPSE_RUNTIME_FOLDER/MacOS/eclipse -nosplash -application org.eclipse.equinox.p2.director -repository $UPDATE_URL -installIU com.wudsn.ide.feature.feature.group -destination $ECLIPSE_RUNTIME_FOLDER/Eclipse
+}
+
+
+
+#
+# Install projects.
+#
+install_projects(){
+  PROJECTS_FOLDER=$1
+  if [ ! -d $PROJECTS_FOLDER {
+    begin_progress "Installing Projects."
+    download_repo wudsn-ide-projects $PROJECTS_FOLDER
+  fi
+}
+
+#
+# Create the workspace folder and initialize its preferences.
+#
+create_workspace_folder(){
   WORKSPACE_FOLDER=$1
-  ECLIPSE_CONTENTS=$2
-  SETTINGS_FOLDER=$ECLIPSE_CONTENTS/Eclipse/configuration/.settings
+  if [ -d $WORKSPACE_FOLDER {
+    return
+  }
+  display_progress "Installing WUDSN defaults for workspace $WORKSPACE_FOLDER."
+  create_folder $WORKSPACE_FOLDER
+
+  SETTINGS_FOLDER=$WORKSPACE_FOLDER/.metadata/.plugins/org.eclipse.core.runtime/.settings
+  create_folder $SETTINGS_FOLDER
   PREFS=$SETTINGS_FOLDER/org.eclipse.ui.ide.prefs
-  echo "Installing WUDSN defaults for workspace $WORKSPACE_FOLDER in $PREFS."
-  mkdir -p $SETTINGS_FOLDER
- 
+
   RECENT_WORKSPACES=$WORKSPACE_FOLDER
-  echo "MAX_RECENT_WORKSPACES=10">$PREFS
+  echo "eclipse.preferences.version=1">$PREFS
+  echo "MAX_RECENT_WORKSPACES=10">>$PREFS
   echo "RECENT_WORKSPACES=$RECENT_WORKSPACES">>$PREFS
   echo "RECENT_WORKSPACES_PROTOCOL=3">>$PREFS
   echo "SHOW_RECENT_WORKSPACES=false">>$PREFS
   echo "SHOW_WORKSPACE_SELECTION_DIALOG=false">>$PREFS
-  echo "eclipse.preferences.version=1">>$PREFS
+  
+  PREFS=$SETTINGS_FOLDER/org.eclipse.ui.editors.prefs
+  echo "eclipse.preferences.version=1">$PREFS
+  echo "tabWidth=8">>$PREFS
+  
+  PREFS=$SETTINGS_FOLDER/org.eclipse.ui.prefs
+  echo "eclipse.preferences.version=1">$PREFS
+  echo "showIntro=false">>$PREFS
+
+  WORKSPACE_CREATED=1
 }
 
-install_wudsn_feature(){
-  ECLIPSE_CONTENTS=$1
-  echo "Installing WUDSN IDE feature."
-  # See http://help.eclipse.org/latest/index.jsp?topic=/org.eclipse.platform.doc.isv/guide/p2_director.html
-  $ECLIPSE_CONTENTS/MacOS/eclipse -nosplash -application org.eclipse.equinox.p2.director -repository https://www.wudsn.com/update -installIU com.wudsn.ide.feature.feature.group -destination $ECLIPSE_CONTENTS/Eclipse
+
+#
+# Start Eclipse in new process.
+#
+start_eclipse(){
+  begin_progress "Starting WUDSN IDE."
+  open -a $ECLIPSE_APP_FOLDER -noSplash -data $WORKSPACE_FOLDER
+}
+
+
+
+
+
+
+#
+# Handle install mode. 
+#
+handle_install_mode(){
+  if [ "$INSTALL_MODE" == "--start-eclipse" ]; then
+      start_eclipse
+      exit 0
+  else if [ "$INSTALL_MODE" == "--install-all-from-server" ]; then
+      begin_progress "Starting full installation of $WUDSN_VERSION$ version from server $SITE_URL."
+      remove_folder $WORKSPACE_FOLDER
+      remove_folder $PROJECTS_FOLDER
+      remove_folder $INSTALL_FOLDER
+      remove_folder $TOOLS_FOLDER
+  else if [ "$INSTALL_MODE" == "--install-ide-from-server" ]; then
+      begin_progress "Starting IDE installation $WUDSN_VERSION$ version from server $SITE_URL."
+      remove_folder $INSTALL_FOLDER
+      remove_folder $TOOLS_FOLDER
+  else if [ "$INSTALL_MODE" == "--install-ide-from-cache" ]; then
+      begin_progress "Starting IDE installation from local cache."
+      remove_folder $TOOLS_FOLDER
+  else if [ "$INSTALL_MODE" == "--install-workspace" ]; then
+      begin_progress "Starting workspace installation."
+      remove_folder $WORKSPACE_FOLDER
+      remove_folder $PROJECTS_FOLDER
+  else
+    display_progress "ERROR: Invalid install mode '$INSTALL_MODE'.".
+    exit 1
+  fi
 }
 
 #
 # Main function
 #
 main(){
+
   SCRIPT_FOLDER="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
   LOG=$SCRIPT_FOLDER/wudsn.log
   date >"$LOG"
@@ -311,25 +406,31 @@ main(){
   WUDSN_FOLDER=$SCRIPT_FOLDER
   INSTALL_FOLDER=$WUDSN_FOLDER/Install
   TOOLS_FOLDER=$WUDSN_FOLDER/Tools
+  PROJECTS_FOLDER=$WUDSN_FOLDER/Projects
   WORKSPACE_FOLDER=$WUDSN_FOLDER/Workspace
   
   TOOLS_FILE=wudsn-ide-tools-main.zip
   TOOLS_URL=https://github.com/peterdell/wudsn-ide-tools/archive/refs/heads/main.zip
   
-  if [ "$SITE_URL" = "" ];
-  then
+  if [ "$SITE_URL" == "" ]; then
     SITE_URL=https://www.wudsn.com
   fi
+  
+  if [ "$WUDSN_VERSION" == "" ]; then
+    WUDSN_VERSION=stable
+  fi
+
   DOWNLOADS_URL=$SITE_URL/productions/java/ide/downloads
   UPDATE_URL=$SITE_URL/update/$WUDSN_VERSION
   
   ECLIPSE_FILE=eclipse-platform-4.20-macosx-cocoa-x86_64.dmg
   ECLIPSE_URL=$DOWNLOADS_URL/$ECLIPSE_FILE
-  ECLIPSE_FOLDER=$WUDSN_FOLDER/Tools/IDE/Eclipse
+  ECLIPSE_FOLDER_NAME=Eclipse
+  ECLIPSE_FOLDER=$TOOLS_FOLDER/IDE/Eclipse
   ECLIPSE_MOUNT_FOLDER=/Volumes/Eclipse
   ECLIPSE_APP_NAME=Eclipse.app
   ECLIPSE_APP_FOLDER=$ECLIPSE_FOLDER/$ECLIPSE_APP_NAME
-  ECLIPSE_CONTENTS=$ECLIPSE_APP_FOLDER/Contents
+  ECLIPSE_RUNTIME_FOLDER=$ECLIPSE_APP_FOLDER/Contents
   
   JRE_FILE=openjdk-16.0.2_osx-x64_bin.tar.gz
   JRE_URL=$DOWNLOADS_URL/$JRE_FILE
@@ -337,28 +438,26 @@ main(){
   
   check_workspace_lock
   select_install_mode $1
-  return 
+  handle_install_mode
   
-  mkdir -p $INSTALL_FOLDER
+  log_message "Environment variables:"
+  env >>$LOG
+  
+  create_folder $INSTALL_FOLDER
   pushd $INSTALL_FOLDER
-  
+
   install_tools $TOOLS_FOLDER
-  
   install_eclipse $ECLIPSE_FILE $ECLIPSE_URL $ECLIPSE_FOLDER $ECLIPSE_MOUNT_FOLDER $ECLIPSE_APP_NAME $ECLIPSE_APP_FOLDER
-  
   install_java $JRE_FILE $JRE_URL $JRE_FOLDER_NAME $INSTALL_FOLDER
-  
-  download_repo wudsn-ide-workspace $WORKSPACE_FOLDER
-  
-  #install_wudsn_feature $ECLIPSE_CONTENTS
-  
-  install_wudsn_defaults $WORKSPACE_FOLDER $ECLIPSE_CONTENTS
+  install_wudsn_ide_feature
+
+  install_projects $PROJECTS_FOLDER
+  create_workspace_folder $WORKSPACE_FOLDER
   
   popd
   
-  echo "Starting WUDSN IDE."
-  open -a $ECLIPSE_APP_FOLDER $WORKSPACE_FOLDER/Atari800
-  }
+  start_eclipse
+}
 
 #
 # Main script

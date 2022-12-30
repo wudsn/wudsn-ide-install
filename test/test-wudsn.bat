@@ -8,9 +8,10 @@ if ERRORLEVEL 1 (
   pause
   exit /B 1
 )
-if not exist %TEST_DIR% mkdir %TEST_DIR%
-copy ..\%PROGRAM%TEST_DIR%
+if not exist %TEST_DIR%. mkdir %TEST_DIR%
+copy ..\%PROGRAM% %TEST_DIR% >NUL
 pushd %TEST_DIR%
+echo.
 
 rem set SITE_URL=http://localhost:8080
 rem set WUDSN_VERSION=daily

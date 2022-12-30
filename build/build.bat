@@ -1,4 +1,3 @@
-@echo off
 setlocal
 cd /D "%~dp0"
 if exist settings DEL /Q settings

@@ -12,6 +12,6 @@ pushd $TEST_DIR || return
 
 # SITE_URL=http://localhost:8080
 # WUDSN_VERSION=daily
-./$PROGRAM %*
+powershell.exe ./$PROGRAM %*
 
 popd || return
