@@ -425,11 +425,11 @@ main(){
              openjdk-${JRE_VERSION}_macos-x64_bin.tar.gz
              openjdk-${JRE_VERSION}_windows-x64_bin.zip)
   
-  OS_INDEX = 0
-  if [ "$OSTYPE" == "darwin"* -a "$HOSTTYP" == "arm64"]; then
-    OS_INDEX = 2
- elif [ "$OSTYPE" == "darwin"* -a "$HOSTTYPE" == "x86_64"]; then
-    OS_INDEX = 3
+  OS_INDEX=0
+  if [[ "$OSTYPE" == "darwin"* && "$HOSTTYPE" == "arm64" ]]; then
+    OS_INDEX=2
+  elif [[ "$OSTYPE" == "darwin"* && "$HOSTTYPE" == "x86_64" ]]; then
+    OS_INDEX=3
   else
     echo "ERROR: Unsupported operating system '$OSTYPE' and host type '$HOSTTYPE' combination."
     exit 1
