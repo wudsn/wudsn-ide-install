@@ -305,7 +305,7 @@ fi
 install_wudsn_ide_feature(){
   begin_progress "Installing WUDSN IDE feature."
   # See http://help.eclipse.org/latest/index.jsp?topic=/org.eclipse.platform.doc.isv/guide/p2_director.html
-  $ECLIPSE_RUNTIME_FOLDER/MacOS/eclipse -nosplash -application org.eclipse.equinox.p2.director -repository $UPDATE_URL -installIU com.wudsn.ide.feature.feature.group -destination $ECLIPSE_RUNTIME_FOLDER/Eclipse >>$LOG
+  $ECLIPSE_RUNTIME_FOLDER/MacOS/eclipse -nosplash -application org.eclipse.equinox.p2.director -repository $UPDATE_URL -installIU com.wudsn.ide.feature.feature.group -destination $ECLIPSE_RUNTIME_FOLDER/Eclipse >>$LOG 2>>$LOG
 }
 
 
@@ -478,7 +478,7 @@ main(){
   handle_install_mode
   
   log_message "Environment variables:"
-  env >>$LOG
+  set >>$LOG
   
   create_folder $INSTALL_FOLDER
   pushd $INSTALL_FOLDER >>$LOG
@@ -489,7 +489,7 @@ main(){
   install_projects $PROJECTS_FOLDER
   create_workspace_folder $WORKSPACE_FOLDER
   
-  popd
+  popd >>$LOG
   
   start_eclipse
 }
