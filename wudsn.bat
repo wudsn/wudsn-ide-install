@@ -329,7 +329,7 @@ rem
 rem
 rem Create an Eclipse preferences file.
 rem
-:begin_prefs
+:create_prefs
   set PREFS=%SETTINGS_FOLDER%\%1
   echo eclipse.preferences.version=^1>%PREFS%
   goto :eof
@@ -348,7 +348,7 @@ rem
   set SETTINGS_FOLDER=%WORKSPACE_FOLDER%\.metadata\.plugins\org.eclipse.core.runtime\.settings
   call :create_folder %SETTINGS_FOLDER%
 
-  call :begin_prefs org.eclipse.ui.ide.prefs
+  call :create_prefs org.eclipse.ui.ide.prefs
   set RECENT_WORKSPACES=%WORKSPACE_FOLDER:\=\\%
   echo MAX_RECENT_WORKSPACES=10>>%PREFS%
   echo RECENT_WORKSPACES=%RECENT_WORKSPACES% >>%PREFS%
@@ -356,10 +356,10 @@ rem
   echo SHOW_RECENT_WORKSPACES=false>>%PREFS%
   echo SHOW_WORKSPACE_SELECTION_DIALOG=false>>%PREFS%
   
-  call :begin_prefs org.eclipse.ui.editors.prefs
+  call :create_prefs org.eclipse.ui.editors.prefs
   echo tabWidth=^8>>%PREFS%
   
-  call :begin_prefs org.eclipse.ui.prefs
+  call :create_prefs org.eclipse.ui.prefs
   echo showIntro=false>>%PREFS%
 
   set WORKSPACE_CREATED=1
@@ -414,6 +414,16 @@ rem Main function.
 rem
 :main
 
+  rem https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.20-202106111600
+  set ECLIPSE_VERSION=4.26
+  set ECLIPSE_FILES[0]=eclipse-platform-%ECLIPSE_VERSION-win32-x86_64.zip
+
+  rem https://jdk.java.net/archive/
+  set JRE_VERSION=19.0.1
+  set JRE_FILES[0]=openjdk-%JRE_VERSION%_windows-x64_bin.zip
+  
+  set OS_INDEX=0
+
   set SCRIPT_FOLDER=%CD%
   set LOG=%SCRIPT_FOLDER%\wudsn.log
   date /T >%LOG%
@@ -440,7 +450,7 @@ rem
   set DOWNLOADS_URL=%SITE_URL%/productions/java/ide/downloads
   set UPDATE_URL=%SITE_URL%/update/%WUDSN_VERSION%
   
-  set ECLIPSE_FILE=eclipse-platform-4.19-win32-x86_64.zip
+  set ECLIPSE_FILE=ECLIPSE_FILES[%OS_INDEX%]
   set ECLIPSE_URL=%DOWNLOADS_URL%/%ECLIPSE_FILE%
   set ECLIPSE_FOLDER_NAME=eclipse
   set ECLIPSE_FOLDER=%TOOLS_FOLDER%\IDE\Eclipse
@@ -448,9 +458,9 @@ rem
   set ECLIPSE_APP_NAME=Eclipse.exe
   set ECLIPSE_APP_EXE=%ECLIPSE_RUNTIME_FOLDER%\%ECLIPSE_APP_NAME%
   
-  set JRE_FILE=openjdk-16.0.2_windows-x64_bin.zip
+  set JRE_FILE=%JRE_FILES[%OS_INDEX%]%
   set JRE_URL=%DOWNLOADS_URL%/%JRE_FILE%
-  set JRE_FOLDER_NAME=jdk-16.0.2
+  set JRE_FOLDER_NAME=jdk-%JRE_VERSION%
   
   call :check_workspace_lock
   call :select_install_mode %1

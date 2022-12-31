@@ -53,4 +53,6 @@ fart.exe --c-style %FILE% "if \x22" "if [ \x22"
 fart.exe --c-style %FILE% "\x22 {" "\x22 ]; then"
 fart.exe --c-style %FILE% \\ \x2F
 fart.exe --c-style %FILE% "$/" \x2F
+fart.exe --c-style %FILE% "$-" -
+fart.exe --c-style %FILE% "$_" _
 fart.exe --c-style %FILE% "$\x22" \x22

@@ -10,7 +10,7 @@
 # Print a quoted string on the screen.
 #
 print(){
-  echo $1
+  echo "$1"
 }
 
 #
@@ -324,7 +324,7 @@ install_projects(){
 #
 # Create an Eclipse preferences file.
 #
-begin_prefs(){
+create_prefs(){
   PREFS=$SETTINGS_FOLDER/$1
   echo eclipse.preferences.version=1>$PREFS
 }
@@ -343,7 +343,7 @@ create_workspace_folder(){
   SETTINGS_FOLDER=$WORKSPACE_FOLDER/.metadata/.plugins/org.eclipse.core.runtime/.settings
   create_folder $SETTINGS_FOLDER
 
-  begin_prefs org.eclipse.ui.ide.prefs
+  create_prefs org.eclipse.ui.ide.prefs
   RECENT_WORKSPACES=$WORKSPACE_FOLDER
   echo "MAX_RECENT_WORKSPACES=10">>$PREFS
   echo "RECENT_WORKSPACES=$RECENT_WORKSPACES">>$PREFS
@@ -351,10 +351,10 @@ create_workspace_folder(){
   echo "SHOW_RECENT_WORKSPACES=false">>$PREFS
   echo "SHOW_WORKSPACE_SELECTION_DIALOG=false">>$PREFS
   
-  begin_prefs org.eclipse.ui.editors.prefs
+  create_prefs org.eclipse.ui.editors.prefs
   echo "tabWidth=8">>$PREFS
   
-  begin_prefs org.eclipse.ui.prefs
+  create_prefs org.eclipse.ui.prefs
   echo "showIntro=false">>$PREFS
 
   WORKSPACE_CREATED=1
@@ -405,10 +405,36 @@ handle_install_mode(){
 }
 
 #
-# Main function
+# Main function.
 #
 main(){
 
+  # https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.20-202106111600
+  ECLIPSE_VERSION=4.26
+  ECLIPSE_FILES=( eclipse-platform-${ECLIPSE_VERSION}-linux-gtk-aarch64.tar.gz
+                  eclipse-platform-${ECLIPSE_VERSION}-linux-gtk-x86_64.tar.gz
+                  eclipse-platform-${ECLIPSE_VERSION}-macosx-cocoa-aarch64.dmg
+                  eclipse-platform-${ECLIPSE_VERSION}-macosx-cocoa-x86_64.dmg
+                  eclipse-platform-${ECLIPSE_VERSION}-win32-x86_64.zip)
+  
+  # https://jdk.java.net/archive/
+  JRE_VERSION=19.0.1
+  JRE_FILES=(openjdk-${JRE_VERSION}_linux-aarch64_bin.tar.gz
+             openjdk-${JRE_VERSION}_linux-x64_bin.tar.gz
+             openjdk-${JRE_VERSION}_macos-aarch64_bin.tar.gz
+             openjdk-${JRE_VERSION}_macos-x64_bin.tar.gz
+             openjdk-${JRE_VERSION}_windows-x64_bin.zip)
+  
+  OS_INDEX = 0
+  if [ "$OSTYPE" == "darwin"* -a "$HOSTTYP" == "arm64"]; then
+    OS_INDEX = 2
+ elif [ "$OSTYPE" == "darwin"* -a "$HOSTTYPE" == "x86_64"]; then
+    OS_INDEX = 3
+  else
+    echo "ERROR: Unsupported operating system '$OSTYPE' and host type '$HOSTTYPE' combination."
+    exit 1
+  fi
+  
   SCRIPT_FOLDER="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
   LOG=$SCRIPT_FOLDER/wudsn.log
   date >"$LOG"
@@ -433,8 +459,8 @@ main(){
 
   DOWNLOADS_URL=$SITE_URL/productions/java/ide/downloads
   UPDATE_URL=$SITE_URL/update/$WUDSN_VERSION
-  
-  ECLIPSE_FILE=eclipse-platform-4.20-macosx-cocoa-x86_64.dmg
+
+  ECLIPSE_FILE=${ECLIPSE_FILES[$OS_INDEX]}
   ECLIPSE_URL=$DOWNLOADS_URL/$ECLIPSE_FILE
   ECLIPSE_FOLDER_NAME=Eclipse
   ECLIPSE_FOLDER=$TOOLS_FOLDER/IDE/Eclipse
@@ -443,10 +469,10 @@ main(){
   ECLIPSE_APP_FOLDER=$ECLIPSE_FOLDER/$ECLIPSE_APP_NAME
   ECLIPSE_RUNTIME_FOLDER=$ECLIPSE_APP_FOLDER/Contents
   
-  JRE_FILE=openjdk-16.0.2_osx-x64_bin.tar.gz
+  JRE_FILE=${JRE_FILES[$OS_INDEX]}
   JRE_URL=$DOWNLOADS_URL/$JRE_FILE
-  JRE_FOLDER_NAME=jdk-16.0.2.jdk
-  
+  JRE_FOLDER_NAME=jdk-${JRE_VERSION}.jdk
+
   check_workspace_lock
   select_install_mode $1
   handle_install_mode

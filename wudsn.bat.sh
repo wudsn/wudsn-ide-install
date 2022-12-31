@@ -107,10 +107,11 @@ download
 download_repo
   REPO=$1
   BRANCH=main
-  REPO_BRANCH=$REPO$-$BRANCH
+  REPO_BRANCH=$REPO-$BRANCH
   REPO_FILE=$REPO_BRANCH.zip
   REPO_URL=https://github.com/peterdell/$REPO/archive/refs/heads/$BRANCH.zip
   REPO_TARGET_FOLDER=$2
+
   display_progress "Downloading repo $REPO$ to $REPO_TARGET_FOLDER."
   download $REPO_FILE$ $REPO_URL$ $REPO_BRANCH$ $INSTALL_FOLDER$ IGNORE
 
@@ -207,19 +208,19 @@ display_install_menu
     INSTALL_MODE=--install-ide-from-cache
     return
 
-  else if [ "$ID" == "2" ]; then
+  elif [ "$ID" == "2" ]; then
     INSTALL_MODE=--install-ide-from-server
     return
 
-  else if [ "$ID" == "3" ]; then
+  elif [ "$ID" == "3" ]; then
     INSTALL_MODE=--install-all-from-server
     return
 
-  else if [ "$ID" == "s" ]; then
+  elif [ "$ID" == "s" ]; then
     INSTALL_MODE=--start_eclipse
     return
 
-  else if [ "$ID" == "x" ]; then
+  elif [ "$ID" == "x" ]; then
     exit 0
   fi
   goto choose_install_mode
@@ -328,8 +329,8 @@ install_projects
 #
 # Create an Eclipse preferences file.
 #
-begin_prefs
-  PREFS=$1
+create_prefs
+  PREFS=$SETTINGS_FOLDER/$1
   echo eclipse.preferences.version=^1>$PREFS
   }
 
@@ -347,7 +348,7 @@ create_workspace_folder
   SETTINGS_FOLDER=$WORKSPACE_FOLDER/.metadata/.plugins/org.eclipse.core.runtime/.settings
   create_folder $SETTINGS_FOLDER
 
-  begin_prefs $SETTINGS_FOLDER/org.eclipse.ui.ide.prefs
+  create_prefs org.eclipse.ui.ide.prefs
   RECENT_WORKSPACES=$WORKSPACE_FOLDER:/=//
   echo MAX_RECENT_WORKSPACES=10>>$PREFS
   echo RECENT_WORKSPACES=$RECENT_WORKSPACES$ >>$PREFS
@@ -355,10 +356,10 @@ create_workspace_folder
   echo SHOW_RECENT_WORKSPACES=false>>$PREFS
   echo SHOW_WORKSPACE_SELECTION_DIALOG=false>>$PREFS
   
-  begin_prefs $SETTINGS_FOLDER/org.eclipse.ui.editors.prefs
+  create_prefs org.eclipse.ui.editors.prefs
   echo tabWidth=^8>>$PREFS
   
-  begin_prefs $SETTINGS_FOLDER/org.eclipse.ui.prefs
+  create_prefs org.eclipse.ui.prefs
   echo showIntro=false>>$PREFS
 
   WORKSPACE_CREATED=1
@@ -385,20 +386,20 @@ handle_install_mode
   if [ "$INSTALL_MODE" == "--start_eclipse" ]; then
       start_eclipse
       exit 0
-  else if [ "$INSTALL_MODE" == "--install-all-from-server" ]; then
+  elif [ "$INSTALL_MODE" == "--install-all-from-server" ]; then
       begin_progress "Starting full installation of $WUDSN_VERSION$ version from server $SITE_URL."
       remove_folder $WORKSPACE_FOLDER
       remove_folder $PROJECTS_FOLDER
       remove_folder $INSTALL_FOLDER
       remove_folder $TOOLS_FOLDER
-  else if [ "$INSTALL_MODE" == "--install-ide-from-server" ]; then
+  elif [ "$INSTALL_MODE" == "--install-ide-from-server" ]; then
       begin_progress "Starting IDE installation $WUDSN_VERSION$ version from server $SITE_URL."
       remove_folder $INSTALL_FOLDER
       remove_folder $TOOLS_FOLDER
-  else if [ "$INSTALL_MODE" == "--install-ide-from-cache" ]; then
+  elif [ "$INSTALL_MODE" == "--install-ide-from-cache" ]; then
       begin_progress "Starting IDE installation from local cache."
       remove_folder $TOOLS_FOLDER
-  else if [ "$INSTALL_MODE" == "--install-workspace" ]; then
+  elif [ "$INSTALL_MODE" == "--install-workspace" ]; then
       begin_progress "Starting workspace installation."
       remove_folder $WORKSPACE_FOLDER
       remove_folder $PROJECTS_FOLDER
@@ -412,6 +413,16 @@ handle_install_mode
 # Main function.
 #
 main
+
+  # https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.20-202106111600
+  ECLIPSE_VERSION=4.26
+  ECLIPSE_FILES[0]=eclipse-platform-$ECLIPSE_VERSION-win32-x86_64.zip
+
+  # https://jdk.java.net/archive/
+  JRE_VERSION=19.0.1
+  JRE_FILES[0]=openjdk-$JRE_VERSION_windows-x64_bin.zip
+  
+  OS_INDEX=0
 
   SCRIPT_FOLDER=$CD
   LOG=$SCRIPT_FOLDER/wudsn.log
@@ -439,7 +450,7 @@ main
   DOWNLOADS_URL=$SITE_URL/productions/java/ide/downloads
   UPDATE_URL=$SITE_URL/update/$WUDSN_VERSION
   
-  ECLIPSE_FILE=eclipse-platform-4.19-win32-x86_64.zip
+  ECLIPSE_FILE=ECLIPSE_FILES[$OS_INDEX$]
   ECLIPSE_URL=$DOWNLOADS_URL/$ECLIPSE_FILE
   ECLIPSE_FOLDER_NAME=eclipse
   ECLIPSE_FOLDER=$TOOLS_FOLDER/IDE/Eclipse
@@ -447,9 +458,9 @@ main
   ECLIPSE_APP_NAME=Eclipse.exe
   ECLIPSE_APP_EXE=$ECLIPSE_RUNTIME_FOLDER/$ECLIPSE_APP_NAME
   
-  JRE_FILE=openjdk-16.0.2_windows-x64_bin.zip
+  JRE_FILE=$JRE_FILES[$OS_INDEX$]
   JRE_URL=$DOWNLOADS_URL/$JRE_FILE
-  JRE_FOLDER_NAME=jdk-16.0.2
+  JRE_FOLDER_NAME=jdk-$JRE_VERSION
   
   check_workspace_lock
   select_install_mode $1
