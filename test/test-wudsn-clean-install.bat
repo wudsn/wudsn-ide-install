@@ -3,7 +3,14 @@ setlocal
 cd C:\jac
 set INSTALLER_URL=https://github.com/peterdell/wudsn-ide-install/raw/main
 set SITE_URL=http://localhost:8080
-echo Ensure XAMPP is active at %SITE_URL%.
+
+:check_site_url
+curl -sf %SITE_URL% > nul
+IF ERRORLEVEL 1 (
+  echo ERROR: %SITE_URL% not reachable. Ensure XAMPP is active.
+  pause
+  goto :check_site_url
+)
 set WUDSN_EXE=wudsn.exe
 
 set WUDSN_VERSION=daily
@@ -18,7 +25,13 @@ set WUDSN_DIR=wudsn\%WUDSN_VERSION%
 if exist %WUDSN_DIR% rmdir /S/Q %WUDSN_DIR%
 mkdir %WUDSN_DIR%
 pushd %WUDSN_DIR%
-curl --show-error --location %INSTALLER_URL%/%WUDSN_EXE% --time-cond %WUDSN_EXE% --output %WUDSN_EXE%
+
+if exist %WUDSN_EXE%. (
+  set TIME_COND=--time-cond %WUDSN_EXE%
+) else (
+  set TIME_COND=
+)
+curl --show-error --location %INSTALLER_URL%/%WUDSN_EXE% %TIME_COND% --output %WUDSN_EXE%
 echo Starting WUDSN IDE as new process.
 %WUDSN_EXE%%
 popd
