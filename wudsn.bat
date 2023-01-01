@@ -416,7 +416,7 @@ rem
 
   rem https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.20-202106111600
   set ECLIPSE_VERSION=4.26
-  set ECLIPSE_FILES[0]=eclipse-platform-%ECLIPSE_VERSION-win32-x86_64.zip
+  set ECLIPSE_FILES[0]=eclipse-platform-%ECLIPSE_VERSION%-win32-x86_64.zip
 
   rem https://jdk.java.net/archive/
   set JRE_VERSION=19.0.1
@@ -450,7 +450,9 @@ rem
   set DOWNLOADS_URL=%SITE_URL%/productions/java/ide/downloads
   set UPDATE_URL=%SITE_URL%/update/%WUDSN_VERSION%
   
-  set ECLIPSE_FILE=ECLIPSE_FILES[%OS_INDEX%]
+  setlocal enableDelayedExpansion
+    set ECLIPSE_FILE=!ECLIPSE_FILES[%OS_INDEX%]!
+  endlocal & set ECLIPSE_FILE=%ECLIPSE_FILE%
   set ECLIPSE_URL=%DOWNLOADS_URL%/%ECLIPSE_FILE%
   set ECLIPSE_FOLDER_NAME=eclipse
   set ECLIPSE_FOLDER=%TOOLS_FOLDER%\IDE\Eclipse
@@ -458,7 +460,9 @@ rem
   set ECLIPSE_APP_NAME=Eclipse.exe
   set ECLIPSE_APP_EXE=%ECLIPSE_RUNTIME_FOLDER%\%ECLIPSE_APP_NAME%
   
-  set JRE_FILE=%JRE_FILES[%OS_INDEX%]%
+  setlocal enableDelayedExpansion
+     set JRE_FILE=!JRE_FILES[%OS_INDEX%]!
+  endlocal & set JRE_FILE=%JRE_FILE%
   set JRE_URL=%DOWNLOADS_URL%/%JRE_FILE%
   set JRE_FOLDER_NAME=jdk-%JRE_VERSION%
   
