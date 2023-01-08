@@ -2,15 +2,18 @@
 setlocal
 cd C:\jac
 set INSTALLER_URL=https://github.com/peterdell/wudsn-ide-install/raw/main
-set SITE_URL=http://localhost:8080
+rem set SITE_URL=http://localhost:8080
 
 :check_site_url
-curl -sf %SITE_URL% > nul
-IF ERRORLEVEL 1 (
-  echo ERROR: %SITE_URL% not reachable. Ensure XAMPP is active.
-  pause
-  goto :check_site_url
+if NOT "%SITE_URL%" == "" (
+  curl -sf %SITE_URL% > nul
+  IF ERRORLEVEL 1 (
+    echo ERROR: %SITE_URL% not reachable. Ensure XAMPP is active.
+    pause
+    goto :check_site_url
+  )
 )
+
 set WUDSN_EXE=wudsn.exe
 
 set WUDSN_VERSION=daily
