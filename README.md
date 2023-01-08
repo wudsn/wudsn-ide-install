@@ -4,10 +4,12 @@ The WUDSN IDE installer is the simplest way to install [WUDSN IDE](https://githu
 Create a folder where you want to put the IDE.
 Make sure the folder path contains no spaces or whitespaces.
 
-On Windows (64-bit Intel), download wudsn.exe to the folder and run it.
-Note: Windows Defender may complain upon the first launch.
-- https://github.com/peterdell/wudsn-ide-install/raw/main/wudsn.exe
-
+On Windows (64-bit Intel), download wudsn.bat or wudsn.exe to the folder and run it.
+- https://github.com/peterdell/wudsn-ide-install/raw/main/wudsn.bat or
+- https://github.com/peterdell/wudsn-ide-install/raw/main/wudsn.exe<br>
+  Note: Currently Windows Defender may complain upon the first launch. You'll have to exclude it from checks.<br>
+  Note: The wudsn.exe is the same as wudsn.but with icons and the option link it with file associations.
+  
 On macOS (64-bit Intel or ARM/M1), download wudsn.sh to the folder and run it.
 - https://github.com/peterdell/wudsn-ide-install/raw/main/wudsn.sh
  
