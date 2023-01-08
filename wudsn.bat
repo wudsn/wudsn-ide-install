@@ -19,6 +19,7 @@ rem Display error message and exit the shell.
 rem
 :error
   call :print "ERROR: See messages above and in %LOG%."
+  start notepad.exe "%LOG%"
   pause
   exit 1
 
@@ -383,7 +384,7 @@ rem Handle install mode.
 rem
 :handle_install_mode
   call :display_progress "Selected install mode is '%INSTALL_MODE%'."
-  if "%INSTALL_MODE%" == "--start_eclipse" (
+  if "%INSTALL_MODE%" == "--start-eclipse" (
       call :start_eclipse
       exit 0
   ) else if "%INSTALL_MODE%" == "--install-all-from-server" (
