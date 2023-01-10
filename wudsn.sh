@@ -5,6 +5,8 @@
 # Use https://www.shellcheck.net to validate the .sh script source.
 #
 
+# Under Linux curl is not pre-installed.
+# It must be installed using "sudo apt  install curl"
 
 #
 # Print a quoted string on the screen.
@@ -18,7 +20,7 @@ print(){
 #
 error(){
   echo "ERROR: See messages above and in $LOG."
-  read
+  more <$LOG
   exit 1
 }
 
@@ -91,10 +93,14 @@ download(){
   fi
   create_folder $TARGET_FOLDER
 
-  if [[ $FILE == *.zip ]] || [[ $FILE == *.tar.gz ]]; then
+  if [[ $FILE == *.tar.gz ]]; then
     display_progress "Unpacking $FILE to $TARGET_FOLDER."
     tar -xf $FILE -C $TARGET_FOLDER
   fi
+  if [[ $FILE == *.zip ]]; then
+    display_progress "Unpacking $FILE to $TARGET_FOLDER."
+    unzip $FILE -d $TARGET_FOLDER
+  fi  
 }
 
 
@@ -426,7 +432,9 @@ main(){
              openjdk-${JRE_VERSION}_windows-x64_bin.zip)
   
   OS_INDEX=0
-  if [[ "$OSTYPE" == "darwin"* && "$HOSTTYPE" == "arm64" ]]; then
+  if [[ "$OSTYPE" == "linux-gnu"* && "$HOSTTYPE" == "x86_64" ]]; then
+    OS_INDEX=1
+  elif [[ "$OSTYPE" == "darwin"* && "$HOSTTYPE" == "arm64" ]]; then
     OS_INDEX=2
   elif [[ "$OSTYPE" == "darwin"* && "$HOSTTYPE" == "x86_64" ]]; then
     OS_INDEX=3
@@ -478,7 +486,7 @@ main(){
   handle_install_mode
   
   log_message "Environment variables:"
-  set >>$LOG
+  set -o posix; set >>$LOG; set +o posix
   
   create_folder $INSTALL_FOLDER
   pushd $INSTALL_FOLDER >>$LOG
@@ -498,6 +506,7 @@ main(){
 # Main script
 #
 
-#set -v
+trap "error" EXIT
 set -e
+#set -v
 main $@
