@@ -1,7 +1,12 @@
 #!/bin/bash
 
 TEST_DIR=../out/wudsn
-PROGRAM=wudsn.sh
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  PROGRAM=wudsn.sh
+else
+  PROGRAM=wudsn-linux.sh
+fi
 
 mkdir -p $TEST_DIR
 
