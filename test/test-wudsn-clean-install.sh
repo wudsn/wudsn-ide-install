@@ -1,4 +1,8 @@
 #/usr/bin/bash
+#
+# Test script to install both standard versions inside an Linux VM. Get the script using:
+# wget https://github.com/peterdell/wudsn-ide-install/raw/main/test/test-wudsn-clean-install.sh -O test-wudsn-clean-install.sh
+#
 
 # Install the version in $WUDSN_VERSION
 install_wudsn(){
