@@ -139,8 +139,9 @@ download_repo(){
 #
 check_workspace_lock(){
   WORKSPACE_LOCK=$WORKSPACE_FOLDER/.metadata/.lock
-  rm $WORKSPACE_LOCK 2>>"$LOG"
-
+  if  [ -f $WORKSPACE_LOCK ]; then
+     rm $WORKSPACE_LOCK 2>>"$LOG"
+  fi
   while [ -f $WORKSPACE_LOCK ]
   do
     echo "ERROR: Workspace $WORKSPACE_FOLDER is locked. Close Eclipse first."
