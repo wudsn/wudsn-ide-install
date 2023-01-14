@@ -81,12 +81,12 @@ install_commands(){
 # Usage: download repo <filename> <url> <folder> <target_folder> <FAIL|IGNORE>
 #
 download(){
-  FILE=$1
-  URL=$2
-  FOLDER=$3
-  TARGET_FOLDER=$4
-  TARGET=$TARGET_FOLDER/$FOLDER
-  MODE=$5
+  local FILE=$1
+  local URL=$2
+  local FOLDER=$3
+  local TARGET_FOLDER=$4
+  local TARGET=$TARGET_FOLDER/$FOLDER
+  local MODE=$5
 
   if [ ! -f $FILE ]; then
     display_progress "Downloading $FILE from $URL."
@@ -118,12 +118,12 @@ download(){
 # Usage: download repo <repo> <target_folder>
 #
 download_repo(){
-  REPO=$1
-  BRANCH=main
-  REPO_BRANCH=$REPO-$BRANCH
-  REPO_FILE=$REPO_BRANCH.zip
-  REPO_URL=https://github.com/peterdell/$REPO/archive/refs/heads/$BRANCH.zip
-  REPO_TARGET_FOLDER=$2
+  local REPO=$1
+  local BRANCH=main
+  local REPO_BRANCH=$REPO-$BRANCH
+  local REPO_FILE=$REPO_BRANCH.zip
+  local REPO_URL=https://github.com/peterdell/$REPO/archive/refs/heads/$BRANCH.zip
+  local REPO_TARGET_FOLDER=$2
   
   display_progress "Downloading repo $REPO to $REPO_TARGET_FOLDER."
   download $REPO_FILE $REPO_URL $REPO_BRANCH $INSTALL_FOLDER IGNORE
@@ -138,8 +138,8 @@ download_repo(){
 # Check that the workspace is unlocked.
 #
 check_workspace_lock(){
-  WORKSPACE_LOCK=$WORKSPACE_FOLDER/.metadata/.lock
-  if  [ -f $WORKSPACE_LOCK ]; then
+  local WORKSPACE_LOCK=$WORKSPACE_FOLDER/.metadata/.lock
+  if [ -f $WORKSPACE_LOCK ]; then
      rm $WORKSPACE_LOCK 2>>"$LOG"
   fi
   while [ -f $WORKSPACE_LOCK ]
@@ -253,11 +253,11 @@ install_tools(){
 # Install Eclipse.
 #
 install_eclipse(){
-  ECLIPSE_FILE=$1
-  ECLIPSE_URL=$2
-  ECLIPSE_FOLDER=$3
-  ECLIPSE_MOUNT_FOLDER=$4
-  ECLIPSE_APP_NAME=$5
+  local ECLIPSE_FILE=$1
+  local ECLIPSE_URL=$2
+  local ECLIPSE_FOLDER=$3
+  local ECLIPSE_MOUNT_FOLDER=$4
+  local ECLIPSE_APP_NAME=$5
 
   if [ -d $ECLIPSE_FOLDER ]; then
     return
@@ -266,7 +266,7 @@ install_eclipse(){
   begin_progress "Installing Eclipse."
   download $ECLIPSE_FILE $ECLIPSE_URL eclipse $ECLIPSE_FOLDER FAIL
 
-  if [ -n "$ECLIPSE_MOUNT_FOLDER" ]; then
+  if [ ! "$ECLIPSE_MOUNT_FOLDER" == "none" ]; then
     display_progress "Mounting $ECLIPSE_FILE."
     set +e
     hdiutil mount $ECLIPSE_FILE -quiet
@@ -469,6 +469,7 @@ detect_os_type(){
   ECLIPSE_FOLDER=$TOOLS_FOLDER/IDE/Eclipse
 
   if [[ "$OS_TYPE" == "linux-gnu"  ]]; then
+    ECLIPSE_MOUNT_FOLDER=none
     ECLIPSE_APP_NAME=eclipse
     ECLIPSE_APP_FOLDER=$ECLIPSE_FOLDER 
     ECLIPSE_RUNTIME_FOLDER=$ECLIPSE_APP_FOLDER/$ECLIPSE_APP_NAME  
