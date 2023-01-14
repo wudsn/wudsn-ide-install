@@ -549,5 +549,5 @@ main(){
 
 trap "error" EXIT
 set -e
-#set -v
+set -v
 main $@

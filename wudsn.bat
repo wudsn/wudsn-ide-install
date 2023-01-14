@@ -420,6 +420,7 @@ rem
 rem
 rem Detect the OS type and architecture and set dependent variables.
 rem
+:detect_os_type
   rem https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.20-202106111600
   set ECLIPSE_VERSION=4.26
   set ECLIPSE_FILES[0]=eclipse-platform-%ECLIPSE_VERSION%-win32-x86_64.zip
@@ -441,7 +442,7 @@ rem
   set ECLIPSE_APP_EXE=%ECLIPSE_RUNTIME_FOLDER%\%ECLIPSE_APP_NAME%
   
   setlocal enableDelayedExpansion
-     set JRE_FILE=!JRE_FILES[%OS_INDEX%]!
+    set JRE_FILE=!JRE_FILES[%OS_INDEX%]!
   endlocal & set JRE_FILE=%JRE_FILE%
   set JRE_URL=%DOWNLOADS_URL%/%JRE_FILE%
   set JRE_FOLDER_NAME=jdk-%JRE_VERSION%
