@@ -460,7 +460,7 @@ detect_os_type(){
     fi
   fi
 
-  if [ -z "$OS_INDEX" ];
+  if [ -z "$OS_INDEX" ]; then
     echo "ERROR: Unsupported operating system '$OSTYPE' and host type '$HOSTTYPE' combination."
     exit 1
   fi
