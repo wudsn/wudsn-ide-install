@@ -5,6 +5,6 @@
 
 SCRIPT=test-wudsn-clean-install.sh
 echo Updating $SCRIPT
-wget https://raw.githubusercontent.com/peterdell/wudsn-ide-install/main/$SCRIPT -O $SCRIPT
+wget https://github.com/peterdell/wudsn-ide-install/raw/main/test/$SCRIPT -O $SCRIPT
 chmod u+x $SCRIPT
 ./$SCRIPT
