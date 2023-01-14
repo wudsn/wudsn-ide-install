@@ -266,7 +266,7 @@ install_eclipse(){
   begin_progress "Installing Eclipse."
   download $ECLIPSE_FILE $ECLIPSE_URL eclipse $ECLIPSE_FOLDER FAIL
 
-  if [[ -n "$ECLIPSE_MOUNT_FOLDER" ]]; then
+  if [ -n "$ECLIPSE_MOUNT_FOLDER" ]; then
     display_progress "Mounting $ECLIPSE_FILE."
     set +e
     hdiutil mount $ECLIPSE_FILE -quiet
