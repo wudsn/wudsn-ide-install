@@ -102,11 +102,11 @@ download(){
 
   if [[ $FILE == *.tar.gz ]]; then
     display_progress "Unpacking $FILE to $TARGET_FOLDER."
-    tar -xf $FILE -C $TARGET_FOLDER
+    tar -xf $FILE -C $TARGET_FOLDER >>$LOG
   fi
   if [[ $FILE == *.zip ]]; then
     display_progress "Unpacking $FILE to $TARGET_FOLDER."
-    unzip -q $FILE -d $TARGET_FOLDER >$LOG
+    unzip -q $FILE -d $TARGET_FOLDER >>$LOG
   fi  
 }
 
