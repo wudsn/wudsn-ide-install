@@ -453,7 +453,7 @@ detect_os_type(){
     OS_INDEX=1
   elif [[ "$OSTYPE" == "darwin"* ]]; then
     OS_TYPE=darwin
-    if [[ & "$HOSTTYPE" == "arm64" ]]; then
+    if [[ "$HOSTTYPE" == "arm64" ]]; then
       OS_INDEX=2
     elif [[ "$HOSTTYPE" == "x86_64" ]]; then
       OS_INDEX=3
