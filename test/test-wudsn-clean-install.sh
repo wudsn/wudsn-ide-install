@@ -18,7 +18,7 @@ install_wudsn(){
 install_wudsn_versions(){
 cd ~/jac
 
-WUDSN_EXECUTABLE=wudsn-linux.sh
+WUDSN_EXECUTABLE=wudsn.sh
 INSTALLER_URL=https://github.com/peterdell/wudsn-ide-install/raw/main/$WUDSN_EXECUTABLE
 
 rm -rf wudsn

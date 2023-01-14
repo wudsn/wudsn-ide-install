@@ -1,12 +1,9 @@
 #!/bin/bash
 #
-# WUDSN IDE Installer - Version 2022-12-28
+# WUDSN IDE Installer - Version 2023-01-14 for macOS and Linux, 64-bit.
 # Visit https://www.wudsn.com for the latest version.
 # Use https://www.shellcheck.net to validate the .sh script source.
 #
-
-# Under Linux curl is not pre-installed.
-# It must be installed using "sudo apt  install curl"
 
 #
 # Print a quoted string on the screen.
@@ -70,6 +67,16 @@ remove_folder(){
 }
 
 #
+# Install missing commands.
+#
+install_commands(){
+  if ! command -v curl &> /dev/null
+  then
+    sudo apt install curl
+  fi
+}
+
+#
 # Download a .zip file and unpack to target folder.
 # Usage: download repo <filename> <url> <folder> <target_folder> <FAIL|IGNORE>
 #
@@ -95,11 +102,11 @@ download(){
 
   if [[ $FILE == *.tar.gz ]]; then
     display_progress "Unpacking $FILE to $TARGET_FOLDER."
-    tar -xf $FILE -C $TARGET_FOLDER
+    tar -xf $FILE -C $TARGET_FOLDER >>$LOG
   fi
   if [[ $FILE == *.zip ]]; then
     display_progress "Unpacking $FILE to $TARGET_FOLDER."
-    unzip $FILE -d $TARGET_FOLDER
+    unzip -q $FILE -d $TARGET_FOLDER >>$LOG
   fi  
 }
 
@@ -132,9 +139,7 @@ download_repo(){
 #
 check_workspace_lock(){
   WORKSPACE_LOCK=$WORKSPACE_FOLDER/.metadata/.lock
-  if [ -f $WORKSPACE_LOCK ];
-  then rm $WORKSPACE_LOCK 2>>"$LOG"
-  fi
+  rm $WORKSPACE_LOCK 2>>"$LOG"
 
   while [ -f $WORKSPACE_LOCK ]
   do
@@ -252,7 +257,6 @@ install_eclipse(){
   ECLIPSE_FOLDER=$3
   ECLIPSE_MOUNT_FOLDER=$4
   ECLIPSE_APP_NAME=$5
-  ECLIPSE_FOLDER=$6
 
   if [ -d $ECLIPSE_FOLDER ]; then
     return
@@ -261,48 +265,56 @@ install_eclipse(){
   begin_progress "Installing Eclipse."
   download $ECLIPSE_FILE $ECLIPSE_URL eclipse $ECLIPSE_FOLDER FAIL
 
-  display_progress "Mounting $ECLIPSE_FILE."
-  set +e
-  hdiutil mount $ECLIPSE_FILE -quiet
-  if [ $? -ne 0 ]; then
-    hdiutil mount $ECLIPSE_FILE
-    exit
+  if [[ -n "$ECLIPSE_MOUNT_FOLDER" ]]; then
+    display_progress "Mounting $ECLIPSE_FILE."
+    set +e
+    hdiutil mount $ECLIPSE_FILE -quiet
+    if [ $? -ne 0 ]; then
+      hdiutil detach $ECLIPSE_FILE
+      exit 1
+    fi
+    set -e
+    rsync -az $ECLIPSE_MOUNT_FOLDER/$ECLIPSE_APP_NAME $ECLIPSE_FOLDER/..
+    
+    display_progress "Unmounting $ECLIPSE_FILE."
+    set +e
+    hdiutil detach $ECLIPSE_MOUNT_FOLDER -force -quiet
+    if [ $? -ne 0 ]; then
+      hdiutil detach $ECLIPSE_MOUNT_FOLDER -force
+      exit 1
+    fi
+    set -e
   fi
-  set -e
-  rsync -az $ECLIPSE_MOUNT_FOLDER/$ECLIPSE_APP_NAME $ECLIPSE_FOLDER/..
-
-  display_progress "Unmounting $ECLIPSE_FILE."
-  set +e
-  hdiutil detach $ECLIPSE_MOUNT_FOLDER -force -quiet
-  if [ $? -ne 0 ]; then
-    hdiutil detach $ECLIPSE_MOUNT_FOLDER -force
-    exit
-  fi
-  set -e
 
   install_wudsn_ide_feature
 }
 
 #
-# Install Java.
+# Install Java globally.
 #
-install_java(){
+install_java_globally(){
   JRE_FILE=$1
   JRE_URL=$2
   JRE_FOLDER_NAME=$3
   INSTALL_FOLDER=$4
 
-  # Check for JDK
-  JRE_JVM_FOLDER=/Library/Java/JavaVirtualMachines
-  JRE_TARGET_FOLDER=$JRE_JVM_FOLDER/$JRE_FOLDER_NAME
-  echo "Installing Java."
-  if [ ! -d $JRE_TARGET_FOLDER ]; then
-    download $JRE_FILE $JRE_URL $JRE_FOLDER_NAME $INSTALL_FOLDER FAIL
-    echo "Enter the admin password to install Java version $JRE_FOLDER_NAME in $JRE_TARGET_FOLDER."
-    sudo mv $JRE_FOLDER_NAME $JRE_JVM_FOLDER
+  begin_progress "Installing Java."
+  if [[ "$OSTYPE" == "linux-gnu"  ]]; then
+    sudo apt install openjdk-17-jre-headless
+  elif [[ "$OSTYPE" == "darwin"*  ]]; then
+    JRE_JVM_FOLDER=/Library/Java/JavaVirtualMachines
+    JRE_TARGET_FOLDER=$JRE_JVM_FOLDER/$JRE_FOLDER_NAME
+    if [ ! -d $JRE_TARGET_FOLDER ]; then
+      download $JRE_FILE $JRE_URL $JRE_FOLDER_NAME $INSTALL_FOLDER FAIL
+      begin_progress "Enter the admin password to install Java version $JRE_FOLDER_NAME in $JRE_TARGET_FOLDER."
+      sudo mv $JRE_FOLDER_NAME $JRE_JVM_FOLDER
+    else
+      begin_progress "Java version $JRE_FOLDER_NAME is already installed in $JRE_TARGET_FOLDER."
+    fi
+
   else
-    echo "Java version $JRE_FOLDER_NAME is already installed in $JRE_TARGET_FOLDER."
-fi
+    display_progress "ERROR: Unsupported operating system '$OSTYPE'"
+  fi
 }
 
 #
@@ -311,7 +323,7 @@ fi
 install_wudsn_ide_feature(){
   begin_progress "Installing WUDSN IDE feature."
   # See http://help.eclipse.org/latest/index.jsp?topic=/org.eclipse.platform.doc.isv/guide/p2_director.html
-  $ECLIPSE_RUNTIME_FOLDER/MacOS/eclipse -nosplash -application org.eclipse.equinox.p2.director -repository $UPDATE_URL -installIU com.wudsn.ide.feature.feature.group -destination $ECLIPSE_RUNTIME_FOLDER/Eclipse >>$LOG 2>>$LOG
+  $ECLIPSE_EXECUTABLE -nosplash -application org.eclipse.equinox.p2.director -repository $UPDATE_URL -installIU com.wudsn.ide.feature.feature.group -destination $ECLIPSE_DESTINATION_FOLDER >>$LOG 2>>$LOG
 }
 
 
@@ -372,7 +384,7 @@ create_workspace_folder(){
 #
 start_eclipse(){
   begin_progress "Starting WUDSN IDE."
-  open -a $ECLIPSE_APP_FOLDER --args -noSplash -data $WORKSPACE_FOLDER
+  $ECLIPSE_EXECUTABLE --args -noSplash -data $WORKSPACE_FOLDER &
 }
 
 
@@ -411,11 +423,11 @@ handle_install_mode(){
 }
 
 #
-# Main function.
+# Detect the OS type and architecture and set dependent variables.
 #
-main(){
+detect_os_type(){
 
-  # https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.20-202106111600
+# https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.20-202106111600
   ECLIPSE_VERSION=4.26
   ECLIPSE_FILES=( eclipse-platform-${ECLIPSE_VERSION}-linux-gtk-aarch64.tar.gz
                   eclipse-platform-${ECLIPSE_VERSION}-linux-gtk-x86_64.tar.gz
@@ -430,18 +442,57 @@ main(){
              openjdk-${JRE_VERSION}_macos-aarch64_bin.tar.gz
              openjdk-${JRE_VERSION}_macos-x64_bin.tar.gz
              openjdk-${JRE_VERSION}_windows-x64_bin.zip)
-  
+
+  # Map OS type and host type to own codes.
+  OS_TYPE="unknown"
   OS_INDEX=0
-  if [[ "$OSTYPE" == "linux-gnu"* && "$HOSTTYPE" == "x86_64" ]]; then
+  if [[ "$OSTYPE" == "linux-gnu" && "$HOSTTYPE" == "x86_64" ]]; then
+    OS_TYPE=linux-gnu
     OS_INDEX=1
-  elif [[ "$OSTYPE" == "darwin"* && "$HOSTTYPE" == "arm64" ]]; then
-    OS_INDEX=2
-  elif [[ "$OSTYPE" == "darwin"* && "$HOSTTYPE" == "x86_64" ]]; then
-    OS_INDEX=3
-  else
+  elif [[ "$OSTYPE" == "darwin"* ]]; then
+    OS_TYPE=darwin
+    if [[ "$HOSTTYPE" == "arm64" ]]; then
+      OS_INDEX=2
+    elif [[ "$HOSTTYPE" == "x86_64" ]]; then
+      OS_INDEX=3
+    fi
+  fi
+
+  if [ -z "$OS_INDEX" ]; then
     echo "ERROR: Unsupported operating system '$OSTYPE' and host type '$HOSTTYPE' combination."
     exit 1
   fi
+
+  ECLIPSE_FILE=${ECLIPSE_FILES[$OS_INDEX]}
+  ECLIPSE_URL=$DOWNLOADS_URL/$ECLIPSE_FILE
+  ECLIPSE_FOLDER=$TOOLS_FOLDER/IDE/Eclipse
+
+  if [[ "$OS_TYPE" == "linux-gnu"  ]]; then
+    ECLIPSE_APP_NAME=eclipse
+    ECLIPSE_APP_FOLDER=$ECLIPSE_FOLDER 
+    ECLIPSE_RUNTIME_FOLDER=$ECLIPSE_APP_FOLDER/$ECLIPSE_APP_NAME  
+    ECLIPSE_EXECUTABLE=$ECLIPSE_RUNTIME_FOLDER/$ECLIPSE_APP_NAME
+    # Folder containing the p2 repository
+    ECLIPSE_DESTINATION_FOLDER=$ECLIPSE_RUNTIME_FOLDER
+  elif [[ "$OS_TYPE" == "darwin"  ]]; then
+    ECLIPSE_MOUNT_FOLDER=/Volumes/Eclipse
+    ECLIPSE_APP_NAME=Eclipse.app
+    ECLIPSE_APP_FOLDER=$ECLIPSE_FOLDER/$ECLIPSE_APP_NAME
+    ECLIPSE_RUNTIME_FOLDER=$ECLIPSE_APP_FOLDER/Contents
+    ECLIPSE_EXECUTABLE=$ECLIPSE_RUNTIME_FOLDER/MacOS/eclipse
+    # Folder containing the p2 repository
+    ECLIPSE_DESTINATION_FOLDER=$ECLIPSE_RUNTIME_FOLDER/Eclipse
+  fi
+
+  JRE_FILE=${JRE_FILES[$OS_INDEX]}
+  JRE_URL=$DOWNLOADS_URL/$JRE_FILE
+  JRE_FOLDER_NAME=jdk-${JRE_VERSION}.jdk
+}
+
+#
+# Main function.
+#
+main(){
   
   SCRIPT_FOLDER="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
   LOG=$SCRIPT_FOLDER/wudsn.log
@@ -468,32 +519,21 @@ main(){
   DOWNLOADS_URL=$SITE_URL/productions/java/ide/downloads
   UPDATE_URL=$SITE_URL/update/$WUDSN_VERSION
 
-  ECLIPSE_FILE=${ECLIPSE_FILES[$OS_INDEX]}
-  ECLIPSE_URL=$DOWNLOADS_URL/$ECLIPSE_FILE
-  ECLIPSE_FOLDER_NAME=Eclipse
-  ECLIPSE_FOLDER=$TOOLS_FOLDER/IDE/Eclipse
-  ECLIPSE_MOUNT_FOLDER=/Volumes/Eclipse
-  ECLIPSE_APP_NAME=Eclipse.app
-  ECLIPSE_APP_FOLDER=$ECLIPSE_FOLDER/$ECLIPSE_APP_NAME
-  ECLIPSE_RUNTIME_FOLDER=$ECLIPSE_APP_FOLDER/Contents
-  
-  JRE_FILE=${JRE_FILES[$OS_INDEX]}
-  JRE_URL=$DOWNLOADS_URL/$JRE_FILE
-  JRE_FOLDER_NAME=jdk-${JRE_VERSION}.jdk
-
+  detect_os_type
   check_workspace_lock
   select_install_mode $1
   handle_install_mode
-  
+
   log_message "Environment variables:"
   set -o posix; set >>$LOG; set +o posix
   
   create_folder $INSTALL_FOLDER
   pushd $INSTALL_FOLDER >>$LOG
 
+  install_commands
+  install_java_globally $JRE_FILE $JRE_URL $JRE_FOLDER_NAME $INSTALL_FOLDER
   install_tools $TOOLS_FOLDER
-  install_java $JRE_FILE $JRE_URL $JRE_FOLDER_NAME $INSTALL_FOLDER
-  install_eclipse $ECLIPSE_FILE $ECLIPSE_URL $ECLIPSE_FOLDER $ECLIPSE_MOUNT_FOLDER $ECLIPSE_APP_NAME $ECLIPSE_APP_FOLDER
+  install_eclipse $ECLIPSE_FILE $ECLIPSE_URL $ECLIPSE_APP_FOLDER $ECLIPSE_MOUNT_FOLDER $ECLIPSE_APP_NAME 
   install_projects $PROJECTS_FOLDER
   create_workspace_folder $WORKSPACE_FOLDER
   
