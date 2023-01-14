@@ -14,8 +14,9 @@ install_wudsn(){
   echo Downloading Installer.
   wget --no-cache $INSTALLER_URL
   chmod u+x $WUDSN_EXECUTABLE
-# The following call must not be started with & as it requires password inputs for sudo
-  ./$WUDSN_EXECUTABLE
+
+# The following call must not be started in a new window, so sudo password inputs work and exits are ignored
+  gnome-terminal -- ./$WUDSN_EXECUTABLE &
   popd
 
 }
