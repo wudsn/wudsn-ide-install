@@ -6,14 +6,14 @@
 #
 
 #
-# Print a quoted string on the screen.
+# Print a quoted string $1 on the screen.
 #
 print(){
   echo "$1"
 }
 
 #
-# Display error message and exit the shell.
+# Display logged error messages and exit the shell.
 #
 error(){
   echo "ERROR: See messages above and in $LOG."
@@ -30,7 +30,7 @@ log_message(){
 }
 
 #
-# Display progress activity.
+# Display progress activity $1.
 #
 begin_progress(){
   echo "$1"
@@ -39,21 +39,21 @@ begin_progress(){
 
 
 #
-# Display progress message
+# Display progress message $1.
 #
 display_progress(){
   log_message "$1"
 }
 
 #
-# Create a folder including intermediate folders.
+# Create the folder $1 including intermediate folders.
 #
 create_folder(){
   mkdir -p $1
 }
 
 #
-# Remove a folder and its contents if it exists.
+# Remove the folder $1 and its contents if it exists.
 #
 remove_folder(){
   if [ -d $1 ]; then
@@ -67,12 +67,25 @@ remove_folder(){
 }
 
 #
+# Install package $1.
+#
+install_package(){
+  local REQUIRED_PKG=$1
+  local PKG_OK=$(dpkg-query -W --showformat='${Status}\n' $REQUIRED_PKG|grep "install ok installed")
+  display_progress "Checking for package $REQUIRED_PKG: $PKG_OK"
+  if [ "" = "$PKG_OK" ]; then
+    display_progress "Intalling required package $REQUIRED_PKG."
+    sudo apt-get --yes install $REQUIRED_PKG
+  fi
+}
+
+#
 # Install missing commands.
 #
 install_commands(){
   if ! command -v curl &> /dev/null
   then
-    sudo apt install curl
+    install_package curl
   fi
 }
 
@@ -81,12 +94,12 @@ install_commands(){
 # Usage: download repo <filename> <url> <folder> <target_folder> <FAIL|IGNORE>
 #
 download(){
-  FILE=$1
-  URL=$2
-  FOLDER=$3
-  TARGET_FOLDER=$4
-  TARGET=$TARGET_FOLDER/$FOLDER
-  MODE=$5
+  local FILE=$1
+  local URL=$2
+  local FOLDER=$3
+  local TARGET_FOLDER=$4
+  local TARGET=$TARGET_FOLDER/$FOLDER
+  local MODE=$5
 
   if [ ! -f $FILE ]; then
     display_progress "Downloading $FILE from $URL."
@@ -102,7 +115,7 @@ download(){
 
   if [[ $FILE == *.tar.gz ]]; then
     display_progress "Unpacking $FILE to $TARGET_FOLDER."
-    tar -xf $FILE -C $TARGET_FOLDER >>$LOG
+    tar -xf $FILE -C $TARGET_FOLDER >>$LOG 2>>$LOG
   fi
   if [[ $FILE == *.zip ]]; then
     display_progress "Unpacking $FILE to $TARGET_FOLDER."
@@ -118,12 +131,12 @@ download(){
 # Usage: download repo <repo> <target_folder>
 #
 download_repo(){
-  REPO=$1
-  BRANCH=main
-  REPO_BRANCH=$REPO-$BRANCH
-  REPO_FILE=$REPO_BRANCH.zip
-  REPO_URL=https://github.com/peterdell/$REPO/archive/refs/heads/$BRANCH.zip
-  REPO_TARGET_FOLDER=$2
+  local REPO=$1
+  local BRANCH=main
+  local REPO_BRANCH=$REPO-$BRANCH
+  local REPO_FILE=$REPO_BRANCH.zip
+  local REPO_URL=https://github.com/peterdell/$REPO/archive/refs/heads/$BRANCH.zip
+  local REPO_TARGET_FOLDER=$2
   
   display_progress "Downloading repo $REPO to $REPO_TARGET_FOLDER."
   download $REPO_FILE $REPO_URL $REPO_BRANCH $INSTALL_FOLDER IGNORE
@@ -138,8 +151,8 @@ download_repo(){
 # Check that the workspace is unlocked.
 #
 check_workspace_lock(){
-  WORKSPACE_LOCK=$WORKSPACE_FOLDER/.metadata/.lock
-  if  [ -f $WORKSPACE_LOCK ]; then
+  local WORKSPACE_LOCK=$WORKSPACE_FOLDER/.metadata/.lock
+  if [ -f $WORKSPACE_LOCK ]; then
      rm $WORKSPACE_LOCK 2>>"$LOG"
   fi
   while [ -f $WORKSPACE_LOCK ]
@@ -253,11 +266,11 @@ install_tools(){
 # Install Eclipse.
 #
 install_eclipse(){
-  ECLIPSE_FILE=$1
-  ECLIPSE_URL=$2
-  ECLIPSE_FOLDER=$3
-  ECLIPSE_MOUNT_FOLDER=$4
-  ECLIPSE_APP_NAME=$5
+  local ECLIPSE_FILE=$1
+  local ECLIPSE_URL=$2
+  local ECLIPSE_FOLDER=$3
+  local ECLIPSE_MOUNT_FOLDER=$4
+  local ECLIPSE_APP_NAME=$5
 
   if [ -d $ECLIPSE_FOLDER ]; then
     return
@@ -266,7 +279,7 @@ install_eclipse(){
   begin_progress "Installing Eclipse."
   download $ECLIPSE_FILE $ECLIPSE_URL eclipse $ECLIPSE_FOLDER FAIL
 
-  if [[ -n "$ECLIPSE_MOUNT_FOLDER" ]]; then
+  if [ ! "$ECLIPSE_MOUNT_FOLDER" == "none" ]; then
     display_progress "Mounting $ECLIPSE_FILE."
     set +e
     hdiutil mount $ECLIPSE_FILE -quiet
@@ -301,7 +314,7 @@ install_java_globally(){
 
   begin_progress "Installing Java."
   if [[ "$OSTYPE" == "linux-gnu"  ]]; then
-    sudo apt install openjdk-17-jre-headless
+    install_package openjdk-17-jre-headless
   elif [[ "$OSTYPE" == "darwin"*  ]]; then
     JRE_JVM_FOLDER=/Library/Java/JavaVirtualMachines
     JRE_TARGET_FOLDER=$JRE_JVM_FOLDER/$JRE_FOLDER_NAME
@@ -469,6 +482,7 @@ detect_os_type(){
   ECLIPSE_FOLDER=$TOOLS_FOLDER/IDE/Eclipse
 
   if [[ "$OS_TYPE" == "linux-gnu"  ]]; then
+    ECLIPSE_MOUNT_FOLDER=none
     ECLIPSE_APP_NAME=eclipse
     ECLIPSE_APP_FOLDER=$ECLIPSE_FOLDER 
     ECLIPSE_RUNTIME_FOLDER=$ECLIPSE_APP_FOLDER/$ECLIPSE_APP_NAME  
