@@ -6,14 +6,14 @@
 #
 
 #
-# Print a quoted string on the screen.
+# Print a quoted string $1 on the screen.
 #
 print(){
   echo "$1"
 }
 
 #
-# Display error message and exit the shell.
+# Display logged error messages and exit the shell.
 #
 error(){
   echo "ERROR: See messages above and in $LOG."
@@ -30,7 +30,7 @@ log_message(){
 }
 
 #
-# Display progress activity.
+# Display progress activity $1.
 #
 begin_progress(){
   echo "$1"
@@ -39,21 +39,21 @@ begin_progress(){
 
 
 #
-# Display progress message
+# Display progress message $1.
 #
 display_progress(){
   log_message "$1"
 }
 
 #
-# Create a folder including intermediate folders.
+# Create the folder $1 including intermediate folders.
 #
 create_folder(){
   mkdir -p $1
 }
 
 #
-# Remove a folder and its contents if it exists.
+# Remove the folder $1 and its contents if it exists.
 #
 remove_folder(){
   if [ -d $1 ]; then
@@ -67,12 +67,25 @@ remove_folder(){
 }
 
 #
+# Install package $1.
+#
+install_package(){
+  local REQUIRED_PKG=$1
+  local PKG_OK=$(dpkg-query -W --showformat='${Status}\n' $REQUIRED_PKG|grep "install ok installed")
+  display_progress "Checking for package $REQUIRED_PKG: $PKG_OK"
+  if [ "" = "$PKG_OK" ]; then
+    display_progress "Intalling required package $REQUIRED_PKG."
+    sudo apt-get --yes install $REQUIRED_PKG
+  fi
+}
+
+#
 # Install missing commands.
 #
 install_commands(){
   if ! command -v curl &> /dev/null
   then
-    sudo apt install curl
+    install_package curl
   fi
 }
 
@@ -301,7 +314,7 @@ install_java_globally(){
 
   begin_progress "Installing Java."
   if [[ "$OSTYPE" == "linux-gnu"  ]]; then
-    sudo apt install openjdk-17-jre-headless
+    install_package openjdk-17-jre-headless
   elif [[ "$OSTYPE" == "darwin"*  ]]; then
     JRE_JVM_FOLDER=/Library/Java/JavaVirtualMachines
     JRE_TARGET_FOLDER=$JRE_JVM_FOLDER/$JRE_FOLDER_NAME
