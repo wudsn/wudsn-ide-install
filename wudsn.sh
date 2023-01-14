@@ -397,6 +397,7 @@ create_workspace_folder(){
 # Start Eclipse in new process.
 #
 start_eclipse(){
+  trap "" EXIT
   begin_progress "Starting WUDSN IDE."
   $ECLIPSE_EXECUTABLE --args -noSplash -data $WORKSPACE_FOLDER &
 }
@@ -555,7 +556,6 @@ main(){
   popd >>$LOG
 
   start_eclipse
-  exit 0
 }
 
 #
@@ -564,5 +564,5 @@ main(){
 
 trap "error" EXIT
 set -e
-set -v
+#set -v
 main $@
