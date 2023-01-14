@@ -553,8 +553,9 @@ main(){
   create_workspace_folder $WORKSPACE_FOLDER
   
   popd >>$LOG
-  
+
   start_eclipse
+  exit 0
 }
 
 #
