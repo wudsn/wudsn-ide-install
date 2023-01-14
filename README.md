@@ -10,11 +10,9 @@ On Windows (64-bit Intel), download wudsn.bat or wudsn.exe to the folder and run
   Note: Currently Windows Defender may complain upon the first launch. You'll have to exclude it from checks.<br>
   Note: The wudsn.exe is the same as wudsn.but with icons and the option link it with file associations.
   
-On macOS (64-bit Intel or ARM/M1), download wudsn.sh to the folder and run it.
+On macOS (64-bit Intel or ARM/M1) an Linux, download wudsn.sh to the folder and run it.
 - https://github.com/peterdell/wudsn-ide-install/raw/main/wudsn.sh
  
-Versions for Linux are in the making.
-
 The file will create and populate the following subfolders via downloads:
 - Install - the cache folder where all downloads are stored
 - Tools - the IDE and all related command line programs
