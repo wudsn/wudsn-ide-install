@@ -71,7 +71,7 @@ rem
 rem
 rem Install missing commands.
 rem
-install_commands:
+:install_commands
 rem curl is part of the standard Windows installation.
 
 goto :eof

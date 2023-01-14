@@ -1,21 +1,22 @@
 #/usr/bin/bash
 #
-# Test script to install both standard versions inside an Linux VM. Get the script using:
-# wget https://github.com/peterdell/wudsn-ide-install/raw/main/test/test-wudsn-clean-install.sh -O test-wudsn-clean-install.sh
+# Test script to install both standard versions inside an Linux VM.
+# Use update-test-wudsn-clean-install.sh to update this script.
 #
 
 # Install the version in $WUDSN_VERSION
 install_wudsn(){
- echo Installing WUDSN IDE Version $WUDSN_VERSION.
- rm -rf $WUDSN_VERSION
- mkdir $WUDSN_VERSION
- pushd $WUDSN_VERSION
+  echo Installing WUDSN IDE Version $WUDSN_VERSION.
+  rm -rf $WUDSN_VERSION
+  mkdir $WUDSN_VERSION
+  pushd $WUDSN_VERSION
 
- echo Downloading Installer.
- wget --no-cache $INSTALLER_URL
- chmod u+x $WUDSN_EXECUTABLE
- ./$WUDSN_EXECUTABLE &
- popd
+  echo Downloading Installer.
+  wget --no-cache $INSTALLER_URL
+  chmod u+x $WUDSN_EXECUTABLE
+# The following call must not be started with & as it requires password inputs for sudo
+  ./$WUDSN_EXECUTABLE
+  popd
 
 }
 
