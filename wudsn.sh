@@ -17,7 +17,7 @@ print(){
 #
 error(){
   echo "ERROR: See messages above and in $LOG."
-  cat <$LOG
+  more <$LOG
   exit 1
 }
 
