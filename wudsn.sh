@@ -17,7 +17,7 @@ print(){
 #
 error(){
   echo "ERROR: See messages above and in $LOG."
-  more <$LOG
+  cat <$LOG
   exit 1
 }
 
@@ -102,7 +102,7 @@ download(){
 
   if [[ $FILE == *.tar.gz ]]; then
     display_progress "Unpacking $FILE to $TARGET_FOLDER."
-    tar -xf $FILE -C $TARGET_FOLDER >>$LOG
+    tar -xf $FILE -C $TARGET_FOLDER >>$LOG 2>>$LOG
   fi
   if [[ $FILE == *.zip ]]; then
     display_progress "Unpacking $FILE to $TARGET_FOLDER."
