@@ -292,9 +292,9 @@ install_eclipse(){
 }
 
 #
-# Install Java.
+# Install Java globally.
 #
-install_java(){
+install_java_globally(){
   JRE_FILE=$1
   JRE_URL=$2
   JRE_FOLDER_NAME=$3
@@ -315,7 +315,7 @@ install_java(){
     fi
 
   else
-    display_progress "Unsupported  echo "ERROR: Unsupported operating system '$OSTYPE'
+    display_progress "ERROR: Unsupported operating system '$OSTYPE'"
   fi
 }
 
@@ -386,7 +386,7 @@ create_workspace_folder(){
 #
 start_eclipse(){
   begin_progress "Starting WUDSN IDE."
-  $ECLIPSE_EXECUTABLE --args -noSplash -data $WORKSPACE_FOLDER
+  $ECLIPSE_EXECUTABLE --args -noSplash -data $WORKSPACE_FOLDER &
 }
 
 
@@ -425,11 +425,11 @@ handle_install_mode(){
 }
 
 #
-# Main function.
+# Detect the OS type and architecture and set dependent variables.
 #
-main(){
+detect_os_type(){
 
-  # https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.20-202106111600
+# https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.20-202106111600
   ECLIPSE_VERSION=4.26
   ECLIPSE_FILES=( eclipse-platform-${ECLIPSE_VERSION}-linux-gtk-aarch64.tar.gz
                   eclipse-platform-${ECLIPSE_VERSION}-linux-gtk-x86_64.tar.gz
@@ -444,18 +444,56 @@ main(){
              openjdk-${JRE_VERSION}_macos-aarch64_bin.tar.gz
              openjdk-${JRE_VERSION}_macos-x64_bin.tar.gz
              openjdk-${JRE_VERSION}_windows-x64_bin.zip)
-  
+
+  # Map OS type and host type to own codes.
+  OS_TYPE="unknown"
   OS_INDEX=0
   if [[ "$OSTYPE" == "linux-gnu" && "$HOSTTYPE" == "x86_64" ]]; then
+    OS_TYPE=linux-gnu
     OS_INDEX=1
-  elif [[ "$OSTYPE" == "darwin"* && "$HOSTTYPE" == "arm64" ]]; then
-    OS_INDEX=2
-  elif [[ "$OSTYPE" == "darwin"* && "$HOSTTYPE" == "x86_64" ]]; then
-    OS_INDEX=3
-  else
+  elif [[ "$OSTYPE" == "darwin"* ]]; then
+    OS_TYPE=darwin
+    if [[ & "$HOSTTYPE" == "arm64" ]]; then
+      OS_INDEX=2
+    elif [[ "$HOSTTYPE" == "x86_64" ]]; then
+      OS_INDEX=3
+    fi
+  fi
+
+  if [ -z "$OS_INDEX" ];
     echo "ERROR: Unsupported operating system '$OSTYPE' and host type '$HOSTTYPE' combination."
     exit 1
   fi
+
+  ECLIPSE_FILE=${ECLIPSE_FILES[$OS_INDEX]}
+  ECLIPSE_URL=$DOWNLOADS_URL/$ECLIPSE_FILE
+  ECLIPSE_FOLDER=$TOOLS_FOLDER/IDE/Eclipse
+
+  if [[ "$OS_TYPE" == "linux-gnu"  ]]; then
+    ECLIPSE_APP_FOLDER=$ECLIPSE_FOLDER 
+    ECLIPSE_RUNTIME_FOLDER=$ECLIPSE_APP_FOLDER/eclipse  
+    ECLIPSE_EXECUTABLE=$ECLIPSE_RUNTIME_FOLDER/eclipse
+    # Folder containing the p2 repository
+    ECLIPSE_DESTINATION_FOLDER=$ECLIPSE_RUNTIME_FOLDER
+  elif [[ "$OS_TYPE" == "darwin"  ]]; then
+    ECLIPSE_MOUNT_FOLDER=/Volumes/Eclipse
+    ECLIPSE_APP_NAME=Eclipse.app
+    ECLIPSE_APP_FOLDER=$ECLIPSE_FOLDER/$ECLIPSE_APP_NAME
+    ECLIPSE_RUNTIME_FOLDER=$ECLIPSE_APP_FOLDER/Contents
+    ECLIPSE_EXECUTABLE=$ECLIPSE_RUNTIME_FOLDER/MacOS/eclipse
+    # Folder containing the p2 repository
+    ECLIPSE_DESTINATION_FOLDER=$ECLIPSE_RUNTIME_FOLDER/Eclipse
+  fi
+
+  JRE_FILE=${JRE_FILES[$OS_INDEX]}
+  JRE_URL=$DOWNLOADS_URL/$JRE_FILE
+  JRE_FOLDER_NAME=jdk-${JRE_VERSION}.jdk
+}
+
+#
+# Main function.
+#
+main(){
   
   SCRIPT_FOLDER="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
   LOG=$SCRIPT_FOLDER/wudsn.log
@@ -482,30 +520,7 @@ main(){
   DOWNLOADS_URL=$SITE_URL/productions/java/ide/downloads
   UPDATE_URL=$SITE_URL/update/$WUDSN_VERSION
 
-  ECLIPSE_FILE=${ECLIPSE_FILES[$OS_INDEX]}
-  ECLIPSE_URL=$DOWNLOADS_URL/$ECLIPSE_FILE
-  ECLIPSE_FOLDER=$TOOLS_FOLDER/IDE/Eclipse
-
-  if [[ "$OSTYPE" == "linux-gnu"  ]]; then
-    ECLIPSE_APP_FOLDER=$ECLIPSE_FOLDER 
-    ECLIPSE_RUNTIME_FOLDER=$ECLIPSE_APP_FOLDER/eclipse  
-    ECLIPSE_EXECUTABLE=$ECLIPSE_RUNTIME_FOLDER/eclipse
-    # Folder containing the p2 repository
-    ECLIPSE_DESTINATION_FOLDER=$ECLIPSE_RUNTIME_FOLDER
-  elif [[ "$OSTYPE" == "darwin"*  ]]; then
-    ECLIPSE_MOUNT_FOLDER=/Volumes/Eclipse
-    ECLIPSE_APP_NAME=Eclipse.app
-    ECLIPSE_APP_FOLDER=$ECLIPSE_FOLDER/$ECLIPSE_APP_NAME
-    ECLIPSE_RUNTIME_FOLDER=$ECLIPSE_APP_FOLDER/Contents
-    ECLIPSE_EXECUTABLE=$ECLIPSE_RUNTIME_FOLDER/MacOS/eclipse
-    # Folder containing the p2 repository
-    ECLIPSE_DESTINATION_FOLDER=$ECLIPSE_RUNTIME_FOLDER/Eclipse
-  fi
-
-  JRE_FILE=${JRE_FILES[$OS_INDEX]}
-  JRE_URL=$DOWNLOADS_URL/$JRE_FILE
-  JRE_FOLDER_NAME=jdk-${JRE_VERSION}.jdk
-
+  detect_os_type
   check_workspace_lock
   select_install_mode $1
   handle_install_mode
@@ -517,8 +532,8 @@ main(){
   pushd $INSTALL_FOLDER >>$LOG
 
   install_curl
+  install_java_globally $JRE_FILE $JRE_URL $JRE_FOLDER_NAME $INSTALL_FOLDER
   install_tools $TOOLS_FOLDER
-  install_java $JRE_FILE $JRE_URL $JRE_FOLDER_NAME $INSTALL_FOLDER
   install_eclipse $ECLIPSE_FILE $ECLIPSE_URL $ECLIPSE_APP_FOLDER $ECLIPSE_MOUNT_FOLDER $ECLIPSE_APP_NAME 
   install_projects $PROJECTS_FOLDER
   create_workspace_folder $WORKSPACE_FOLDER
