@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# WUDSN IDE Installer - Version 2022-12-28
+# WUDSN IDE Installer - Version 2023-01-14 for macOS and Linux, 64-bit.
 # Visit https://www.wudsn.com for the latest version.
 # Use https://www.shellcheck.net to validate the .sh script source.
 #
@@ -67,9 +67,9 @@ remove_folder(){
 }
 
 #
-# Install curl if it missing.
+# Install missing commands.
 #
-install_curl(){
+install_commands(){
   if ! command -v curl &> /dev/null
   then
     sudo apt install curl
@@ -139,9 +139,7 @@ download_repo(){
 #
 check_workspace_lock(){
   WORKSPACE_LOCK=$WORKSPACE_FOLDER/.metadata/.lock
-  if [ -f $WORKSPACE_LOCK ];
-  then rm $WORKSPACE_LOCK 2>>"$LOG"
-  fi
+  rm $WORKSPACE_LOCK 2>>"$LOG"
 
   while [ -f $WORKSPACE_LOCK ]
   do
@@ -470,9 +468,10 @@ detect_os_type(){
   ECLIPSE_FOLDER=$TOOLS_FOLDER/IDE/Eclipse
 
   if [[ "$OS_TYPE" == "linux-gnu"  ]]; then
+    ECLIPSE_APP_NAME=eclipse
     ECLIPSE_APP_FOLDER=$ECLIPSE_FOLDER 
-    ECLIPSE_RUNTIME_FOLDER=$ECLIPSE_APP_FOLDER/eclipse  
-    ECLIPSE_EXECUTABLE=$ECLIPSE_RUNTIME_FOLDER/eclipse
+    ECLIPSE_RUNTIME_FOLDER=$ECLIPSE_APP_FOLDER/$ECLIPSE_APP_NAME  
+    ECLIPSE_EXECUTABLE=$ECLIPSE_RUNTIME_FOLDER/$ECLIPSE_APP_NAME
     # Folder containing the p2 repository
     ECLIPSE_DESTINATION_FOLDER=$ECLIPSE_RUNTIME_FOLDER
   elif [[ "$OS_TYPE" == "darwin"  ]]; then
@@ -531,7 +530,7 @@ main(){
   create_folder $INSTALL_FOLDER
   pushd $INSTALL_FOLDER >>$LOG
 
-  install_curl
+  install_commands
   install_java_globally $JRE_FILE $JRE_URL $JRE_FOLDER_NAME $INSTALL_FOLDER
   install_tools $TOOLS_FOLDER
   install_eclipse $ECLIPSE_FILE $ECLIPSE_URL $ECLIPSE_APP_FOLDER $ECLIPSE_MOUNT_FOLDER $ECLIPSE_APP_NAME 

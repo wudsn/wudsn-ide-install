@@ -1,6 +1,6 @@
 @echo off
 #
-# WUDSN IDE Installer - Version 2022-12-28
+# WUDSN IDE Installer - Version 2023-01-14 for Windows, 64-bit.
 # Visit https://www.wudsn.com for the latest version.
 # Use https://www.shellcheck.net to validate the .sh script source.
 #
@@ -19,6 +19,7 @@ print
 #
 error
   print "ERROR: See messages above and in $LOG."
+  start notepad.exe "$LOG"
   pause
   exit 1
 
@@ -66,6 +67,14 @@ remove_folder
     fi
   fi
   }
+
+#
+# Install missing commands.
+#
+install_commands:
+# curl is part of the standard Windows installation.
+
+}
 
 #
 # Download a .zip file and unpack to target folder.
@@ -180,7 +189,7 @@ select_install_mode
      return
   fi
   
-  if [ -f $ECLIPSE_APP_EXE {
+  if [ -f $ECLIPSE_FOLDER {
     INSTALL_MODE=--start-eclipse
   fi
 
@@ -224,7 +233,6 @@ display_install_menu
     exit 0
   fi
   goto choose_install_mode
-
 
 
 
@@ -383,7 +391,7 @@ start_eclipse
 #
 handle_install_mode
   display_progress "Selected install mode is '$INSTALL_MODE$'."
-  if [ "$INSTALL_MODE" == "--start_eclipse" ]; then
+  if [ "$INSTALL_MODE" == "--start-eclipse" ]; then
       start_eclipse
       exit 0
   elif [ "$INSTALL_MODE" == "--install-all-from-server" ]; then
@@ -410,10 +418,8 @@ handle_install_mode
   }
 
 #
-# Main function.
+# Detect the OS type and architecture and dependent variables.
 #
-main
-
   # https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.20-202106111600
   ECLIPSE_VERSION=4.26
   ECLIPSE_FILES[0]=eclipse-platform-$ECLIPSE_VERSION-win32-x86_64.zip
@@ -423,6 +429,29 @@ main
   JRE_FILES[0]=openjdk-$JRE_VERSION_windows-x64_bin.zip
   
   OS_INDEX=0
+
+  setlocal enableDelayedExpansion
+    ECLIPSE_FILE=!ECLIPSE_FILES[$OS_INDEX$]!
+  endlocal & ECLIPSE_FILE=$ECLIPSE_FILE
+  ECLIPSE_URL=$DOWNLOADS_URL/$ECLIPSE_FILE
+  ECLIPSE_FOLDER_NAME=eclipse
+  ECLIPSE_FOLDER=$TOOLS_FOLDER/IDE/Eclipse
+  ECLIPSE_RUNTIME_FOLDER=$ECLIPSE_FOLDER/$ECLIPSE_FOLDER_NAME
+  ECLIPSE_APP_NAME=Eclipse.exe
+  ECLIPSE_APP_EXE=$ECLIPSE_RUNTIME_FOLDER/$ECLIPSE_APP_NAME
+  
+  setlocal enableDelayedExpansion
+     JRE_FILE=!JRE_FILES[$OS_INDEX$]!
+  endlocal & JRE_FILE=$JRE_FILE
+  JRE_URL=$DOWNLOADS_URL/$JRE_FILE
+  JRE_FOLDER_NAME=jdk-$JRE_VERSION
+
+}
+
+#
+# Main function.
+#
+main
 
   SCRIPT_FOLDER=$CD
   LOG=$SCRIPT_FOLDER/wudsn.log
@@ -450,18 +479,7 @@ main
   DOWNLOADS_URL=$SITE_URL/productions/java/ide/downloads
   UPDATE_URL=$SITE_URL/update/$WUDSN_VERSION
   
-  ECLIPSE_FILE=ECLIPSE_FILES[$OS_INDEX$]
-  ECLIPSE_URL=$DOWNLOADS_URL/$ECLIPSE_FILE
-  ECLIPSE_FOLDER_NAME=eclipse
-  ECLIPSE_FOLDER=$TOOLS_FOLDER/IDE/Eclipse
-  ECLIPSE_RUNTIME_FOLDER=$ECLIPSE_FOLDER/$ECLIPSE_FOLDER_NAME
-  ECLIPSE_APP_NAME=Eclipse.exe
-  ECLIPSE_APP_EXE=$ECLIPSE_RUNTIME_FOLDER/$ECLIPSE_APP_NAME
-  
-  JRE_FILE=$JRE_FILES[$OS_INDEX$]
-  JRE_URL=$DOWNLOADS_URL/$JRE_FILE
-  JRE_FOLDER_NAME=jdk-$JRE_VERSION
-  
+  detect_os_type
   check_workspace_lock
   select_install_mode $1
   handle_install_mode
@@ -472,6 +490,7 @@ main
   create_folder $INSTALL_FOLDER
   pushd $INSTALL_FOLDER
 
+  install_commands
   install_tools $TOOLS_FOLDER
   install_eclipse $ECLIPSE_FOLDER
   install_projects $PROJECTS_FOLDER

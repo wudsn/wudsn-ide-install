@@ -1,6 +1,6 @@
 @echo off
 rem
-rem WUDSN IDE Installer - Version 2022-12-28
+rem WUDSN IDE Installer - Version 2023-01-14 for Windows, 64-bit.
 rem Visit https://www.wudsn.com for the latest version.
 rem Use https://www.shellcheck.net to validate the .sh script source.
 rem
@@ -67,6 +67,14 @@ rem
     )
   )
   goto :eof
+
+rem
+rem Install missing commands.
+rem
+install_commands:
+rem curl is part of the standard Windows installation.
+
+goto :eof
 
 rem
 rem Download a .zip file and unpack to target folder.
@@ -181,7 +189,7 @@ rem
      goto :eof
   )
   
-  if exist %ECLIPSE_APP_EXE%. (
+  if exist %ECLIPSE_FOLDER%. (
     set INSTALL_MODE=--start-eclipse
   )
 
@@ -225,7 +233,6 @@ rem
     exit 0
   )
   goto :choose_install_mode
-
 
 
 
@@ -411,10 +418,8 @@ rem
   goto :eof
 
 rem
-rem Main function.
+rem Detect the OS type and architecture and set dependent variables.
 rem
-:main
-
   rem https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.20-202106111600
   set ECLIPSE_VERSION=4.26
   set ECLIPSE_FILES[0]=eclipse-platform-%ECLIPSE_VERSION%-win32-x86_64.zip
@@ -424,6 +429,29 @@ rem
   set JRE_FILES[0]=openjdk-%JRE_VERSION%_windows-x64_bin.zip
   
   set OS_INDEX=0
+
+  setlocal enableDelayedExpansion
+    set ECLIPSE_FILE=!ECLIPSE_FILES[%OS_INDEX%]!
+  endlocal & set ECLIPSE_FILE=%ECLIPSE_FILE%
+  set ECLIPSE_URL=%DOWNLOADS_URL%/%ECLIPSE_FILE%
+  set ECLIPSE_FOLDER_NAME=eclipse
+  set ECLIPSE_FOLDER=%TOOLS_FOLDER%\IDE\Eclipse
+  set ECLIPSE_RUNTIME_FOLDER=%ECLIPSE_FOLDER%\%ECLIPSE_FOLDER_NAME%
+  set ECLIPSE_APP_NAME=Eclipse.exe
+  set ECLIPSE_APP_EXE=%ECLIPSE_RUNTIME_FOLDER%\%ECLIPSE_APP_NAME%
+  
+  setlocal enableDelayedExpansion
+     set JRE_FILE=!JRE_FILES[%OS_INDEX%]!
+  endlocal & set JRE_FILE=%JRE_FILE%
+  set JRE_URL=%DOWNLOADS_URL%/%JRE_FILE%
+  set JRE_FOLDER_NAME=jdk-%JRE_VERSION%
+
+goto :eof
+
+rem
+rem Main function.
+rem
+:main
 
   set SCRIPT_FOLDER=%CD%
   set LOG=%SCRIPT_FOLDER%\wudsn.log
@@ -451,22 +479,7 @@ rem
   set DOWNLOADS_URL=%SITE_URL%/productions/java/ide/downloads
   set UPDATE_URL=%SITE_URL%/update/%WUDSN_VERSION%
   
-  setlocal enableDelayedExpansion
-    set ECLIPSE_FILE=!ECLIPSE_FILES[%OS_INDEX%]!
-  endlocal & set ECLIPSE_FILE=%ECLIPSE_FILE%
-  set ECLIPSE_URL=%DOWNLOADS_URL%/%ECLIPSE_FILE%
-  set ECLIPSE_FOLDER_NAME=eclipse
-  set ECLIPSE_FOLDER=%TOOLS_FOLDER%\IDE\Eclipse
-  set ECLIPSE_RUNTIME_FOLDER=%ECLIPSE_FOLDER%\%ECLIPSE_FOLDER_NAME%
-  set ECLIPSE_APP_NAME=Eclipse.exe
-  set ECLIPSE_APP_EXE=%ECLIPSE_RUNTIME_FOLDER%\%ECLIPSE_APP_NAME%
-  
-  setlocal enableDelayedExpansion
-     set JRE_FILE=!JRE_FILES[%OS_INDEX%]!
-  endlocal & set JRE_FILE=%JRE_FILE%
-  set JRE_URL=%DOWNLOADS_URL%/%JRE_FILE%
-  set JRE_FOLDER_NAME=jdk-%JRE_VERSION%
-  
+  call :detect_os_type
   call :check_workspace_lock
   call :select_install_mode %1
   call :handle_install_mode
@@ -477,6 +490,7 @@ rem
   call :create_folder %INSTALL_FOLDER%
   pushd %INSTALL_FOLDER%
 
+  call :install_commands
   call :install_tools %TOOLS_FOLDER%
   call :install_eclipse %ECLIPSE_FOLDER%
   call :install_projects %PROJECTS_FOLDER%
