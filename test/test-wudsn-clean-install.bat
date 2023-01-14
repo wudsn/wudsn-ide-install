@@ -34,8 +34,8 @@ if exist %WUDSN_EXE%. (
 ) else (
   set TIME_COND=
 )
+echo Downloading installer.
 curl --show-error --location %INSTALLER_URL%/%WUDSN_EXE% %TIME_COND% --output %WUDSN_EXE%
-echo Starting WUDSN IDE as new process.
 %WUDSN_EXE%%
 popd
 goto :eof
