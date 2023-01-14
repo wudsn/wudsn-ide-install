@@ -5,9 +5,6 @@
 # Use https://www.shellcheck.net to validate the .sh script source.
 #
 
-# Under Linux curl is not pre-installed.
-# It must be installed using "sudo apt  install curl"
-
 #
 # Print a quoted string on the screen.
 #
@@ -66,6 +63,16 @@ remove_folder(){
       display_progress "ERROR: Cannot remove folder $1"
       error
     fi
+  fi
+}
+
+#
+# Install curl if it missing.
+#
+install_curl(){
+  if ! command -v curl &> /dev/null
+  then
+    sudo apt install curl
   fi
 }
 
@@ -502,13 +509,14 @@ main(){
   check_workspace_lock
   select_install_mode $1
   handle_install_mode
-  
+
   log_message "Environment variables:"
   set -o posix; set >>$LOG; set +o posix
   
   create_folder $INSTALL_FOLDER
   pushd $INSTALL_FOLDER >>$LOG
 
+  install_curl
   install_tools $TOOLS_FOLDER
   install_java $JRE_FILE $JRE_URL $JRE_FOLDER_NAME $INSTALL_FOLDER
   install_eclipse $ECLIPSE_FILE $ECLIPSE_URL $ECLIPSE_APP_FOLDER $ECLIPSE_MOUNT_FOLDER $ECLIPSE_APP_NAME 
