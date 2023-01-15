@@ -399,8 +399,7 @@ create_workspace_folder(){
 start_eclipse(){
   trap "" EXIT
   begin_progress "Starting WUDSN IDE."
-  $ECLIPSE_EXECUTABLE --args -noSplash -data $WORKSPACE_FOLDER &
-  sleep 1
+  nohup $ECLIPSE_EXECUTABLE --args -noSplash -data $WORKSPACE_FOLDER &
 }
 
 
