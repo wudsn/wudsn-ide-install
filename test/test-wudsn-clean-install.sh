@@ -16,7 +16,7 @@ install_wudsn(){
   chmod u+x $WUDSN_EXECUTABLE
 
 # The following call must not be started in a new window, so sudo password inputs work and exits are ignored
-  gnome-terminal -- ./$WUDSN_EXECUTABLE &
+  nohup gnome-terminal -- ./$WUDSN_EXECUTABLE &
   popd
 
 }
