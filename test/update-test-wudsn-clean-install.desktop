@@ -1,0 +1,9 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=true
+Exec=/home/osboxes/jac/update-test-wudsn-clean-install.sh
+Name=Clean Install
+Comment=WUDSN IDE Clean Install Test
+Icon=
