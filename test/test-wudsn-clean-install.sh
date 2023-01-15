@@ -13,7 +13,7 @@ install_wudsn(){
 
   echo Downloading Installer.
   wget --no-cache $INSTALLER_URL
-  chmod u+x $WUDSN_EXECUTABLE
+  chmod a+x $WUDSN_EXECUTABLE
 
 # The following call must not be started in a new window, so sudo password inputs work and exits are ignored
   nohup gnome-terminal -- ./$WUDSN_EXECUTABLE &

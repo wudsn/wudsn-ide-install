@@ -7,6 +7,6 @@ cd ~/jac
 SCRIPT=test-wudsn-clean-install.sh
 echo Updating $SCRIPT
 wget https://github.com/peterdell/wudsn-ide-install/raw/main/test/$SCRIPT -O $SCRIPT
-chmod u+x $SCRIPT
+chmod a+x $SCRIPT
 bash $SCRIPT
 sleep 1
