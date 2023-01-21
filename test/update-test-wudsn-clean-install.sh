@@ -1,4 +1,4 @@
-#/usr/bin/bash
+#!/bin/bash
 #
 # Update script for test-wudsn-clean-install.sh.
 #

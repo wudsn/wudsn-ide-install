@@ -1,4 +1,4 @@
-#/usr/bin/bash
+#!/bin/bash
 #
 # Test script to install both standard versions inside an Linux VM.
 # Use update-test-wudsn-clean-install.sh to update this script.
