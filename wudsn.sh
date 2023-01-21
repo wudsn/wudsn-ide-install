@@ -121,7 +121,7 @@ download(){
   fi
   if [[ ${FILE} == *.zip ]]; then
     display_progress "Unpacking ${FILE} to ${TARGET_FOLDER}."
-    unzip -q "${FILE}" -d "${TARGET_FOLDER}" >>"${LOG}"
+    unzip -q "${FILE}" -d "${TARGET_FOLDER}" >>"${LOG}" 2>>"${LOG}"
   fi  
 }
 
@@ -145,7 +145,7 @@ download_repo(){
 
   display_progress "Copying files to ${REPO_TARGET_FOLDER}."
   create_folder "${REPO_TARGET_FOLDER}"
-  cp -p -R "${REPO_BRANCH}/*" "${REPO_TARGET_FOLDER}"
+  cp -p -R "${REPO_BRANCH}/*" "${REPO_TARGET_FOLDER}" >>"${LOG}" 2>>"${LOG}"
   remove_folder "${REPO_BRANCH}"
 }
 
