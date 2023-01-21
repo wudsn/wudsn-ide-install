@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # WUDSN IDE Installer - Version 2023-01-14 for macOS and Linux, 64-bit.
 # Visit https://www.wudsn.com for the latest version.
@@ -115,11 +115,11 @@ download(){
   fi
   create_folder "${TARGET_FOLDER}"
 
-  if [[ ${FILE} == *.tar.gz ]]; then
+  if [[ "${FILE}" == "*.tar.gz" ]]; then
     display_progress "Unpacking ${FILE} to ${TARGET_FOLDER}."
     tar -xf "${FILE}" -C "${TARGET_FOLDER}" >>"${LOG}" 2>>"${LOG}"
   fi
-  if [[ ${FILE} == *.zip ]]; then
+  if [[ "${FILE}" == "*.zip" ]]; then
     display_progress "Unpacking ${FILE} to ${TARGET_FOLDER}."
     unzip -q "${FILE}" -d "${TARGET_FOLDER}" >>"${LOG}" 2>>"${LOG}"
   fi  
@@ -317,9 +317,9 @@ install_java_globally(){
   INSTALL_FOLDER=$4
 
   begin_progress "Installing Java."
-  if [[ "${OSTYPE}" == "linux-gnu"  ]]; then
+  if [ "${OS_TYPE}" = "linux-gnu"  ]; then
     install_package openjdk-17-jre-headless
-  elif [[ "${OSTYPE}" == "darwin"*  ]]; then
+  elif [ "${OS_TYPE}" = "darwin"  ]; then
     JRE_JVM_FOLDER=/Library/Java/JavaVirtualMachines
     JRE_TARGET_FOLDER=${JRE_JVM_FOLDER}/${JRE_FOLDER_NAME}
     if [ ! -d "${JRE_TARGET_FOLDER}" ]; then
@@ -331,7 +331,7 @@ install_java_globally(){
     fi
 
   else
-    display_progress "ERROR: Unsupported operating system '${OSTYPE}'"
+    display_progress "ERROR: Unsupported operating system '${OS_TYPE}'"
   fi
 }
 
@@ -468,14 +468,14 @@ detect_os_type(){
   # Map OS type and host type to own codes.
   OS_TYPE="unknown"
   OS_INDEX=0
-  if [[ "${OSTYPE}" == "linux-gnu" && "${HOSTTYPE}" == "x86_64" ]]; then
+  if [ "${OSTYPE}" == "linux-gnu" -a "${HOSTTYPE}" = "x86_64" ]; then
     OS_TYPE=linux-gnu
     OS_INDEX=1
   elif [[ "${OSTYPE}" == "darwin"* ]]; then
     OS_TYPE=darwin
-    if [[ "${HOSTTYPE}" == "arm64" ]]; then
+    if [ "${HOSTTYPE}" == "arm64" ]; then
       OS_INDEX=2
-    elif [[ "${HOSTTYPE}" == "x86_64" ]]; then
+    elif [ "${HOSTTYPE}" == "x86_64" ]; then
       OS_INDEX=3
     fi
   fi
@@ -489,7 +489,7 @@ detect_os_type(){
   ECLIPSE_URL=${DOWNLOADS_URL}/${ECLIPSE_FILE}
   ECLIPSE_FOLDER=$TOOLS_FOLDER/IDE/Eclipse
 
-  if [[ "${OS_TYPE}" == "linux-gnu"  ]]; then
+  if [ "${OS_TYPE}" = "linux-gnu" ]; then
     ECLIPSE_MOUNT_FOLDER=none
     ECLIPSE_APP_NAME=eclipse
     ECLIPSE_APP_FOLDER=${ECLIPSE_FOLDER} 
@@ -497,7 +497,7 @@ detect_os_type(){
     ECLIPSE_EXECUTABLE=${ECLIPSE_RUNTIME_FOLDER}/${ECLIPSE_APP_NAME}
     # Folder containing the p2 repository
     ECLIPSE_DESTINATION_FOLDER=${ECLIPSE_RUNTIME_FOLDER}
-  elif [[ "${OS_TYPE}" == "darwin"  ]]; then
+  elif [ "${OS_TYPE}" == "darwin" ]; then
     ECLIPSE_MOUNT_FOLDER=/Volumes/Eclipse
     ECLIPSE_APP_NAME=Eclipse.app
     ECLIPSE_APP_FOLDER=${ECLIPSE_FOLDER}/${ECLIPSE_APP_NAME}
