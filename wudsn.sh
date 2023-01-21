@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # WUDSN IDE Installer - Version 2023-01-14 for macOS and Linux, 64-bit.
 # Visit https://www.wudsn.com for the latest version.
