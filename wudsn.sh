@@ -143,12 +143,12 @@ download_repo(){
   display_progress "Downloading repo ${REPO} to ${REPO_TARGET_FOLDER}."
   download "${REPO_FILE}" "${REPO_URL}" "${REPO_BRANCH}" "${INSTALL_FOLDER}" IGNORE
 
+  local REPO_BRANCH_FOLDER=${INSTALL_FOLDER}/${REPO_BRANCH}
+
   display_progress "Copying files to ${REPO_TARGET_FOLDER}."
   create_folder "${REPO_TARGET_FOLDER}"
-  pwd
-  set -v
-  cp -p -R "${REPO_BRANCH}/*" "${REPO_TARGET_FOLDER}" >>"${LOG}" 2>>"${LOG}"
-  remove_folder "${REPO_BRANCH}"
+  cp -p -R "${REPO_BRANCH_FOLDER}/*" "${REPO_TARGET_FOLDER}" >>"${LOG}" 2>>"${LOG}"
+  remove_folder "${REPO_BRANCH_FOLDER}"
 }
 
 # 
@@ -568,5 +568,5 @@ main(){
 
 trap "error" EXIT
 set -e
-#set -v
+#set -x
 main "$@"
