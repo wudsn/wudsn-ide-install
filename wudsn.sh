@@ -405,7 +405,7 @@ create_workspace_folder(){
 start_eclipse(){
   trap "" EXIT
   begin_progress "Starting WUDSN IDE."
-  nohup "${ECLIPSE_EXECUTABLE}" -data "${WORKSPACE_FOLDER}" </dev/null &>eclipse.log & disown
+  "${ECLIPSE_EXECUTABLE}" -data "${WORKSPACE_FOLDER}" </dev/null &>"${SCRIPT_FOLDER}/eclipse.log"
   # nohup ${ECLIPSE_EXECUTABLE} -noSplash -data ${WORKSPACE_FOLDER} &
 }
 
@@ -517,7 +517,7 @@ detect_os_type(){
 #
 main(){
   
-  SCRIPT_FOLDER="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+  SCRIPT_FOLDER="$(readlink -f "$(dirname "${0}")")"
   LOG=${SCRIPT_FOLDER}/wudsn.log
   date >"${LOG}"
   begin_progress "Checking installation in ${SCRIPT_FOLDER}."
