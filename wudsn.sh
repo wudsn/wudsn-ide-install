@@ -147,7 +147,7 @@ download_repo(){
 
   display_progress "Copying files to ${REPO_TARGET_FOLDER}."
   create_folder "${REPO_TARGET_FOLDER}"
-  cp -p -R "${REPO_BRANCH_FOLDER}/*" "${REPO_TARGET_FOLDER}" >>"${LOG}" 2>>"${LOG}"
+  cp -p -R "${REPO_BRANCH_FOLDER}"/* "${REPO_TARGET_FOLDER}" >>"${LOG}" 2>>"${LOG}"
   remove_folder "${REPO_BRANCH_FOLDER}"
 }
 
