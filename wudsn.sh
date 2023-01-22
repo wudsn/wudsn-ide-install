@@ -411,10 +411,8 @@ create_workspace_folder(){
 start_eclipse(){
   trap "" EXIT
   begin_progress "Starting WUDSN IDE."
-  local ECLIPSE_LOG=${SCRIPT_FOLDER}/eclipse.log
   echo "Starting ${ECLIPSE_EXECUTABLE}" >"${ECLIPSE_LOG}"
-  # The parenthsis create a new background shell, the child process will be moved to init
-  ( "${ECLIPSE_EXECUTABLE}" -data "${WORKSPACE_FOLDER}" </dev/null &>>"${ECLIPSE_LOG}" 2>>"${ECLIPSE_LOG}" & ) 
+  "${ECLIPSE_EXECUTABLE}" -data "${WORKSPACE_FOLDER}" </dev/null &>>"${ECLIPSE_LOG}" 2>>"${ECLIPSE_LOG}" &
 }
 
 
@@ -502,6 +500,10 @@ detect_os_type(){
   ECLIPSE_FILE=${ECLIPSE_FILES[${OS_INDEX}]}
   ECLIPSE_URL=${DOWNLOADS_URL}/${ECLIPSE_FILE}
   ECLIPSE_FOLDER=$TOOLS_FOLDER/IDE/Eclipse
+  ECLIPSE_LOG=${SCRIPT_FOLDER}/eclipse.log
+  if [ -f "${ECLIPSE_LOG}" ]; then
+    rm "${ECLIPSE_LOG}"
+  fi
 
   if [ "${OS_TYPE}" = "linux-gnu" ]; then
     ECLIPSE_MOUNT_FOLDER=none
