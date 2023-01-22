@@ -1,6 +1,6 @@
 @echo off
 rem
-rem The template was downloaded from https://www.osboxes.org/ubuntu/.
+rem The template VM image was downloaded from https://www.osboxes.org/ubuntu/.
 rem Changes:
 rem - Change password of user osboxes using sudo passwd osboxes password
 rem - Enable auto-login for user osboxes in "users" settings
