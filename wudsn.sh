@@ -72,7 +72,9 @@ remove_folder(){
 install_package(){
   local REQUIRED_PKG=$1
   local PKG_OK
+  set +e
   PKG_OK=$(dpkg-query -W --showformat='${Status}\n' "${REQUIRED_PKG}"|grep "install ok installed")
+  set -
   display_progress "Checking for package ${REQUIRED_PKG}: ${PKG_OK}"
   if [ "" = "${PKG_OK}" ]; then
     display_progress "Intalling required package ${REQUIRED_PKG}."
