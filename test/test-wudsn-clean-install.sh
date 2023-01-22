@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Test script to install both standard versions inside an Linux VM.
-# Use update-test-wudsn-clean-install.sh to update this script.
+# Use update-test-wudsn-clean-install.sh to update this script from the server.
 #
 
 # Install the version in $WUDSN_VERSION
@@ -16,7 +16,7 @@ install_wudsn(){
   chmod a+x $WUDSN_EXECUTABLE
 
 # The following call must not be started in a new window, so sudo password inputs work and exits are ignored
-  nohup gnome-terminal -- ./$WUDSN_EXECUTABLE &
+  gnome-terminal --wait --title "Installing WUDSN version ${WUDSN_VERSION}" -- ./$WUDSN_EXECUTABLE &
   popd
 
 }
