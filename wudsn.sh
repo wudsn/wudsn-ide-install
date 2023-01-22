@@ -199,7 +199,7 @@ select_install_mode(){
   if [ "${INSTALL_MODE}" = "--install-workspace" ]; then
     return
   fi
-  if [ -d "${ECLIPSE_APP_FOLDER}" -a "${INSTALL_MODE}" = "--start-eclipse" ]; then
+  if [ -d "${ECLIPSE_APP_FOLDER}" ] && [ "${INSTALL_MODE}" = "--start-eclipse" ]; then
     return
   fi
 
@@ -415,7 +415,7 @@ start_eclipse(){
   trap "" EXIT
   begin_progress "Starting WUDSN IDE."
   echo "Starting ${ECLIPSE_EXECUTABLE}" >"${ECLIPSE_LOG}"
-  "${ECLIPSE_EXECUTABLE}" -data "${WORKSPACE_FOLDER}" </dev/null &>>"${ECLIPSE_LOG}" 2>>"${ECLIPSE_LOG}" &
+  "${ECLIPSE_EXECUTABLE}" -data "${WORKSPACE_FOLDER}" </dev/null >>"${ECLIPSE_LOG}" 2>>"${ECLIPSE_LOG}" &
 }
 
 
