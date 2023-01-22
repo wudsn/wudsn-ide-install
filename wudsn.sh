@@ -312,7 +312,7 @@ install_eclipse(){
     set -e
     
     # Remove code signing to prevent issues when changinge files in the folder
-    codesign --remove - Eclipse.app
+    codesign --remove Eclipse.app
   fi
 
   install_wudsn_ide_feature
