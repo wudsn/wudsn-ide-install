@@ -179,7 +179,7 @@ select_install_mode(){
     INSTALL_MODE="--install-all-from-server"
   fi
   
-  if [ "${INSTALL_MODE}" == "--install-all-from-server" ]; then
+  if [ "${INSTALL_MODE}" = "--install-all-from-server" ]; then
     return
   fi
   
@@ -188,22 +188,22 @@ select_install_mode(){
     return
   fi
   
-  if [ "${INSTALL_MODE}" == "--install-ide-from-cache" ]; then
+  if [ "${INSTALL_MODE}" = "--install-ide-from-cache" ]; then
     return
   fi
-  if [ "${INSTALL_MODE}" == "--install-ide-from-server" ]; then
+  if [ "${INSTALL_MODE}" = "--install-ide-from-server" ]; then
     return
   fi
-  if [ "${INSTALL_MODE}" == "--install-workspace" ]; then
+  if [ "${INSTALL_MODE}" = "--install-workspace" ]; then
     return
   fi
 
-  if [ "${INSTALL_MODE}" == "--install" ]; then
+  if [ "${INSTALL_MODE}" = "--install" ]; then
     display_install_menu
     return
   fi
   
-  if [ ! "${INSTALL_MODE}" == "" ]; then
+  if [ ! "${INSTALL_MODE}" = "" ]; then
      echo "ERROR: Invalid install mode '${INSTALL_MODE}'. Use on of these options."
      echo "wudsn.sh --install-ide-from-cache|--install-ide-from-server|--install-all-from-server|-install-workspace"
      echo 
@@ -286,7 +286,7 @@ install_eclipse(){
   begin_progress "Installing Eclipse."
   download "${ECLIPSE_FILE}" "${ECLIPSE_URL}" eclipse "${ECLIPSE_FOLDER}" FAIL
 
-  if [ ! "${ECLIPSE_MOUNT_FOLDER}" == "none" ]; then
+  if [ ! "${ECLIPSE_MOUNT_FOLDER}" = "none" ]; then
     display_progress "Mounting ${ECLIPSE_FILE}."
     set +e
     
@@ -423,23 +423,23 @@ start_eclipse(){
 # Handle install mode. 
 #
 handle_install_mode(){
-  if [ "${INSTALL_MODE}" == "--start-eclipse" ]; then
+  if [ "${INSTALL_MODE}" = "--start-eclipse" ]; then
       start_eclipse
       exit 0
-  elif [ "${INSTALL_MODE}" == "--install-all-from-server" ]; then
+  elif [ "${INSTALL_MODE}" = "--install-all-from-server" ]; then
       begin_progress "Starting full installation of ${WUDSN_VERSION} version from server ${SITE_URL}."
       remove_folder "${WORKSPACE_FOLDER}"
       remove_folder "${PROJECTS_FOLDER}"
       remove_folder "${INSTALL_FOLDER}"
       remove_folder "${TOOLS_FOLDER}"
-  elif [ "${INSTALL_MODE}" == "--install-ide-from-server" ]; then
+  elif [ "${INSTALL_MODE}" = "--install-ide-from-server" ]; then
       begin_progress "Starting IDE installation ${WUDSN_VERSION} version from server ${SITE_URL}."
       remove_folder "${INSTALL_FOLDER}"
       remove_folder "${TOOLS_FOLDER}"
-  elif [ "${INSTALL_MODE}" == "--install-ide-from-cache" ]; then
+  elif [ "${INSTALL_MODE}" = "--install-ide-from-cache" ]; then
       begin_progress "Starting IDE installation from local cache."
       remove_folder "${TOOLS_FOLDER}"
-  elif [ "${INSTALL_MODE}" == "--install-workspace" ]; then
+  elif [ "${INSTALL_MODE}" = "--install-workspace" ]; then
       begin_progress "Starting workspace installation."
       remove_folder "${WORKSPACE_FOLDER}"
       remove_folder "${PROJECTS_FOLDER}"
@@ -477,15 +477,15 @@ detect_os_type(){
   case "$OSTYPE" in
     linux-gnu)
       OS_TYPE=linux-gnu
-      if [ "${HOSTTYPE}" == "x86_64" ]; then
+      if [ "${HOSTTYPE}" = "x86_64" ]; then
         OS_INDEX=1
       fi
       ;;
     darwin*) 
       OS_TYPE=darwin
-      if [ "${HOSTTYPE}" == "arm64" ]; then
+      if [ "${HOSTTYPE}" = "arm64" ]; then
         OS_INDEX=2
-      elif [ "${HOSTTYPE}" == "x86_64" ]; then
+      elif [ "${HOSTTYPE}" = "x86_64" ]; then
         OS_INDEX=3
       fi
       ;;
@@ -508,7 +508,7 @@ detect_os_type(){
     ECLIPSE_EXECUTABLE=${ECLIPSE_RUNTIME_FOLDER}/${ECLIPSE_APP_NAME}
     # Folder containing the p2 repository
     ECLIPSE_DESTINATION_FOLDER=${ECLIPSE_RUNTIME_FOLDER}
-  elif [ "${OS_TYPE}" == "darwin" ]; then
+  elif [ "${OS_TYPE}" = "darwin" ]; then
     ECLIPSE_MOUNT_FOLDER=/Volumes/Eclipse
     ECLIPSE_APP_NAME=Eclipse.app
     ECLIPSE_APP_FOLDER=${ECLIPSE_FOLDER}/${ECLIPSE_APP_NAME}
@@ -539,11 +539,11 @@ main(){
   PROJECTS_FOLDER=${WUDSN_FOLDER}/Projects
   WORKSPACE_FOLDER=${WUDSN_FOLDER}/Workspace
   
-  if [ "${SITE_URL}" == "" ]; then
+  if [ "${SITE_URL}" = "" ]; then
     SITE_URL=https://www.wudsn.com
   fi
   
-  if [ "${WUDSN_VERSION}" == "" ]; then
+  if [ "${WUDSN_VERSION}" = "" ]; then
     WUDSN_VERSION=stable
   fi
 
