@@ -199,6 +199,9 @@ select_install_mode(){
   if [ "${INSTALL_MODE}" = "--install-workspace" ]; then
     return
   fi
+  if [ -d "${ECLIPSE_APP_FOLDER}" -a "${INSTALL_MODE}" = "--start-eclipse" ]; then
+    return
+  fi
 
   if [ "${INSTALL_MODE}" = "--install" ]; then
     display_install_menu
@@ -207,7 +210,7 @@ select_install_mode(){
   
   if [ ! "${INSTALL_MODE}" = "" ]; then
      echo "ERROR: Invalid install mode '${INSTALL_MODE}'. Use on of these options."
-     echo "wudsn.sh --install-ide-from-cache|--install-ide-from-server|--install-all-from-server|-install-workspace"
+     echo "wudsn.sh --install-ide-from-cache|--install-ide-from-server|--install-all-from-server|-install-workspace|--start-eclipse"
      echo 
      display_install_menu
      return
