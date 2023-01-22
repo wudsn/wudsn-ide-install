@@ -335,6 +335,7 @@ install_java_globally(){
 
   else
     display_progress "ERROR: Unsupported operating system '${OS_TYPE}'"
+    exit 1
   fi
 }
 
@@ -475,7 +476,8 @@ detect_os_type(){
   
   case "$OSTYPE" in
     linux-gnu)
-     if [ "${HOSTTYPE}" == "x86_64" ]; then
+      OS_TYPE=linux-gnu
+      if [ "${HOSTTYPE}" == "x86_64" ]; then
         OS_INDEX=1
       fi
       ;;
