@@ -115,14 +115,17 @@ download(){
   fi
   create_folder "${TARGET_FOLDER}"
 
-  if [[ "${FILE}" == "*.tar.gz" ]]; then
-    display_progress "Unpacking ${FILE} to ${TARGET_FOLDER}."
-    tar -xf "${FILE}" -C "${TARGET_FOLDER}" >>"${LOG}" 2>>"${LOG}"
-  fi
-  if [[ "${FILE}" == "*.zip" ]]; then
-    display_progress "Unpacking ${FILE} to ${TARGET_FOLDER}."
-    unzip -q "${FILE}" -d "${TARGET_FOLDER}" >>"${LOG}" 2>>"${LOG}"
-  fi  
+  case "${FILE}" in
+    *.tar.gz )
+      display_progress "Unpacking ${FILE} to ${TARGET_FOLDER}."
+      tar -xf "${FILE}" -C "${TARGET_FOLDER}" >>"${LOG}" 2>>"${LOG}"
+      ;;
+
+    *.zip )
+      display_progress "Unpacking ${FILE} to ${TARGET_FOLDER}."
+      unzip -q "${FILE}" -d "${TARGET_FOLDER}" >>"${LOG}" 2>>"${LOG}"
+      ;;
+  esac 
 }
 
 
@@ -405,8 +408,9 @@ create_workspace_folder(){
 start_eclipse(){
   trap "" EXIT
   begin_progress "Starting WUDSN IDE."
-  "${ECLIPSE_EXECUTABLE}" -data "${WORKSPACE_FOLDER}" </dev/null &>"${SCRIPT_FOLDER}/eclipse.log"
-  # nohup ${ECLIPSE_EXECUTABLE} -noSplash -data ${WORKSPACE_FOLDER} &
+  
+  # The parenthsis create a new background shell, the child process will be moved to init
+  ( "${ECLIPSE_EXECUTABLE}" -data "${WORKSPACE_FOLDER}" </dev/null &>"${SCRIPT_FOLDER}/eclipse.log" & )
 }
 
 
@@ -468,17 +472,22 @@ detect_os_type(){
   # Map OS type and host type to own codes.
   OS_TYPE="unknown"
   OS_INDEX=0
-  if [ "${OSTYPE}" == "linux-gnu" -a "${HOSTTYPE}" = "x86_64" ]; then
-    OS_TYPE=linux-gnu
-    OS_INDEX=1
-  elif [[ "${OSTYPE}" == "darwin"* ]]; then
-    OS_TYPE=darwin
-    if [ "${HOSTTYPE}" == "arm64" ]; then
-      OS_INDEX=2
-    elif [ "${HOSTTYPE}" == "x86_64" ]; then
-      OS_INDEX=3
-    fi
-  fi
+  
+  case "$OSTYPE" in
+    linux-gnu)
+     if [ "${HOSTTYPE}" == "x86_64" ]; then
+        OS_INDEX=1
+      fi
+      ;;
+    darwin*) 
+      OS_TYPE=darwin
+      if [ "${HOSTTYPE}" == "arm64" ]; then
+        OS_INDEX=2
+      elif [ "${HOSTTYPE}" == "x86_64" ]; then
+        OS_INDEX=3
+      fi
+      ;;
+  esac
 
   if [ -z "${OS_INDEX}" ]; then
     echo "ERROR: Unsupported operating system '${OSTYPE}' and host type '${HOSTTYPE}' combination."
