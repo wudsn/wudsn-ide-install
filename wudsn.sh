@@ -280,16 +280,16 @@ install_tools(){
 install_eclipse(){
   local ECLIPSE_FILE=$1
   local ECLIPSE_URL=$2
-  local ECLIPSE_FOLDER=$3
+  local ECLIPSE_APP_FOLDER=$3
   local ECLIPSE_MOUNT_FOLDER=$4
   local ECLIPSE_APP_NAME=$5
 
-  if [ -d "${ECLIPSE_FOLDER}" ]; then
+  if [ -d "${ECLIPSE_APP_FOLDER}" ]; then
     return
   fi
 
   begin_progress "Installing Eclipse."
-  download "${ECLIPSE_FILE}" "${ECLIPSE_URL}" eclipse "${ECLIPSE_FOLDER}" FAIL
+  download "${ECLIPSE_FILE}" "${ECLIPSE_URL}" eclipse "${ECLIPSE_APP_FOLDER}" FAIL
 
   if [ ! "${ECLIPSE_MOUNT_FOLDER}" = "none" ]; then
     display_progress "Mounting ${ECLIPSE_FILE}."
@@ -300,7 +300,7 @@ install_eclipse(){
       exit 1
     fi
     set -e
-    rsync -az "${ECLIPSE_MOUNT_FOLDER}"/"${ECLIPSE_APP_NAME}" "${ECLIPSE_FOLDER}"/..
+    rsync -az "${ECLIPSE_MOUNT_FOLDER}"/"${ECLIPSE_APP_NAME}" "${ECLIPSE_APP_FOLDER}"/..
     
     display_progress "Unmounting ${ECLIPSE_FILE}."
     set +e
@@ -310,6 +310,9 @@ install_eclipse(){
       exit 1
     fi
     set -e
+    
+    # Remove code signing to prevent issues when changinge files in the folder
+    codesign --remove - Eclipse.app
   fi
 
   install_wudsn_ide_feature
