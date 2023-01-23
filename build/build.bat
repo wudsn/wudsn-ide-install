@@ -16,6 +16,10 @@ build\f2ko\bat2exe /bat %BAT_FILE% /exe %EXE_FILE% /icon build\wudsn.ico ^
               /x64 /workdir 0 /overwrite /upx ^
               /fileversion %FILE_VERSION%  /productname "WUDSN IDE" /productversion %PRODUCT_VERSION% /copyright %COPYRIGHT% /company WUDSN
 
+rem From https://www.battoexeconverter.com/
+rem "C:\Program Files (x86)\Advanced BAT to EXE Converter v4.52\ab2econv452\aB2Econv.exe" %BAT_FILE% %EXE_FILE%
+goto :eof
+
 set NAME=wudsn-2
 set BAT_FOLDER=out\%NAME%
 if exist %BAT_FOLDER% (
@@ -42,5 +46,5 @@ goto :eof
 
 rem This is the untested version and it does not look promising.
 :build2
-build\islamadel\bat2exe /source:%~f1 /target:%~f2 /s /y
+rem build\islamadel\bat2exe /source:%~f1 /target:%~f2 /s /y
 goto :eof
