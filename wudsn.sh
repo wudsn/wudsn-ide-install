@@ -212,7 +212,7 @@ select_install_mode(){
   
   if [ ! "${INSTALL_MODE}" = "" ]; then
      print "ERROR: Invalid install mode '${INSTALL_MODE}'. Use on of these options."
-     print "wudsn.sh --install-ide-from-cache|--install-ide-from-server|--install-all-from-server|-install-workspace|--start-eclipse"
+     print "wudsn.sh --install-ide-from-cache|--install-ide-from-server|--install-all-from-server|--install-workspace|--start-eclipse"
      echo 
      display_install_menu
      return
