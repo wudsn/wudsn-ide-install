@@ -37,32 +37,34 @@ rem
 :begin_progress
   echo | set /p=%1
   echo.
-  call :log_message %1
+  call :log_message "%1"
   goto :eof
 
 rem
 rem Display progress message %1.
 rem
 :display_progress
-  call :log_message %1
+  call :log_message "%1"
   goto :eof
 
 rem
 rem Create the folder %1 including intermediate folders.
 rem
 :create_folder
-  if not exist %1. mkdir %1
+  if not exist "%1" (
+    mkdir "%1"
+  )
   goto :eof
 
 rem
 rem Remove the folder %1 and its contents if it exists.
 rem
 :remove_folder
-  if exist %1 (
+  if exist "%1" (
     call :display_progress "Removing folder %1."
-    rmdir /S/Q %1
-    if exist %1 (
-      call :display_progress "ERROR: Cannot remove folder %1"
+    rmdir /S/Q "%1"
+    if exist "%1" (
+      call :display_progress "ERROR: Cannot remove folder %1."
       call :error
     )
   )
@@ -88,14 +90,14 @@ rem
   set TARGET=%TARGET_FOLDER%\%FOLDER%
   set MODE=%5
   
-  if not exist %FILE% (
+  if not exist "%FILE%" (
     call :display_progress "Downloading %FILE% from %URL%."
     curl --silent --show-error --location %URL% --output %FILE%
   ) else (
     call :display_progress "File %FILE% is present."
   )
   
-  if exist %TARGET% (
+  if exist "%TARGET%" (
     call :remove_folder %TARGET%
   )
   call :create_folder %TARGET_FOLDER%
@@ -124,7 +126,7 @@ rem
   call :display_progress "Downloading repo %REPO% to %REPO_TARGET_FOLDER%."
   call :download %REPO_FILE% %REPO_URL% %REPO_BRANCH% %INSTALL_FOLDER% IGNORE
 
-  set local REPO_BRANCH_FOLDER=%INSTALL_FOLDER%\%REPO_BRANCH%
+  set REPO_BRANCH_FOLDER=%INSTALL_FOLDER%\%REPO_BRANCH%
 
   call :display_progress "Copying files to %REPO_TARGET_FOLDER%."
   call :create_folder %REPO_TARGET_FOLDER%
@@ -155,7 +157,7 @@ rem
 :select_install_mode
   set INSTALL_MODE=%1
   
-  if not exist %PROJECTS_FOLDER% (
+  if not exist "%PROJECTS_FOLDER%" (
     set INSTALL_MODE=--install-all-from-server
   )
 
@@ -163,7 +165,7 @@ rem
     goto :eof
   )
   
-  if not exist %INSTALL_FOLDER% (
+  if not exist "%INSTALL_FOLDER%" (
     set INSTALL_MODE=--install
     goto :eof
   )
@@ -178,15 +180,12 @@ rem
     goto :eof
   )
   
-  if exist %ECLIPSE_APP_FOLDER% (
+  if exist "%ECLIPSE_APP_FOLDER%" (
     if "%INSTALL_MODE%" == "--start-eclipse" (
       goto :eof
     )
   )
-  if [ -d "${ECLIPSE_APP_FOLDER}" ] && [ "${INSTALL_MODE}" = "--start-eclipse" ]; then
-    return
-  fi
-  
+
   if "%INSTALL_MODE%" == "--install" (
     call :display_install_menu
     goto :eof
@@ -194,13 +193,13 @@ rem
   
   if not "%INSTALL_MODE%" == "" (
      call :print "ERROR: Invalid install mode '%INSTALL_MODE%'. Use one of these options."
-     echo wudsn.exe --install-ide-from-cache^|--install-ide-from-server^|--install-all-from-server^|-install-workspace
+     echo wudsn.exe --install-ide-from-cache^|--install-ide-from-server^|--install-all-from-server^|--install-workspace^|--start-eclipse
      echo.
      call :display_install_menu
      goto :eof
   )
   
-  if exist %ECLIPSE_FOLDER% (
+  if exist "%ECLIPSE_APP_FOLDER%" (
     set INSTALL_MODE=--start-eclipse
   )
 
@@ -261,12 +260,12 @@ rem
 rem Install Eclipse.
 rem
 :install_eclipse
-  set ECLIPSE_FOLDER=%1
-  if exist %ECLIPSE_FOLDER% (
+  set ECLIPSE_APP_FOLDER=%1
+  if exist "%ECLIPSE_APP_FOLDER%" (
     goto :eof
   )
   call :begin_progress "Installing Eclipse."
-  call :download %ECLIPSE_FILE% %ECLIPSE_URL% %ECLIPSE_FOLDER_NAME% %ECLIPSE_FOLDER% FAIL
+  call :download %ECLIPSE_FILE% %ECLIPSE_URL% %ECLIPSE_FOLDER_NAME% %ECLIPSE_APP_FOLDER% FAIL
   if ERRORLEVEL 1 (
     call :error
   )
@@ -339,7 +338,7 @@ rem Install projects.
 rem
 :install_projects
   set PROJECTS_FOLDER=%1
-  if not exist %PROJECTS_FOLDER% (
+  if not exist "%PROJECTS_FOLDER%" (
     call :begin_progress "Installing Projects."
     call :download_repo wudsn-ide-projects %PROJECTS_FOLDER%
   )
@@ -390,10 +389,10 @@ rem
 :start_eclipse
   if "%WORKSPACE_CREATED%" == "2" (
     call :begin_progress "Starting WUDSN IDE for import projects from %PROJECTS_FOLDER%."
-    start %ECLIPSE_RUNTIME_FOLDER%\eclipse.exe -noSplash -import %PROJECTS_FOLDER%
+    start %ECLIPSE_EXECUTABLE% -noSplash -import %PROJECTS_FOLDER%
   ) else (
     call :begin_progress "Starting WUDSN IDE in new window."
-    start %ECLIPSE_RUNTIME_FOLDER%\eclipse.exe -noSplash -data %WORKSPACE_FOLDER%
+    start %ECLIPSE_EXECUTABLE% -noSplash -data %WORKSPACE_FOLDER%
   )
   goto :eof
 
@@ -423,7 +422,7 @@ rem
       call :remove_folder %WORKSPACE_FOLDER%
       call :remove_folder %PROJECTS_FOLDER%
   ) else (
-    call :display_progress "ERROR: Invalid install mode '%INSTALL_MODE%'.".
+    call :display_progress "ERROR: Invalid install mode '%INSTALL_MODE%'."
     call :error
   )
   goto :eof
@@ -448,9 +447,10 @@ rem
   set ECLIPSE_URL=%DOWNLOADS_URL%/%ECLIPSE_FILE%
   set ECLIPSE_FOLDER_NAME=eclipse
   set ECLIPSE_FOLDER=%TOOLS_FOLDER%\IDE\Eclipse
+  set ECLIPSE_APP_FOLDER=%ECLIPSE_FOLDER%
   set ECLIPSE_RUNTIME_FOLDER=%ECLIPSE_FOLDER%\%ECLIPSE_FOLDER_NAME%
-  set ECLIPSE_APP_NAME=Eclipse.exe
-  set ECLIPSE_APP_EXE=%ECLIPSE_RUNTIME_FOLDER%\%ECLIPSE_APP_NAME%
+  set ECLIPSE_APP_NAME=eclipse.exe
+  set ECLIPSE_EXECUTABLE=%ECLIPSE_RUNTIME_FOLDER%\%ECLIPSE_APP_NAME%
   
   setlocal enableDelayedExpansion
     set JRE_FILE=!JRE_FILES[%OS_INDEX%]!
@@ -470,7 +470,8 @@ rem
   date /T >%LOG%
   time /T >>%LOG%
   call :begin_progress "Checking installation in %SCRIPT_FOLDER%."
-  
+  echo.
+
   set WUDSN_FOLDER=%SCRIPT_FOLDER%
   set INSTALL_FOLDER=%WUDSN_FOLDER%\Install
   set TOOLS_FOLDER=%WUDSN_FOLDER%\Tools
@@ -501,7 +502,7 @@ rem
 
   call :install_commands
   call :install_tools %TOOLS_FOLDER%
-  call :install_eclipse %ECLIPSE_FOLDER%
+  call :install_eclipse %ECLIPSE_APP_FOLDER%
   call :install_projects %PROJECTS_FOLDER%
   call :create_workspace_folder %WORKSPACE_FOLDER%
 
