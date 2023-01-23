@@ -1,11 +1,20 @@
 @echo off
+rem Check all .sh scripts for consistency using shellcheck.
+rem See https://www.shellcheck.net/ for the web version.
+setlocal
 cd /D "%~dp0"
 cd ..
-for /r %%i in (*.sh) do (
-  echo Checking %%i
-  if not %%I==C:\jac\system\Java\Programming\Repositories\wudsn-ide-install\wudsn.bat.sh (
-    build\shellcheck\shellcheck %%i
-  ) else (
-    echo "WHAT"
-  )
+set FOLDER=%CD%
+set FILE=%FOLDER%\wudsn.bat.sh
+for /R %%I in (*.sh) do (
+  call :check %%I
+
 )
+goto :eof
+
+:check
+  if not %1==%FILE% (
+    echo Checking %1
+    build\shellcheck\shellcheck %1
+  )
+goto :eof
