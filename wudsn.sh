@@ -1,12 +1,14 @@
 #!/bin/bash
 #
-# WUDSN IDE Installer - Version 2023-01-14 for macOS and Linux, 64-bit.
+# WUDSN IDE Installer - Version 2023-01-23 for macOS and Linux, 64-bit.
 # Visit https://www.wudsn.com for the latest version.
 # Use https://www.shellcheck.net to validate the .sh script source.
 #
 
+
+
 #
-# Print a quoted string $1 on the screen.
+# Print the quoted string "$1" on the screen.
 #
 print(){
   echo "$1"
@@ -22,7 +24,7 @@ error(){
 }
 
 #
-# Append message $1 to the log.
+# Append message "$1" to the log.
 #
 log_message(){
   echo "$1" >>"${LOG}"
@@ -30,7 +32,7 @@ log_message(){
 }
 
 #
-# Display progress activity $1.
+# Display progress activity "$1".
 #
 begin_progress(){
   echo "$1"
@@ -39,21 +41,21 @@ begin_progress(){
 
 
 #
-# Display progress message $1.
+# Display progress message "$1".
 #
 display_progress(){
   log_message "$1"
 }
 
 #
-# Create the folder $1 including intermediate folders.
+# Create the folder "$1" including intermediate folders.
 #
 create_folder(){
   mkdir -p "$1"
 }
 
 #
-# Remove the folder $1 and its contents if it exists.
+# Remove the folder "$1" and its contents if it exists.
 #
 remove_folder(){
   if [ -d "$1" ]; then
@@ -77,7 +79,7 @@ install_package(){
   set -
   display_progress "Checking for package ${REQUIRED_PKG}: ${PKG_OK}"
   if [ "" = "${PKG_OK}" ]; then
-    display_progress "Intalling required package ${REQUIRED_PKG}."
+    display_progress "Installing required package ${REQUIRED_PKG}."
     sudo apt-get --yes install "${REQUIRED_PKG}"
   fi
 }
@@ -209,8 +211,8 @@ select_install_mode(){
   fi
   
   if [ ! "${INSTALL_MODE}" = "" ]; then
-     echo "ERROR: Invalid install mode '${INSTALL_MODE}'. Use on of these options."
-     echo "wudsn.sh --install-ide-from-cache|--install-ide-from-server|--install-all-from-server|-install-workspace|--start-eclipse"
+     print "ERROR: Invalid install mode '${INSTALL_MODE}'. Use on of these options."
+     print "wudsn.sh --install-ide-from-cache|--install-ide-from-server|--install-all-from-server|-install-workspace|--start-eclipse"
      echo 
      display_install_menu
      return
@@ -225,11 +227,11 @@ select_install_mode(){
 # Display the installer menu and prompt the user for selection.
 #
 display_install_menu(){
-  echo "WUDSN IDE Installer"
-  echo "==================="
+  print "WUDSN IDE Installer"
+  print "==================="
   echo
-  echo "Close all open Eclipse processes."
-  echo "Select your option to reinstall the ${WUDSN_VERSION} version of WUDSN IDE in ${WUDSN_FOLDER}"
+  print "Close all open Eclipse processes."
+  print "Select your option to reinstall the ${WUDSN_VERSION} version of WUDSN IDE in ${WUDSN_FOLDER}"
 
   while(true)
   do

@@ -1,6 +1,6 @@
 @echo off
 rem
-rem WUDSN IDE Installer - Version 2023-01-14 for Windows, 64-bit.
+rem WUDSN IDE Installer - Version 2023-01-23 for Windows, 64-bit.
 rem Visit https://www.wudsn.com for the latest version.
 rem Use https://www.shellcheck.net to validate the .sh script source.
 rem
@@ -8,14 +8,14 @@ rem
 goto :main_script %1
 
 rem
-rem Print a quoted string on the screen.
+rem Print the quoted string %1 on the screen.
 rem
 :print
   echo %~1
   goto :eof
   
 rem
-rem Display error message and exit the shell.
+rem Display logged error messages and exit the shell.
 rem
 :error
   call :print "ERROR: See messages above and in %LOG%."
@@ -24,7 +24,7 @@ rem
   exit 1
 
 rem
-rem Append message to log
+rem  Append message %1 to the log.
 rem
 :log_message
   echo | set /p=%1 >>%LOG%
@@ -32,7 +32,7 @@ rem
   goto :eof
 
 rem
-rem Display progress activity.
+rem Display progress activity %1.
 rem
 :begin_progress
   echo | set /p=%1
@@ -41,27 +41,27 @@ rem
   goto :eof
 
 rem
-rem Display progress message
+rem Display progress message %1.
 rem
 :display_progress
   call :log_message %1
   goto :eof
 
 rem
-rem Create a folder including intermediate folders.
+rem Create the folder %1 including intermediate folders.
 rem
 :create_folder
   if not exist %1. mkdir %1
   goto :eof
 
 rem
-rem Remove a folder and its contents if it exists.
+rem Remove the folder %1 and its contents if it exists.
 rem
 :remove_folder
-  if exist %1. (
+  if exist %1 (
     call :display_progress "Removing folder %1."
     rmdir /S/Q %1
-    if exist %1. (
+    if exist %1 (
       call :display_progress "ERROR: Cannot remove folder %1"
       call :error
     )
@@ -95,7 +95,7 @@ rem
     call :display_progress "File %FILE% is present."
   )
   
-  if exist %TARGET%. (
+  if exist %TARGET% (
     call :remove_folder %TARGET%
   )
   call :create_folder %TARGET_FOLDER%
@@ -124,10 +124,12 @@ rem
   call :display_progress "Downloading repo %REPO% to %REPO_TARGET_FOLDER%."
   call :download %REPO_FILE% %REPO_URL% %REPO_BRANCH% %INSTALL_FOLDER% IGNORE
 
+  set local REPO_BRANCH_FOLDER=%INSTALL_FOLDER%\%REPO_BRANCH%
+
   call :display_progress "Copying files to %REPO_TARGET_FOLDER%."
   call :create_folder %REPO_TARGET_FOLDER%
   xcopy /E /R /Y /Q %REPO_BRANCH%\*.* %REPO_TARGET_FOLDER% >>%LOG%
-  call :remove_folder %REPO_BRANCH%
+  call :remove_folder %REPO_BRANCH_FOLDER%
   goto :eof
 
 
@@ -138,7 +140,7 @@ rem
   set WORKSPACE_LOCK=%WORKSPACE_FOLDER%\.metadata\.lock
   :workspace_locked
   if exist %WORKSPACE_LOCK%. del %WORKSPACE_LOCK% 2>>%LOG%
-  if exist %WORKSPACE_LOCK%. (
+  if exist %WORKSPACE_LOCK% (
     call :print "ERROR: Workspace %WORKSPACE_FOLDER% is locked. Close Eclipse first."
     pause
     goto :workspace_locked
@@ -176,6 +178,15 @@ rem
     goto :eof
   )
   
+  if exist %ECLIPSE_APP_FOLDER% (
+    if "%INSTALL_MODE%" == "--start-eclipse" (
+      goto :eof
+    )
+  )
+  if [ -d "${ECLIPSE_APP_FOLDER}" ] && [ "${INSTALL_MODE}" = "--start-eclipse" ]; then
+    return
+  fi
+  
   if "%INSTALL_MODE%" == "--install" (
     call :display_install_menu
     goto :eof
@@ -189,7 +200,7 @@ rem
      goto :eof
   )
   
-  if exist %ECLIPSE_FOLDER%. (
+  if exist %ECLIPSE_FOLDER% (
     set INSTALL_MODE=--start-eclipse
   )
 
@@ -251,7 +262,7 @@ rem Install Eclipse.
 rem
 :install_eclipse
   set ECLIPSE_FOLDER=%1
-  if exist %ECLIPSE_FOLDER%. (
+  if exist %ECLIPSE_FOLDER% (
     goto :eof
   )
   call :begin_progress "Installing Eclipse."
@@ -328,7 +339,7 @@ rem Install projects.
 rem
 :install_projects
   set PROJECTS_FOLDER=%1
-  if not exist %PROJECTS_FOLDER%. (
+  if not exist %PROJECTS_FOLDER% (
     call :begin_progress "Installing Projects."
     call :download_repo wudsn-ide-projects %PROJECTS_FOLDER%
   )
@@ -347,7 +358,7 @@ rem Create the workspace folder and initialize its preferences.
 rem
 :create_workspace_folder
   set WORKSPACE_FOLDER=%1
-  if exist %WORKSPACE_FOLDER%. (
+  if exist %WORKSPACE_FOLDER% (
     goto :eof
   )
   call :display_progress "Installing WUDSN defaults for workspace %WORKSPACE_FOLDER%."
@@ -465,9 +476,6 @@ rem
   set TOOLS_FOLDER=%WUDSN_FOLDER%\Tools
   set PROJECTS_FOLDER=%WUDSN_FOLDER%\Projects
   set WORKSPACE_FOLDER=%WUDSN_FOLDER%\Workspace
-  
-  set TOOLS_FILE=wudsn-ide-tools-main.zip
-  set TOOLS_URL=https://github.com/peterdell/wudsn-ide-tools/archive/refs/heads/main.zip
   
   if "%SITE_URL%" == "" (
     set SITE_URL=https://www.wudsn.com
