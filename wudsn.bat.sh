@@ -51,7 +51,9 @@ display_progress
 # Create the folder "$1" including intermediate folders.
 #
 create_folder
-  if [ ! -f "$1". mkdir "$1"
+  if [ ! -f "$1" ]; then
+    mkdir "$1"
+  fi
   }
 
 #
@@ -62,7 +64,7 @@ remove_folder
     display_progress "Removing folder "$1"."
     rmdir /S/Q "$1"
     if [ -f "$1" ]; then
-      display_progress "ERROR: Cannot remove folder "$1""
+      display_progress "ERROR: Cannot remove folder "$1"."
       error
     fi
   fi
@@ -88,14 +90,14 @@ download
   TARGET=${TARGET_FOLDER}/${FOLDER}
   MODE=$5
   
-  if [ ! -f ${FILE} {
+  if [ ! -f "${FILE}" ]; then
     display_progress "Downloading ${FILE} from ${URL}."
     curl --silent --show-error --location ${URL} --output ${FILE}
   fi else {
     display_progress "File ${FILE} is present."
   fi
   
-  if [ -f ${TARGET} {
+  if [ -f "${TARGET}" ]; then
     remove_folder ${TARGET}
   fi
   create_folder ${TARGET_FOLDER}
@@ -124,7 +126,7 @@ download_repo
   display_progress "Downloading repo ${REPO} to ${REPO_TARGET_FOLDER}."
   download ${REPO_FILE} ${REPO_URL} ${REPO_BRANCH} ${INSTALL_FOLDER} IGNORE
 
-  local REPO_BRANCH_FOLDER=${INSTALL_FOLDER}/${REPO_BRANCH}
+  REPO_BRANCH_FOLDER=${INSTALL_FOLDER}/${REPO_BRANCH}
 
   display_progress "Copying files to ${REPO_TARGET_FOLDER}."
   create_folder ${REPO_TARGET_FOLDER}
@@ -155,7 +157,7 @@ check_workspace_lock
 select_install_mode
   INSTALL_MODE=$1
   
-  if [ ! -f ${PROJECTS_FOLDER} {
+  if [ ! -f "${PROJECTS_FOLDER}" ]; then
     INSTALL_MODE=--install-all-from-server
   fi
 
@@ -163,7 +165,7 @@ select_install_mode
     return
   fi
   
-  if [ ! -f ${INSTALL_FOLDER} {
+  if [ ! -f "${INSTALL_FOLDER}" ]; then
     INSTALL_MODE=--install
     return
   fi
@@ -178,15 +180,12 @@ select_install_mode
     return
   fi
   
-  if [ -f ${ECLIPSE_APP_FOLDER} {
+  if [ -f "${ECLIPSE_APP_FOLDER}" ]; then
     if [ "${INSTALL_MODE}" = "--start-eclipse" ]; then
       return
     fi
   fi
-  if [ -d "${ECLIPSE_APP_FOLDER}" ] && [ "${INSTALL_MODE}" = "--start-eclipse" ]; then
-    return
-  fi
-  
+
   if [ "${INSTALL_MODE}" = "--install" ]; then
     display_install_menu
     return
@@ -194,13 +193,13 @@ select_install_mode
   
   if not "${INSTALL_MODE}" = "" ]; then
      print "ERROR: Invalid install mode '%INSTALL_MODE%'. Use one of these options."
-     echo wudsn.exe --install-ide-from-cache^|--install-ide-from-server^|--install-all-from-server^|-install-workspace
+     echo wudsn.exe --install-ide-from-cache^|--install-ide-from-server^|--install-all-from-server^|--install-workspace^|--start-eclipse
      echo
      display_install_menu
      return
   fi
   
-  if [ -f ${ECLIPSE_FOLDER} {
+  if [ -f "${ECLIPSE_APP_FOLDER}" ]; then
     INSTALL_MODE=--start-eclipse
   fi
 
@@ -261,12 +260,12 @@ install_tools
 # Install Eclipse.
 #
 install_eclipse
-  ECLIPSE_FOLDER=$1
-  if [ -f ${ECLIPSE_FOLDER} {
+  ECLIPSE_APP_FOLDER=$1
+  if [ -f "${ECLIPSE_APP_FOLDER}" ]; then
     return
   fi
   begin_progress "Installing Eclipse."
-  download ${ECLIPSE_FILE} ${ECLIPSE_URL} ${ECLIPSE_FOLDER_NAME} ${ECLIPSE_FOLDER} FAIL
+  download ${ECLIPSE_FILE} ${ECLIPSE_URL} ${ECLIPSE_FOLDER_NAME} ${ECLIPSE_APP_FOLDER} FAIL
   if ERRORLEVEL 1 {
     error
   fi
@@ -339,7 +338,7 @@ install_wudsn_ide_feature
 #
 install_projects
   PROJECTS_FOLDER=$1
-  if [ ! -f ${PROJECTS_FOLDER} {
+  if [ ! -f "${PROJECTS_FOLDER}" ]; then
     begin_progress "Installing Projects."
     download_repo wudsn-ide-projects ${PROJECTS_FOLDER}
   fi
@@ -390,10 +389,10 @@ create_workspace_folder
 start_eclipse
   if [ "${WORKSPACE_CREATED}" = "2" ]; then
     begin_progress "Starting WUDSN IDE for import projects from ${PROJECTS_FOLDER}."
-    start ${ECLIPSE_RUNTIME_FOLDER}/eclipse.exe -noSplash -import ${PROJECTS_FOLDER}
+    start ${ECLIPSE_EXECUTABLE} -noSplash -import ${PROJECTS_FOLDER}
   fi else {
     begin_progress "Starting WUDSN IDE in new window."
-    start ${ECLIPSE_RUNTIME_FOLDER}/eclipse.exe -noSplash -data ${WORKSPACE_FOLDER}
+    start ${ECLIPSE_EXECUTABLE} -noSplash -data ${WORKSPACE_FOLDER}
   fi
   }
 
@@ -423,7 +422,7 @@ handle_install_mode
       remove_folder ${WORKSPACE_FOLDER}
       remove_folder ${PROJECTS_FOLDER}
   fi else {
-    display_progress "ERROR: Invalid install mode '%INSTALL_MODE%'.".
+    display_progress "ERROR: Invalid install mode '%INSTALL_MODE%'."
     error
   fi
   }
@@ -448,9 +447,10 @@ detect_os_type
   ECLIPSE_URL=${DOWNLOADS_URL}/${ECLIPSE_FILE}
   ECLIPSE_FOLDER_NAME=eclipse
   ECLIPSE_FOLDER=${TOOLS_FOLDER}/IDE/Eclipse
+  ECLIPSE_APP_FOLDER=${ECLIPSE_FOLDER}
   ECLIPSE_RUNTIME_FOLDER=${ECLIPSE_FOLDER}/${ECLIPSE_FOLDER_NAME}
-  ECLIPSE_APP_NAME=Eclipse.exe
-  ECLIPSE_APP_EXE=${ECLIPSE_RUNTIME_FOLDER}/${ECLIPSE_APP_NAME}
+  ECLIPSE_APP_NAME=eclipse.exe
+  ECLIPSE_EXECUTABLE=${ECLIPSE_RUNTIME_FOLDER}/${ECLIPSE_APP_NAME}
   
   setlocal enableDelayedExpansion
     JRE_FILE=!JRE_FILES[%OS_INDEX%]!
@@ -501,7 +501,7 @@ main
 
   install_commands
   install_tools ${TOOLS_FOLDER}
-  install_eclipse ${ECLIPSE_FOLDER}
+  install_eclipse ${ECLIPSE_APP_FOLDER}
   install_projects ${PROJECTS_FOLDER}
   create_workspace_folder ${WORKSPACE_FOLDER}
 
