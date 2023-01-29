@@ -155,7 +155,6 @@ rem
 rem Select install mode.
 rem
 :select_install_mode
-  echo on
   set INSTALL_MODE=%1
 
   if "%INSTALL_MODE%" == "--install-all-from-server" (
