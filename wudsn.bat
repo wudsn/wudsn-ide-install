@@ -434,10 +434,12 @@ rem
   rem https://archive.eclipse.org/eclipse/downloads/drops4/R-4.26-202211231800/
   set ECLIPSE_VERSION=4.26
   set ECLIPSE_FILES[0]=eclipse-platform-%ECLIPSE_VERSION%-win32-x86_64.zip
+  rem set ECLIPSE_FILES[1]=eclipse-platform-%ECLIPSE_VERSION%-win32-aarch64.zip
 
   rem https://jdk.java.net/archive/
   set JRE_VERSION=19.0.1
   set JRE_FILES[0]=openjdk-%JRE_VERSION%_windows-x64_bin.zip
+  rem set JRE_FILES[1]=openjdk-%JRE_VERSION%_windows-aarch64.bin.zip
   
   set OS_INDEX=0
 
