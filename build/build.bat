@@ -32,6 +32,7 @@ set EXE_CONVERTER=C:\Program Files (x86)\Advanced BAT to EXE Converter PRO v4.52
 
 rem Trailing 0/1/2 can be interpreted as file descriptor numbers.
 rem Therefore they must be separated by a space.
+rem The word "Installer" must not appear in the product name, otherwise Windows will trigger a UAC prompt.
 echo @echo OFF>%BAT_HEADER_FILE%
 echo rem BFCPEOPTIONSTART>>%BAT_HEADER_FILE%
 echo rem Advanced BAT to EXE Converter www.BatToExeConverter.com>>%BAT_HEADER_FILE%
@@ -44,13 +45,13 @@ echo rem BFCPEADMINEXE=0 >>%BAT_HEADER_FILE%
 echo rem BFCPEINVISEXE=0 >>%BAT_HEADER_FILE%
 echo rem BFCPEVERINCLUDE=1 >>%BAT_HEADER_FILE%
 echo rem BFCPEVERVERSION=%FILE_VERSION% >>%BAT_HEADER_FILE%
-echo rem BFCPEVERPRODUCT=WUDSN IDE Installer>>%BAT_HEADER_FILE%
+echo rem BFCPEVERPRODUCT=WUDSN IDE>>%BAT_HEADER_FILE%
 echo rem BFCPEVERDESC=Visit www.wudsn.com>>%BAT_HEADER_FILE%
 echo rem BFCPEVERCOMPANY=WUDSN>>%BAT_HEADER_FILE%
 echo rem BFCPEVERCOPYRIGHT=%COPYRIGHT%>>%BAT_HEADER_FILE%
 echo rem BFCPEWINDOWCENTER=1 >>%BAT_HEADER_FILE%
 echo rem BFCPEDISABLEQE=1 >>%BAT_HEADER_FILE%
-echo rem BFCPEWINDOWHEIGHT=125 >>%BAT_HEADER_FILE%
+echo rem BFCPEWINDOWHEIGHT=25 >>%BAT_HEADER_FILE%
 echo rem BFCPEWINDOWWIDTH=132 >>%BAT_HEADER_FILE%
 echo rem BFCPEWTITLE=WUDSN IDE Installer>>%BAT_HEADER_FILE%
 echo rem BFCPEOPTIONEND>>%BAT_HEADER_FILE%
@@ -63,6 +64,7 @@ if ERRORLEVEL 1 (
   pause
   goto :eof
 )
+rmdir /S/Q %BAT_FOLDER%
 
 rem Signing is currently not relevant
 rem 

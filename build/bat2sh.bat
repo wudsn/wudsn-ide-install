@@ -1,4 +1,4 @@
-@echo on
+@echo off
 rem Simply hack conversion from .bat to .bat-sh for Eclipse comparison with .sh.
 setlocal
 cd /D "%~dp0"
@@ -22,7 +22,6 @@ fart.exe %FILE% "%%3" "$3"
 fart.exe %FILE% "%%4" "$4"
 fart.exe %FILE% "%%5" "$5"
 
-echo on
 rem backslash to slash
 fart.exe --c-style %FILE% \\ "\x2F"
 

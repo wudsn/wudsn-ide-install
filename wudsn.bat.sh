@@ -5,7 +5,7 @@
 # Use https://www.shellcheck.net to validate the .sh script source.
 #
 
-goto main_script "$1"
+goto main_script
 
 #
 # Print the quoted string "$1" on the screen.
@@ -156,18 +156,19 @@ check_workspace_lock
 #
 select_install_mode
   INSTALL_MODE=$1
-  
-  if [ ! -f "${PROJECTS_FOLDER}" ]; then
-    INSTALL_MODE=--install-all-from-server
-  fi
 
   if [ "${INSTALL_MODE}" = "--install-all-from-server" ]; then
     return
   fi
-  
-  if [ ! -f "${INSTALL_FOLDER}" ]; then
-    INSTALL_MODE=--install
-    return
+
+  if [ "${INSTALL_MODE}" = "" ]; then
+    if [ ! -f "${PROJECTS_FOLDER}" ]; then
+      INSTALL_MODE=--install-all-from-server
+      return
+    elif [ ! -f "${INSTALL_FOLDER}" ]; then
+      INSTALL_MODE=--install
+      return
+    fi
   fi
 
   if [ "${INSTALL_MODE}" = "--install-ide-from-cache" ]; then
@@ -179,7 +180,7 @@ select_install_mode
   if [ "${INSTALL_MODE}" = "--install-workspace" ]; then
     return
   fi
-  
+
   if [ -f "${ECLIPSE_APP_FOLDER}" ]; then
     if [ "${INSTALL_MODE}" = "--start-eclipse" ]; then
       return
@@ -431,13 +432,15 @@ handle_install_mode
 # Detect the OS type and architecture and dependent variables.
 #
 detect_os_type
-  # https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.20-202106111600
+  # https://archive.eclipse.org/eclipse/downloads/drops4/R-4.26-202211231800/
   ECLIPSE_VERSION=4.26
   ECLIPSE_FILES[0]=eclipse-platform-${ECLIPSE_VERSION}-win32-x86_64.zip
+  # ECLIPSE_FILES[1]=eclipse-platform-${ECLIPSE_VERSION}-win32-aarch64.zip
 
   # https://jdk.java.net/archive/
   JRE_VERSION=19.0.1
   JRE_FILES[0]=openjdk-${JRE_VERSION%_windows-x64_bin.zip
+  # JRE_FILES[1]=openjdk-${JRE_VERSION%_windows-aarch64.bin.zip
   
   OS_INDEX=0
 
@@ -464,13 +467,15 @@ detect_os_type
 # Main function.
 #
 main
-
   SCRIPT_FOLDER=${CD}
   LOG=${SCRIPT_FOLDER}/wudsn.log
   date /T >${LOG}
   time /T >>${LOG}
+  display_progress "$1"
+
   begin_progress "Checking installation in ${SCRIPT_FOLDER}."
-  
+  echo
+
   WUDSN_FOLDER=${SCRIPT_FOLDER}
   INSTALL_FOLDER=${WUDSN_FOLDER}/Install
   TOOLS_FOLDER=${WUDSN_FOLDER}/Tools
@@ -514,7 +519,9 @@ main
 # Main script
 #
 main_script
+  pushd "${~dp0"
   setlocal
   setlocal enableextensions enabledelayedexpansion
   main "$1"
+  popd
   }

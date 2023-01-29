@@ -5,7 +5,7 @@ setlocal
 cd /D "%~dp0"
 cd ..
 set FOLDER=%CD%
-set FILE=%FOLDER%\wudsn.bat.sh
+set IGNORE_FILE=%FOLDER%\wudsn.bat.sh
 for /R %%I in (*.sh) do (
   call :check %%I
 
@@ -13,7 +13,7 @@ for /R %%I in (*.sh) do (
 goto :eof
 
 :check
-  if not %1==%FILE% (
+  if not %1==%IGNORE_FILE% (
     echo Checking %1
     build\shellcheck\shellcheck %1
   )
