@@ -155,6 +155,7 @@ rem
 rem Select install mode.
 rem
 :select_install_mode
+  echo on
   set INSTALL_MODE=%1
 
   if "%INSTALL_MODE%" == "--install-all-from-server" (
@@ -164,6 +165,7 @@ rem
   if "%INSTALL_MODE%" == "" (
     if not exist "%PROJECTS_FOLDER%" (
       set INSTALL_MODE=--install-all-from-server
+      goto :eof
     ) else if not exist "%INSTALL_FOLDER%" (
       set INSTALL_MODE=--install
       goto :eof
