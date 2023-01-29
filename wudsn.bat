@@ -1,6 +1,6 @@
 @echo off
 rem
-rem WUDSN IDE Installer - Version 2023-01-23 for Windows, 64-bit.
+rem WUDSN IDE Installer - Version 2023-01-29 for Windows, 64-bit.
 rem Visit https://www.wudsn.com for the latest version.
 rem Use https://www.shellcheck.net to validate the .sh script source.
 rem

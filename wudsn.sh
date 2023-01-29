@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# WUDSN IDE Installer - Version 2023-01-23 for macOS and Linux, 64-bit.
+# WUDSN IDE Installer - Version 2023-01-29 for macOS and Linux, 64-bit.
 # Visit https://www.wudsn.com for the latest version.
 # Use https://www.shellcheck.net to validate the .sh script source.
 #
@@ -179,17 +179,20 @@ check_workspace_lock(){
 select_install_mode(){
   INSTALL_MODE=$1
   
-  if [ ! -d "${PROJECTS_FOLDER}" ]; then
-    INSTALL_MODE="--install-all-from-server"
-  fi
-  
   if [ "${INSTALL_MODE}" = "--install-all-from-server" ]; then
     return
   fi
-  
-  if [ ! -d "${INSTALL_FOLDER}" ]; then
-    INSTALL_MODE="--install"
-    return
+
+  if [ ! "${INSTALL_MODE}" = "" ]; then
+    if [ ! -d "${PROJECTS_FOLDER}" ]; then
+      INSTALL_MODE="--install-all-from-server"
+      return
+    fi
+
+    if [ ! -d "${INSTALL_FOLDER}" ]; then
+      INSTALL_MODE="--install"
+      return
+    fi
   fi
   
   if [ "${INSTALL_MODE}" = "--install-ide-from-cache" ]; then
