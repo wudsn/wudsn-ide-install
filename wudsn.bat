@@ -5,7 +5,7 @@ rem Visit https://www.wudsn.com for the latest version.
 rem Use https://www.shellcheck.net to validate the .sh script source.
 rem
 
-goto :main_script %1
+goto :main_script
 
 rem
 rem Print the quoted string %1 on the screen.
@@ -156,18 +156,18 @@ rem Select install mode.
 rem
 :select_install_mode
   set INSTALL_MODE=%1
-  
-  if not exist "%PROJECTS_FOLDER%" (
-    set INSTALL_MODE=--install-all-from-server
-  )
 
   if "%INSTALL_MODE%" == "--install-all-from-server" (
     goto :eof
   )
-  
-  if not exist "%INSTALL_FOLDER%" (
-    set INSTALL_MODE=--install
-    goto :eof
+
+  if "%INSTALL_MODE%" == "" (
+    if not exist "%PROJECTS_FOLDER%" (
+      set INSTALL_MODE=--install-all-from-server
+    ) else if not exist "%INSTALL_FOLDER%" (
+      set INSTALL_MODE=--install
+      goto :eof
+    )
   )
 
   if "%INSTALL_MODE%" == "--install-ide-from-cache" (
@@ -179,7 +179,7 @@ rem
   if "%INSTALL_MODE%" == "--install-workspace" (
     goto :eof
   )
-  
+
   if exist "%ECLIPSE_APP_FOLDER%" (
     if "%INSTALL_MODE%" == "--start-eclipse" (
       goto :eof
@@ -466,11 +466,12 @@ rem
 rem Main function.
 rem
 :main
-
   set SCRIPT_FOLDER=%CD%
   set LOG=%SCRIPT_FOLDER%\wudsn.log
   date /T >%LOG%
   time /T >>%LOG%
+  call :display_progress %1
+
   call :begin_progress "Checking installation in %SCRIPT_FOLDER%."
   echo.
 
@@ -517,7 +518,9 @@ rem
 rem Main script
 rem
 :main_script
+  pushd "%~dp0"
   setlocal
   setlocal enableextensions enabledelayedexpansion
   call :main %1
+  popd
   goto :eof

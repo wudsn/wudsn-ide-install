@@ -8,9 +8,6 @@ On Windows (64-bit Intel), download "wudsn.bat" or "wudsn.exe" to the folder and
 - https://github.com/peterdell/wudsn-ide-install/raw/main/wudsn.bat or
 - https://github.com/peterdell/wudsn-ide-install/raw/main/wudsn.exe<br>
   The executable "wudsn.exe" is the same as "wudsn.bat", but with icons and the option to link it with file associations.<br>
-  Note: Currently Windows Defender may complain upon the first launch of "wudsn.exe".
-        To exclude it from checks open the Windows settings and follow the path
-        Virus & threat protection settings / Manage Settings / Exclusions / Add or remove exclusions / Add an exclusion" <br>
   
 On macOS (64-bit Intel or ARM/M1) an Linux, download "wudsn.sh" to the folder and run it.
 - https://github.com/peterdell/wudsn-ide-install/raw/main/wudsn.sh
