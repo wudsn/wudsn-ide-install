@@ -431,7 +431,7 @@ rem
 rem Detect the OS type and architecture and set dependent variables.
 rem
 :detect_os_type
-  rem https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.20-202106111600
+  rem https://archive.eclipse.org/eclipse/downloads/drops4/R-4.26-202211231800/
   set ECLIPSE_VERSION=4.26
   set ECLIPSE_FILES[0]=eclipse-platform-%ECLIPSE_VERSION%-win32-x86_64.zip
 

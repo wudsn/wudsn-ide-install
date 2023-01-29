@@ -464,7 +464,7 @@ handle_install_mode(){
 #
 detect_os_type(){
 
-# https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.20-202106111600
+# https://archive.eclipse.org/eclipse/downloads/drops4/R-4.26-202211231800/
   ECLIPSE_VERSION=4.26
   ECLIPSE_FILES=( "eclipse-platform-${ECLIPSE_VERSION}-linux-gtk-aarch64.tar.gz"
                   "eclipse-platform-${ECLIPSE_VERSION}-linux-gtk-x86_64.tar.gz"
