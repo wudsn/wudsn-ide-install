@@ -164,11 +164,9 @@ rem
   if "%INSTALL_MODE%" == "" (
     if not exist "%PROJECTS_FOLDER%" (
       set INSTALL_MODE=--install-all-from-server
-    ) else (
-      if not exist "%INSTALL_FOLDER%" (
-        set INSTALL_MODE=--install
-        goto :eof
-      )
+    ) else if not exist "%INSTALL_FOLDER%" (
+      set INSTALL_MODE=--install
+      goto :eof
     )
   )
 
