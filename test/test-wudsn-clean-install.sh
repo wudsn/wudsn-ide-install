@@ -40,7 +40,7 @@ install_wudsn(){
   then
     gnome-terminal --wait --title "Installing WUDSN version ${WUDSN_VERSION}" -- ./${WUDSN_EXECUTABLE} &
   else
-  	open -a Terminal.app -W ${WUDSN_EXECUTABLE}
+  	open -a Terminal.app ${WUDSN_EXECUTABLE}
   fi
   popd
 
