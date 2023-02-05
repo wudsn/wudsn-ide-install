@@ -6,7 +6,7 @@
 
 # Download executable file from URL $1 to $2.
 download_executable(){
-  if -f "$2";
+  if test -f $2";
   then
   	rm -f "$2"
   fi
@@ -33,7 +33,7 @@ install_wudsn(){
   pushd "${WUDSN_VERSION}"
 
   echo Downloading Installer.
-  download_executable "$INSTALLER_URL" "${WUDSN_EXECUTABLE}"
+  download_executable "${INSTALLER_URL}" "${WUDSN_EXECUTABLE}"
 
 # The following call must not be started in a new window, so sudo password inputs work and exits are ignored
   gnome-terminal --wait --title "Installing WUDSN version ${WUDSN_VERSION}" -- ./${WUDSN_EXECUTABLE} &

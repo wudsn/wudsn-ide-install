@@ -8,7 +8,7 @@
 
 # Download executable file from URL $1 to $2.
 download_executable(){
-  if -f "$2";
+  if test -f "$2";
   then
   	rm -f "$2"
   fi
@@ -33,19 +33,6 @@ SCRIPT=test-wudsn-clean-install.sh
 URL=https://github.com/peterdell/wudsn-ide-install/raw/main/test/${SCRIPT}
 
 echo Updating ${SCRIPT} from ${URL}.
-
-if command -v curl &> /dev/null
-then
-  curl --location "${URL}" --output "${SCRIPT}"
-else
-  if command -v wget &> /dev/null
-  then
-    wget --no-cache "${URL}" -O "${SCRIPT}"
-  else
-    echo ERROR: Neither curl nor wget are installed.
-    exit 1
-  fi
-fi
-chmod a+x "${SCRIPT}"
+download_executable "${URL}" "${SCRIPT}"
 bash "${SCRIPT}"
 sleep 1
