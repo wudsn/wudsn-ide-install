@@ -12,11 +12,11 @@ download_executable(){
   then
   	rm -f "$2"
   fi
-  if command -v curl &> /dev/null
+  if command -v curl &>/dev/null
   then
     curl --location "$1" --output "$2"
   else
-    if command -v wget &> /dev/null
+    if command -v wget &>/dev/null
     then
       wget --no-cache "$1" -O "$2"
     else

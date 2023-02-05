@@ -6,15 +6,15 @@
 
 # Download executable file from URL $1 to $2.
 download_executable(){
-  if test -f $2";
+  if test -f "$2";
   then
   	rm -f "$2"
   fi
-  if command -v curl &> /dev/null
+  if command -v curl &>/dev/null
   then
     curl --location "$1" --output "$2"
   else
-    if command -v wget &> /dev/null
+    if command -v wget &>/dev/null
     then
       wget --no-cache "$1" -O "$2"
     else
@@ -36,7 +36,12 @@ install_wudsn(){
   download_executable "${INSTALLER_URL}" "${WUDSN_EXECUTABLE}"
 
 # The following call must not be started in a new window, so sudo password inputs work and exits are ignored
-  gnome-terminal --wait --title "Installing WUDSN version ${WUDSN_VERSION}" -- ./${WUDSN_EXECUTABLE} &
+  if command -v gnome-terminal &>/dev/null
+  then
+    gnome-terminal --wait --title "Installing WUDSN version ${WUDSN_VERSION}" -- ./${WUDSN_EXECUTABLE} &
+  else
+  	open -a Terminal.app -W ${WUDSN_EXECUTABLE}
+  fi
   popd
 
 }
