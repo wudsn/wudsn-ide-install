@@ -7,7 +7,7 @@ rem - Enable auto-login for user osboxes in "users" settings
 rem - Install German keyboard layout
 rem - Add default aliases to /etc/profile
 rem - Remove not required apps from favorites
-rem - Favouries: Files, Termina, Firefox, Texteditor
+rem - Favorites: Files, Terminal, Firefox, Texteditor
 rem - Install VM ware guest extensions
 rem - Enable bidirectional clipboard
 rem - Install Github Desktop from Github Desktop from https://gist.github.com/berkorbay/6feda478a00b0432d13f1fc0a50467f1
