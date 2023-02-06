@@ -183,7 +183,7 @@ select_install_mode(){
     return
   fi
 
-  if [ ! "${INSTALL_MODE}" = "" ]; then
+  if [ "${INSTALL_MODE}" = "" ]; then
     if [ ! -d "${PROJECTS_FOLDER}" ]; then
       INSTALL_MODE="--install-all-from-server"
       return
@@ -457,7 +457,7 @@ handle_install_mode(){
       remove_folder "${WORKSPACE_FOLDER}"
       remove_folder "${PROJECTS_FOLDER}"
   else
-    display_progress "ERROR: Invalid install mode '${INSTALL_MODE}'.".
+    display_progress "ERROR: Invalid install mode '${INSTALL_MODE}'."
     exit 1
   fi
 }
