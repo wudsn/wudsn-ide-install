@@ -487,7 +487,7 @@ detect_os_type(){
   OS_TYPE="unknown"
   OS_INDEX=0
   
-  case "$OSTYPE" in
+  case "${OSTYPE}" in
     linux-gnu)
       OS_TYPE=linux-gnu
       if [ "${HOSTTYPE}" = "x86_64" ]; then
