@@ -11,11 +11,13 @@ tar zcfv "${OUT_FILE}" "${IN_FILE}"
 echo Archive ${OUT_FILE} for Linux created.
 
 APP_FOLDER_NAME=${NAME}.app
-APP_FOLDER=out/${APP_FOLDER_NAME}
+CONTENTS_FOLDER=out/${APP_FOLDER_NAME}/Contents
+SCRIPT_FOLDER=${CONTENTS_FOLDER}/MacOS
 OUT_FILE=${APP_FOLDER_NAME}.tar.gz
-rm -rf "${APP_FOLDER}"
-mkdir "${APP_FOLDER}"
-cp "${IN_FILE}" "${APP_FOLDER}/"
+rm -rf "${SCRIPT_FOLDER}"
+mkdir -p "${SCRIPT_FOLDER}"
+cp "build/Info.plist" "${CONTENTS_FOLDER}/"
+cp "${IN_FILE}" "${SCRIPT_FOLDER}/"
 cd "out"
 tar zcfv "../${OUT_FILE}" "${APP_FOLDER_NAME}"
 cd ..
