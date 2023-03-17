@@ -4,11 +4,18 @@
 set -e
 
 NAME=wudsn
+
 IN_FILE=${NAME}.sh
 OUT_FILE=${NAME}.tar.gz
 chmod a+x "${IN_FILE}"
 tar zcfv "${OUT_FILE}" "${IN_FILE}"
 echo Archive ${OUT_FILE} for Linux created.
+
+cp "${IN_FILE}" "${NAME}.command"
+IN_FILE=${NAME}.command
+OUT_FILE=${IN_FILE}.tar.gz
+tar zcfv "${OUT_FILE}" "${IN_FILE}"
+echo Archive ${OUT_FILE} for macOS created.
 
 APP_FOLDER_NAME=${NAME}.app
 CONTENTS_FOLDER=out/${APP_FOLDER_NAME}/Contents
