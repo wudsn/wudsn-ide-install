@@ -1,2 +1,0 @@
-rem Powershell script to create self-signed test certificate
-New-SelfSignedCertificate -Type Custom -Subject "CN=Peter Dell,OU=WUDSN,DC=wudsn,DC=com" -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3","2.5.29.17={text}upn=wudsn.com") -KeyUsage DigitalSignature -CertStoreLocation "Cert:\CurrentUser\My"
