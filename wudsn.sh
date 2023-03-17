@@ -5,7 +5,21 @@
 # Use https://www.shellcheck.net to validate the .sh script source.
 #
 
-
+#
+# Check if string $1 contains string $2
+#
+# Returns 0 if the specified string contains the specified substring, otherwise returns 1.
+#
+contains() {
+    string="$1"
+    substring="$2"
+    if test "${string#*$substring}" != "$string"
+    then
+        return 0    # $substring is in $string
+    else
+        return 1    # $substring is not in $string
+    fi
+}
 
 #
 # Print the quoted string "$1" on the screen.
@@ -316,7 +330,12 @@ install_eclipse(){
     fi
     set -e
     
-    # Remove code signing to prevent issues when changing files in the folder
+    # Check is codesign is completely installed.
+    if contains "$(locate codesign_allocate)" "launchctl"; then
+     sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist
+    fi
+
+    # Remove code signing to prevent issues when changing files in the folder.
     codesign --remove "${ECLIPSE_APP_FOLDER}"
   fi
 
@@ -544,8 +563,7 @@ detect_os_type(){
 # Main function.
 #
 main(){
-  
-  SCRIPT_FOLDER="$(readlink -f "$(dirname "${0}")")"
+  SCRIPT_FOLDER="$( cd -- "$( dirname -- "${0}" )" &> /dev/null && pwd )"
   LOG=${SCRIPT_FOLDER}/wudsn.log
   date >"${LOG}"
   begin_progress "Checking installation in ${SCRIPT_FOLDER}."
