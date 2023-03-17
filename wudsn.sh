@@ -440,7 +440,7 @@ create_workspace_folder(){
 #
 start_eclipse(){
   trap "" EXIT
-  begin_progress "Starting WUDSN IDE."
+  begin_progress "Starting WUDSN IDE. Close this window when starting has finished."
   echo "Starting ${ECLIPSE_EXECUTABLE}" >"${ECLIPSE_LOG}"
   "${ECLIPSE_EXECUTABLE}" -data "${WORKSPACE_FOLDER}" </dev/null >>"${ECLIPSE_LOG}" 2>>"${ECLIPSE_LOG}" &
   sleep 30
