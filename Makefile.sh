@@ -1,6 +1,8 @@
 #!/bin/bash
 # Makefile for Linux and macOS
 
+set -e
+
 NAME=wudsn
 IN_FILE=${NAME}.sh
 OUT_FILE=${NAME}.tar.gz
@@ -14,5 +16,7 @@ OUT_FILE=${APP_FOLDER_NAME}.tar.gz
 rm -rf "${APP_FOLDER}"
 mkdir "${APP_FOLDER}"
 cp "${IN_FILE}" "${APP_FOLDER}/"
-tar zcfv "${OUT_FILE}" "${APP_FOLDER}"
+cd "out"
+tar zcfv "../${OUT_FILE}" "${APP_FOLDER_NAME}"
+cd ..
 echo Archive ${OUT_FILE} for macOS created.
