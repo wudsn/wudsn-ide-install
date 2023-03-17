@@ -9,8 +9,8 @@ On Windows (64-bit Intel), download "wudsn.bat" or "wudsn.exe" to the folder and
 - https://github.com/peterdell/wudsn-ide-install/raw/main/wudsn.exe<br>
   The executable "wudsn.exe" is the same as "wudsn.bat", but with icons and the option to link it with file associations.<br>
   
-On macOS (64-bit Intel or ARM/M1) an Linux, download "wudsn.sh" to the folder and run it.
-- https://github.com/peterdell/wudsn-ide-install/raw/main/wudsn.sh
+On macOS (64-bit Intel or ARM/M1) and Linux, download "wudsn.tar.gz" to the folder, extract its contents and run "wudsn.sh".
+- https://github.com/peterdell/wudsn-ide-install/raw/main/wudsn.tar.gz
  
 The file will create and populate the following subfolders via downloads:
 - Install - the cache folder where all downloads are stored

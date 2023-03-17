@@ -1,3 +1,4 @@
+@rem Makefile for Windows
 @echo off
 cd /D "%~dp0"
 echo Building "wudsn.exe".
