@@ -11,6 +11,9 @@ On Windows (64-bit Intel), download "wudsn.bat" or "wudsn.exe" to the folder and
   
 On macOS (64-bit Intel or ARM/M1), download "wudsn.command.tar.gz" extract its contents to the folder run "wudsn.command".
 - https://github.com/peterdell/wudsn-ide-install/raw/main/wudsn.command.tar.gz
+
+Because macOS blocks unsigned downloads by default you have to open the "System Preferences / Security and Privacy" on the first start of the script and click "Open Anyway".
+![Folders](images/macos-system-preferences.png)
  
 On Linux, download "wudsn.tar.gz" to the folder, extract its contents and run "wudsn.sh".
 - https://github.com/peterdell/wudsn-ide-install/raw/main/wudsn.tar.gz
