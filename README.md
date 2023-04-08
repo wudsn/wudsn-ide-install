@@ -4,18 +4,18 @@ The WUDSN IDE installer is the simplest way to install [WUDSN IDE](https://githu
 Create a folder where you want to put the IDE.
 Make sure the folder path contains no spaces or whitespaces.
 
-On Windows (64-bit Intel), download "wudsn.bat" or "wudsn.exe" to the folder and run it.
+On Windows (64-bit Intel), click one of links below to download "wudsn.bat" or "wudsn.exe" to the folder and run it.
 - https://github.com/peterdell/wudsn-ide-install/raw/main/wudsn.bat or
 - https://github.com/peterdell/wudsn-ide-install/raw/main/wudsn.exe<br>
   The executable "wudsn.exe" is the same as "wudsn.bat", but with icons and the option to link it with file associations.<br>
   
-On macOS (64-bit Intel or ARM/M1), download "wudsn.command.tar.gz" extract its contents to the folder run "wudsn.command".
+On macOS (64-bit Intel or ARM/M1), click the link below to download "wudsn.command.tar.gz" extract its contents to the folder run "wudsn.command".
 - https://github.com/peterdell/wudsn-ide-install/raw/main/wudsn.command.tar.gz
 
 Because macOS blocks unsigned downloads by default you have to open the "System Preferences / Security and Privacy" on the first start of the script and click "Open Anyway".
 ![Folders](images/macos-system-preferences.png)
  
-On Linux, download "wudsn.tar.gz" to the folder, extract its contents and run "wudsn.sh".
+On Linux, click the link below to download "wudsn.tar.gz" to the folder, extract its contents and run "wudsn.sh".
 - https://github.com/peterdell/wudsn-ide-install/raw/main/wudsn.tar.gz
 
 The file will create and populate the following subfolders via downloads:
