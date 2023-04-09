@@ -7,16 +7,16 @@ Make sure the folder path contains no spaces or whitespaces.</br>
 Download the relevant installer version for your operating system.</br>
 To do this, you have to right-click the respective link and choose "Save link as..." from the context menu.
 
-On Windows (64-bit Intel), download "wudsn.exe" to the folder and run it.
+On **Windows** (64-bit Intel), download "wudsn.exe" to the folder and run it.
 - https://github.com/peterdell/wudsn-ide-install/raw/main/wudsn.exe
   
-On macOS (64-bit Intel or ARM/M1), download "wudsn.command.tar.gz" extract its contents to the folder run "wudsn.command".
+On **macOS** (64-bit Intel or ARM/M1), download "wudsn.command.tar.gz" extract its contents to the folder run "wudsn.command".
 - https://github.com/peterdell/wudsn-ide-install/raw/main/wudsn.command.tar.gz
 
 Because macOS blocks unsigned downloads by default you have to open the "System Preferences / Security and Privacy" on the first start of the script and click "Open Anyway".
 ![Folders](images/macos-system-preferences.png)
  
-On Linux, click the link below to download "wudsn.tar.gz" to the folder, extract its contents and run "wudsn.sh".
+On **Linux**, click the link below to download "wudsn.tar.gz" to the folder, extract its contents and run "wudsn.sh".
 - https://github.com/peterdell/wudsn-ide-install/raw/main/wudsn.tar.gz
 
 The file will create and populate the following subfolders via downloads:
@@ -27,7 +27,7 @@ The file will create and populate the following subfolders via downloads:
 ![Folders](images/wudsn-installer-folders.png)
 
 Upon the first start you can import projects for the platform you'd like to work with into the workspace.
-Click "File / Open Projects from File System" and select the platform folder from the "Projects" folder.
+Click "File / Open Projects from File System" and select the platform folder from the "Projects" folder.<br>
 ![Import Project](images/wudsn-installer-import-project.png)
 
 The path to the assemblers/compilers/emulators in the Tools folder must be set once manually.
