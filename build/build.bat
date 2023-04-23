@@ -28,7 +28,7 @@ set BAT_OUT_FILE=%BAT_FOLDER%\%BAT_FILE%
 set BAT_HEADER_FILE=%BAT_OUT_FILE%.tmp
 
 rem From https://www.battoexeconverter.com/
-set EXE_CONVERTER=C:\Program Files (x86)\Advanced BAT to EXE Converter PRO v4.52\ab2econv452pro\aB2Econv.exe
+set EXE_CONVERTER=C:\Program Files (x86)\Advanced BAT to EXE Converter PRO v4.59\ab2econv459pro\aB2Econv.exe
 
 rem Trailing 0/1/2 can be interpreted as file descriptor numbers.
 rem Therefore they must be separated by a space.
