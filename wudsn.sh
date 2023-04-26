@@ -13,7 +13,7 @@
 contains() {
     string="$1"
     substring="$2"
-    if test "${string#*$substring}" != "$string"
+    if test "${string#*"${substring}"}" != "${string}"
     then
         return 0    # $substring is in $string
     else
