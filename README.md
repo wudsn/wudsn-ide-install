@@ -37,3 +37,4 @@ In case of problems check the "wudsn.log" file in the folder.
 You can also run "wudsn.exe" from the command line with the parameter --install.
 This will display the installer menu with options to reinstall or update the IDE.
 ![Installer Menu](images/wudsn-installer-menu.png)
+
