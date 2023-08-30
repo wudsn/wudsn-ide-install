@@ -65,7 +65,7 @@ rem
     rmdir /S/Q "%1"
     if exist "%1" (
       call :display_progress "ERROR: Cannot remove folder %1."
-      call :error
+      goto :error
     )
   )
   goto :eof
@@ -121,7 +121,7 @@ rem
   tar -xf %FILE% -C %TARGET_FOLDER% 2>>%LOG%
   if ERRORLEVEL 1 (
      if "%MODE%" == "FAIL" (
-       call :error
+       goto :error
      )
   )
   goto :eof
@@ -283,7 +283,7 @@ rem
   call :begin_progress "Installing Eclipse."
   call :download %ECLIPSE_FILE% %ECLIPSE_URL% %ECLIPSE_FOLDER_NAME% %ECLIPSE_APP_FOLDER% FAIL
   if ERRORLEVEL 1 (
-    call :error
+    goto :error
   )
   call :install_java
   call :install_wudsn_ide_feature
@@ -321,7 +321,7 @@ rem
   call :begin_progress "Installing Java."
   call :download %JRE_FILE% %JRE_URL% %JRE_FOLDER_NAME% %ECLIPSE_RUNTIME_FOLDER% FAIL
   if ERRORLEVEL 1 (
-    call :error
+    goto :error
   )
   if exist %ECLIPSE_RUNTIME_FOLDER%\jre. rmdir /S/Q %ECLIPSE_RUNTIME_FOLDER%\jre
   move %ECLIPSE_RUNTIME_FOLDER%\%JRE_FOLDER_NAME% %ECLIPSE_RUNTIME_FOLDER%\jre >>%LOG%
@@ -439,7 +439,7 @@ rem
       call :remove_folder %PROJECTS_FOLDER%
   ) else (
     call :display_progress "ERROR: Invalid install mode '%INSTALL_MODE%'."
-    call :error
+    goto :error
   )
   goto :eof
 
