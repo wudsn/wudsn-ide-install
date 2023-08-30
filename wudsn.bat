@@ -74,7 +74,22 @@ rem
 rem Install missing commands.
 rem
 :install_commands
-rem curl is part of the standard Windows installation.
+rem curl and tar are part of the standard Windows installation starting with Windows 10.
+set SYSTEM32=https://wudsn.com/productions/java/ide/downloads/windows-system32.zip
+
+where curl
+if ERRORLEVEL 1 (
+  call :print "The program curl.exe is missing in your %WINDIR%\System32 folder".
+  call :print "Download %SYSTEM32% and extract the contents to that folder".
+  goto :error
+)
+
+where tar
+if ERRORLEVEL 1 (
+  call :print "The program tar.exe is missing in your %WINDIR%\System32 folder".
+  call :print "Download %SYSTEM32% and extract the contents to that folder".
+  goto :error
+)
 
 goto :eof
 
