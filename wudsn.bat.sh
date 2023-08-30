@@ -65,7 +65,7 @@ remove_folder
     rmdir /S/Q "$1"
     if [ -f "$1" ]; then
       display_progress "ERROR: Cannot remove folder "$1"."
-      error
+      goto error
     fi
   fi
   }
@@ -95,7 +95,7 @@ if ERRORLEVEL 1 {
 
 #
 # Download a .zip file and unpack to target folder.
-# Usage: download repo <filename> <url> <folder> <target_folder> <FAIL|IGNORE>
+# Usage: download repo <filename> <url> <folder> <target_folder> <REPLACE|ADD> <FAIL|IGNORE>
 #
 download
   FILE=$1
@@ -103,7 +103,8 @@ download
   FOLDER=$3
   TARGET_FOLDER=$4
   TARGET=${TARGET_FOLDER}/${FOLDER}
-  MODE=$5
+  TARGET_MODE=$5
+  ERROR_MODE=${6
   
   if [ ! -f "${FILE}" ]; then
     display_progress "Downloading ${FILE} from ${URL}."
@@ -112,16 +113,18 @@ download
     display_progress "File ${FILE} is present."
   fi
   
-  if [ -f "${TARGET}" ]; then
-    remove_folder ${TARGET}
+  if [ "${TARGET_MODE}" = "REPLACE" ]; then
+    if [ -f "${TARGET}" ]; then
+      remove_folder ${TARGET}
+    fi
   fi
   create_folder ${TARGET_FOLDER}
   
   display_progress "Unpacking ${FILE} to ${TARGET_FOLDER}."
   tar -xf ${FILE} -C ${TARGET_FOLDER} 2>>${LOG}
   if ERRORLEVEL 1 {
-     if [ "${MODE}" = "FAIL" ]; then
-       error
+     if [ "${ERROR_MODE}" = "FAIL" ]; then
+       goto error
      fi
   fi
   }
@@ -139,7 +142,7 @@ download_repo
   REPO_TARGET_FOLDER=$2
 
   display_progress "Downloading repo ${REPO} to ${REPO_TARGET_FOLDER}."
-  download ${REPO_FILE} ${REPO_URL} ${REPO_BRANCH} ${INSTALL_FOLDER} IGNORE
+  download ${REPO_FILE} ${REPO_URL} ${REPO_BRANCH} ${INSTALL_FOLDER} REPLACE IGNORE
 
   REPO_BRANCH_FOLDER=${INSTALL_FOLDER}/${REPO_BRANCH}
 
@@ -281,9 +284,13 @@ install_eclipse
     return
   fi
   begin_progress "Installing Eclipse."
-  download ${ECLIPSE_FILE} ${ECLIPSE_URL} ${ECLIPSE_FOLDER_NAME} ${ECLIPSE_APP_FOLDER} FAIL
+  download ${ECLIPSE_FILE} ${ECLIPSE_URL} ${ECLIPSE_FOLDER_NAME} ${ECLIPSE_APP_FOLDER} REPLACE FAIL
   if ERRORLEVEL 1 {
-    error
+    goto error
+  fi
+  download ${ECLIPSE_LANGUAGE_FILE_DE} ${DOWNLOADS_URL}/${ECLIPSE_LANGUAGE_FILE_DE} ${ECLIPSE_FOLDER_NAME} ${ECLIPSE_APP_FOLDER} ADD FAIL
+  if ERRORLEVEL 1 {
+    goto error
   fi
   install_java
   install_wudsn_ide_feature
@@ -319,9 +326,9 @@ install_eclipse
 #
 install_java
   begin_progress "Installing Java."
-  download ${JRE_FILE} ${JRE_URL} ${JRE_FOLDER_NAME} ${ECLIPSE_RUNTIME_FOLDER} FAIL
+  download ${JRE_FILE} ${JRE_URL} ${JRE_FOLDER_NAME} ${ECLIPSE_RUNTIME_FOLDER} REPLACE FAIL
   if ERRORLEVEL 1 {
-    error
+    goto error
   fi
   if [ -f ${ECLIPSE_RUNTIME_FOLDER}/jre. rmdir /S/Q ${ECLIPSE_RUNTIME_FOLDER}/jre
   move ${ECLIPSE_RUNTIME_FOLDER}/${JRE_FOLDER_NAME} ${ECLIPSE_RUNTIME_FOLDER}/jre >>${LOG}
@@ -403,12 +410,16 @@ create_workspace_folder
 # Start Eclipse in new process.
 #
 start_eclipse
+  if not "${WUDSN_LANGUAGE}" = "" ]; then
+    ECLIPSE_LANGUAGE_PARAMETER=-nl ${WUDSN_LANGUAGE}
+  fi
+ 
   if [ "${WORKSPACE_CREATED}" = "2" ]; then
     begin_progress "Starting WUDSN IDE for import projects from ${PROJECTS_FOLDER}."
-    start ${ECLIPSE_EXECUTABLE} -noSplash -import ${PROJECTS_FOLDER}
+    start ${ECLIPSE_EXECUTABLE} -noSplash -import ${PROJECTS_FOLDER}  ${ECLIPSE_LANGUAGE_PARAMETER}
   fi else {
     begin_progress "Starting WUDSN IDE in new window."
-    start ${ECLIPSE_EXECUTABLE} -noSplash -data ${WORKSPACE_FOLDER}
+    start ${ECLIPSE_EXECUTABLE} -noSplash -data ${WORKSPACE_FOLDER} ${ECLIPSE_LANGUAGE_PARAMETER}
   fi
   }
 
@@ -439,7 +450,7 @@ handle_install_mode
       remove_folder ${PROJECTS_FOLDER}
   fi else {
     display_progress "ERROR: Invalid install mode '%INSTALL_MODE%'."
-    error
+    goto error
   fi
   }
 
@@ -452,6 +463,9 @@ detect_os_type
   ECLIPSE_FILES[0]=eclipse-platform-${ECLIPSE_VERSION}-win32-x86_64.zip
   # ECLIPSE_FILES[1]=eclipse-platform-${ECLIPSE_VERSION}-win32-aarch64.zip
 
+  # https://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.20.0/2022-12/BabelLanguagePack-eclipse-de_4.26.0.v20230220105658.zip
+  ECLIPSE_LANGUAGE_FILE_DE=BabelLanguagePack-eclipse-de_4.26.0.v20230220105658.zip
+  
   # https://jdk.java.net/archive/
   JRE_VERSION=19.0.1
   JRE_FILES[0]=openjdk-${JRE_VERSION%_windows-x64_bin.zip

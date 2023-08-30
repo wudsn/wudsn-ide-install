@@ -410,12 +410,16 @@ rem
 rem Start Eclipse in new process.
 rem
 :start_eclipse
+  if not "%WUDSN_LANGUAGE%" == "" (
+    set ECLIPSE_LANGUAGE_PARAMETER=-nl %WUDSN_LANGUAGE%
+  )
+ 
   if "%WORKSPACE_CREATED%" == "2" (
     call :begin_progress "Starting WUDSN IDE for import projects from %PROJECTS_FOLDER%."
-    start %ECLIPSE_EXECUTABLE% -noSplash -import %PROJECTS_FOLDER%
+    start %ECLIPSE_EXECUTABLE% -noSplash -import %PROJECTS_FOLDER%  %ECLIPSE_LANGUAGE_PARAMETER%
   ) else (
     call :begin_progress "Starting WUDSN IDE in new window."
-    start %ECLIPSE_EXECUTABLE% -noSplash -data %WORKSPACE_FOLDER%
+    start %ECLIPSE_EXECUTABLE% -noSplash -data %WORKSPACE_FOLDER% %ECLIPSE_LANGUAGE_PARAMETER%
   )
   goto :eof
 
