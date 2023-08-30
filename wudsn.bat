@@ -95,7 +95,7 @@ goto :eof
 
 rem
 rem Download a .zip file and unpack to target folder.
-rem Usage: download repo <filename> <url> <folder> <target_folder> <FAIL|IGNORE>
+rem Usage: download repo <filename> <url> <folder> <target_folder> <REPLACE|ADD> <FAIL|IGNORE>
 rem
 :download
   set FILE=%1
@@ -103,7 +103,8 @@ rem
   set FOLDER=%3
   set TARGET_FOLDER=%4
   set TARGET=%TARGET_FOLDER%\%FOLDER%
-  set MODE=%5
+  set TARGET_MODE=%5
+  set ERROR_MODE=%6
   
   if not exist "%FILE%" (
     call :display_progress "Downloading %FILE% from %URL%."
@@ -112,15 +113,17 @@ rem
     call :display_progress "File %FILE% is present."
   )
   
-  if exist "%TARGET%" (
-    call :remove_folder %TARGET%
+  if "%TARGET_MODE%" == "REPLACE" (
+    if exist "%TARGET%" (
+      call :remove_folder %TARGET%
+    )
   )
   call :create_folder %TARGET_FOLDER%
   
   call :display_progress "Unpacking %FILE% to %TARGET_FOLDER%."
   tar -xf %FILE% -C %TARGET_FOLDER% 2>>%LOG%
   if ERRORLEVEL 1 (
-     if "%MODE%" == "FAIL" (
+     if "%ERROR_MODE%" == "FAIL" (
        goto :error
      )
   )
@@ -139,7 +142,7 @@ rem
   set REPO_TARGET_FOLDER=%2
 
   call :display_progress "Downloading repo %REPO% to %REPO_TARGET_FOLDER%."
-  call :download %REPO_FILE% %REPO_URL% %REPO_BRANCH% %INSTALL_FOLDER% IGNORE
+  call :download %REPO_FILE% %REPO_URL% %REPO_BRANCH% %INSTALL_FOLDER% REPLACE IGNORE
 
   set REPO_BRANCH_FOLDER=%INSTALL_FOLDER%\%REPO_BRANCH%
 
@@ -281,7 +284,11 @@ rem
     goto :eof
   )
   call :begin_progress "Installing Eclipse."
-  call :download %ECLIPSE_FILE% %ECLIPSE_URL% %ECLIPSE_FOLDER_NAME% %ECLIPSE_APP_FOLDER% FAIL
+  call :download %ECLIPSE_FILE% %ECLIPSE_URL% %ECLIPSE_FOLDER_NAME% %ECLIPSE_APP_FOLDER% REPLACE FAIL
+  if ERRORLEVEL 1 (
+    goto :error
+  )
+  call :download %ECLIPSE_LANGUAGE_FILE_DE% %DOWNLOADS_URL%/%ECLIPSE_LANGUAGE_FILE_DE% %ECLIPSE_FOLDER_NAME% %ECLIPSE_APP_FOLDER% ADD FAIL
   if ERRORLEVEL 1 (
     goto :error
   )
@@ -319,7 +326,7 @@ rem Install Java.
 rem
 :install_java
   call :begin_progress "Installing Java."
-  call :download %JRE_FILE% %JRE_URL% %JRE_FOLDER_NAME% %ECLIPSE_RUNTIME_FOLDER% FAIL
+  call :download %JRE_FILE% %JRE_URL% %JRE_FOLDER_NAME% %ECLIPSE_RUNTIME_FOLDER% REPLACE FAIL
   if ERRORLEVEL 1 (
     goto :error
   )
@@ -452,6 +459,9 @@ rem
   set ECLIPSE_FILES[0]=eclipse-platform-%ECLIPSE_VERSION%-win32-x86_64.zip
   rem set ECLIPSE_FILES[1]=eclipse-platform-%ECLIPSE_VERSION%-win32-aarch64.zip
 
+  rem https://www.eclipse.org/downloads/download.php?file=/technology/babel/babel_language_packs/R0.20.0/2022-12/BabelLanguagePack-eclipse-de_4.26.0.v20230220105658.zip
+  set ECLIPSE_LANGUAGE_FILE_DE=BabelLanguagePack-eclipse-de_4.26.0.v20230220105658.zip
+  
   rem https://jdk.java.net/archive/
   set JRE_VERSION=19.0.1
   set JRE_FILES[0]=openjdk-%JRE_VERSION%_windows-x64_bin.zip
