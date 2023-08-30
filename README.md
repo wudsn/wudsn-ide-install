@@ -30,10 +30,11 @@ Upon the first start you can import projects for the platform you'd like to work
 Click "File / Open Projects from File System" and select the platform folder from the "Projects" folder.<br>
 ![Import Project](images/wudsn-installer-import-project.png)
 
-The path to the assemblers/compilers/emulators in the Tools folder must be set once manually.
+The path to the emulators in the Tools folder must be set once manually.
 I plan to improve this in future releases of the IDE.
+  
+In case of problems check the "wudsn.log" file in the folder. If you have earlier versions than Windows 10, e.g. Windows 7, the two tools "curl.exe" and "tar.exe" are probably missing in your "C:\Windows\System32" folder. In this this case download [system32.zip](https://wudsn.com/productions/java/ide/downloads/windows-system32.zip) and extract the 3 files to that folder before starting the WUDSN IDE installation.
 
-In case of problems check the "wudsn.log" file in the folder.
 You can also run "wudsn.exe" from the command line with the parameter --install.
 This will display the installer menu with options to reinstall or update the IDE.
 ![Installer Menu](images/wudsn-installer-menu.png)
