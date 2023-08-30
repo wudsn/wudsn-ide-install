@@ -77,14 +77,14 @@ install_commands
 # curl and tar are part of the standard Windows installation starting with Windows 10.
 SYSTEM32=https://wudsn.com/productions/java/ide/downloads/windows-system32.zip
 
-where curl >NUL
+where curl 2>NUL
 if ERRORLEVEL 1 {
   print "The program curl.exe is missing in your ${WINDIR}/System32 folder."
   print "Download ${SYSTEM32} and extract the contents to that folder."
   goto error
 )
 
-where tar >NUL
+where tar 2>NUL
 if ERRORLEVEL 1 {
   print "The program tar.exe is missing in your ${WINDIR}/System32 folder."
   print "Download ${SYSTEM32} and extract the contents to that folder."
