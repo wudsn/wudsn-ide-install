@@ -33,6 +33,7 @@ set EXE_CONVERTER=C:\Program Files (x86)\Advanced BAT to EXE Converter PRO v4.59
 rem Trailing 0/1/2 can be interpreted as file descriptor numbers.
 rem Therefore they must be separated by a space.
 rem The word "Installer" must not appear in the product name, otherwise Windows will trigger a UAC prompt.
+rem The BFCPEDISABLEQE=1 actually enables QuickEdit. The name of the option is kept for compatibility.
 echo @echo OFF>%BAT_HEADER_FILE%
 echo rem BFCPEOPTIONSTART>>%BAT_HEADER_FILE%
 echo rem Advanced BAT to EXE Converter www.BatToExeConverter.com>>%BAT_HEADER_FILE%
