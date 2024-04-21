@@ -28,11 +28,12 @@ set BAT_OUT_FILE=%BAT_FOLDER%\%BAT_FILE%
 set BAT_HEADER_FILE=%BAT_OUT_FILE%.tmp
 
 rem From https://www.battoexeconverter.com/
-set EXE_CONVERTER=C:\Program Files (x86)\Advanced BAT to EXE Converter PRO v4.59\ab2econv459pro\aB2Econv.exe
+set EXE_CONVERTER=C:\Program Files (x86)\Advanced BAT to EXE Converter PRO v4.61\ab2econv461pro\aB2Econv.exe
 
 rem Trailing 0/1/2 can be interpreted as file descriptor numbers.
 rem Therefore they must be separated by a space.
 rem The word "Installer" must not appear in the product name, otherwise Windows will trigger a UAC prompt.
+rem The BFCPEDISABLEQE=1 actually enables QuickEdit. The name of the option is kept for compatibility.
 echo @echo OFF>%BAT_HEADER_FILE%
 echo rem BFCPEOPTIONSTART>>%BAT_HEADER_FILE%
 echo rem Advanced BAT to EXE Converter www.BatToExeConverter.com>>%BAT_HEADER_FILE%

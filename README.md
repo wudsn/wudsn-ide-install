@@ -30,9 +30,9 @@ Upon the first start you can import projects for the platform you'd like to work
 Click "File / Open Projects from File System" and select the platform folder from the "Projects" folder.<br>
 ![Import Project](images/wudsn-installer-import-project.png)
 
-The path to the assemblers/compilers/emulators in the Tools folder must be set once manually.
+The path to the emulators in the Tools folder must be set once manually.
 I plan to improve this in future releases of the IDE.
-
+  
 In case of problems check the "wudsn.log" file in the folder.
 You can also run "wudsn.exe" from the command line with the parameter --install.
 This will display the installer menu with options to reinstall or update the IDE.
