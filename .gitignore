@@ -6,3 +6,6 @@ Workspace
 Projects
 wudsn.log
 /wudsn.command
+/cpp/wudsn/.vs
+/cpp/wudsn/wudsn
+/cpp/wudsn/x64
