@@ -458,8 +458,8 @@ handle_install_mode
 # Detect the OS type and architecture and dependent variables.
 #
 detect_os_type
-  # https://archive.eclipse.org/eclipse/downloads/drops4/R-4.26-202211231800/
-  ECLIPSE_VERSION=4.26
+  # https://archive.eclipse.org/eclipse/downloads/drops4/R-4.34-202411201800/
+  ECLIPSE_VERSION=4.34
   ECLIPSE_FILES[0]=eclipse-platform-${ECLIPSE_VERSION}-win32-x86_64.zip
   # ECLIPSE_FILES[1]=eclipse-platform-${ECLIPSE_VERSION}-win32-aarch64.zip
 
@@ -467,7 +467,7 @@ detect_os_type
   ECLIPSE_LANGUAGE_FILE_DE=BabelLanguagePack-eclipse-de_4.26.0.v20230220105658.zip
   
   # https://jdk.java.net/archive/
-  JRE_VERSION=19.0.1
+  JRE_VERSION=23.0.1
   JRE_FILES[0]=openjdk-${JRE_VERSION%_windows-x64_bin.zip
   # JRE_FILES[1]=openjdk-${JRE_VERSION%_windows-aarch64.bin.zip
   
