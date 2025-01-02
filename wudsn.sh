@@ -486,8 +486,8 @@ handle_install_mode(){
 #
 detect_os_type(){
 
-# https://archive.eclipse.org/eclipse/downloads/drops4/R-4.26-202211231800/
-  ECLIPSE_VERSION=4.26
+# https://archive.eclipse.org/eclipse/downloads/drops4/R-4.34-202411201800/
+  ECLIPSE_VERSION=4.34
   ECLIPSE_FILES=( "eclipse-platform-${ECLIPSE_VERSION}-linux-gtk-aarch64.tar.gz"
                   "eclipse-platform-${ECLIPSE_VERSION}-linux-gtk-x86_64.tar.gz"
                   "eclipse-platform-${ECLIPSE_VERSION}-macosx-cocoa-aarch64.dmg"
@@ -495,7 +495,7 @@ detect_os_type(){
                   "eclipse-platform-${ECLIPSE_VERSION}-win32-x86_64.zip")
   
   # https://jdk.java.net/archive/
-  JRE_VERSION=19.0.1
+  JRE_VERSION=23.0.1
   JRE_FILES=("openjdk-${JRE_VERSION}_linux-aarch64_bin.tar.gz"
              "openjdk-${JRE_VERSION}_linux-x64_bin.tar.gz"
              "openjdk-${JRE_VERSION}_macos-aarch64_bin.tar.gz"
