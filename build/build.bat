@@ -11,12 +11,14 @@ set PLATFORM=x64
 set CONFIGURATION=Release
 call :build_configuration
 copy  %OUTPUT_FILE% ..\%EXE_FILENAME%
+rmdir /S/Q %RELEASE_DIR%\out
+cd ..
 goto :eof
 
 :build_configuration
 set OUTPUT_DIR=%RELEASE_DIR%\out\%PLATFORM%\%CONFIGURATION%\output
 set OUTPUT_FILE=%OUTPUT_DIR%\%EXE_FILENAME%
-echo Building %OUTPUT_FILE%.
+echo Building "%OUTPUT_FILE%".
 if exist %OUTPUT_FILE% del %OUTPUT_FILE%
 %MSBUILD% %SLN% /property:Configuration=%CONFIGURATION% -verbosity:quiet -fl -flp:logfile=%OUTPUT_DIR%\msbuild.log
 if not exist %OUTPUT_FILE% goto :error
