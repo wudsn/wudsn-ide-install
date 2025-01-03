@@ -1,7 +1,7 @@
 @echo off
 setlocal
 cd C:\jac
-set INSTALLER_URL=https://github.com/peterdell/wudsn-ide-install/raw/main
+set INSTALLER_URL=https://github.com/wudsn/wudsn-ide-install/raw/main
 rem set SITE_URL=http://localhost:8080
 
 :check_site_url

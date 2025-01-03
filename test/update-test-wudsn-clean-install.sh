@@ -30,7 +30,7 @@ download_executable(){
 set -e
 cd ~/jac || exit
 SCRIPT=test-wudsn-clean-install.sh
-URL=https://github.com/peterdell/wudsn-ide-install/raw/main/test/${SCRIPT}
+URL=https://github.com/wudsn/wudsn-ide-install/raw/main/test/${SCRIPT}
 
 echo Updating ${SCRIPT} from ${URL}.
 download_executable "${URL}" "${SCRIPT}"

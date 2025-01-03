@@ -40,9 +40,9 @@ install_wudsn(){
 # The following call must not be started in a new window, so sudo password inputs work and exits are ignored
   if command -v gnome-terminal &>/dev/null
   then
-    gnome-terminal --wait --title "Installing WUDSN version ${WUDSN_VERSION}" -- ./${WUDSN_EXECUTABLE} &
+    gnome-terminal --wait --title "Installing WUDSN version ${WUDSN_VERSION}" -- "./${WUDSN_EXECUTABLE}" &
   else
-  	open -a Terminal.app ${WUDSN_EXECUTABLE}
+  	open -a Terminal.app "${WUDSN_EXECUTABLE}"
   fi
   popd
 
@@ -62,7 +62,7 @@ install_wudsn_versions(){
       ;;
   esac
 
-  INSTALLER_URL="https://github.com/peterdell/wudsn-ide-install/raw/main/${WUDSN_DOWNLOAD}"
+  INSTALLER_URL="https://github.com/wudsn/wudsn-ide-install/raw/main/${WUDSN_DOWNLOAD}"
 
   rm -rf wudsn
   mkdir wudsn

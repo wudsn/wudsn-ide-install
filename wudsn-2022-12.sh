@@ -158,7 +158,7 @@ download_repo(){
   local BRANCH=main
   local REPO_BRANCH=${REPO}-${BRANCH}
   local REPO_FILE=${REPO_BRANCH}.zip
-  local REPO_URL=https://github.com/peterdell/${REPO}/archive/refs/heads/${BRANCH}.zip
+  local REPO_URL=https://github.com/wudsn/${REPO}/archive/refs/heads/${BRANCH}.zip
   local REPO_TARGET_FOLDER=$2
   
   display_progress "Downloading repo ${REPO} to ${REPO_TARGET_FOLDER}."

@@ -138,7 +138,7 @@ rem
   set BRANCH=main
   set REPO_BRANCH=%REPO%-%BRANCH%
   set REPO_FILE=%REPO_BRANCH%.zip
-  set REPO_URL=https://github.com/peterdell/%REPO%/archive/refs/heads/%BRANCH%.zip
+  set REPO_URL=https://github.com/wudsn/%REPO%/archive/refs/heads/%BRANCH%.zip
   set REPO_TARGET_FOLDER=%2
 
   call :display_progress "Downloading repo %REPO% to %REPO_TARGET_FOLDER%."

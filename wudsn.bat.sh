@@ -138,10 +138,10 @@ download_repo
   BRANCH=main
   REPO_BRANCH=${REPO}-${BRANCH}
   REPO_FILE=${REPO_BRANCH}.zip
-  REPO_URL=https://github.com/peterdell/${REPO}/archive/refs/heads/${BRANCH}.zip
+  REPO_URL=https://github.com/wudsn/${REPO}/archive/refs/heads/${BRANCH}.zip
   REPO_TARGET_FOLDER=$2
 
-  display_progress "Downloading repo ${REPO} to ${REPO_TARGET_FOLDER}."
+  display_progress "Downloading repository ${REPO} to ${REPO_TARGET_FOLDER}."
   download ${REPO_FILE} ${REPO_URL} ${REPO_BRANCH} ${INSTALL_FOLDER} REPLACE IGNORE
 
   REPO_BRANCH_FOLDER=${INSTALL_FOLDER}/${REPO_BRANCH}
