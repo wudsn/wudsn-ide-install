@@ -39,10 +39,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="small.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="wudsn.ico">
+    <Image Include="wudsn-64x64.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
