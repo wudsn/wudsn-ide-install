@@ -1,4 +1,4 @@
-@echo on
+@echo off
 cd "%~dp0"
 
 set MSBUILD="C:\Program Files\Microsoft Visual Studio\2022\Community\Msbuild\Current\Bin\MSBuild.exe"
@@ -18,7 +18,7 @@ set OUTPUT_DIR=%RELEASE_DIR%\out\%PLATFORM%\%CONFIGURATION%\output
 set OUTPUT_FILE=%OUTPUT_DIR%\%EXE_FILENAME%
 echo Building %OUTPUT_FILE%.
 if exist %OUTPUT_FILE% del %OUTPUT_FILE%
-%MSBUILD% %SLN% /property:Configuration=%CONFIGURATION% -fl -flp:logfile=%OUTPUT_DIR%\msbuild.log
+%MSBUILD% %SLN% /property:Configuration=%CONFIGURATION% -verbosity:quiet -fl -flp:logfile=%OUTPUT_DIR%\msbuild.log
 if not exist %OUTPUT_FILE% goto :error
 goto :eof
 
