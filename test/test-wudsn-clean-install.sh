@@ -1,6 +1,7 @@
 #!/bin/bash
 #
-# Test script to install both standard versions on macOS or inside a Linux VM.
+# Test script to install both standard versions on macOS or or Linux.
+# This will delete and recreate the "wudsn" in the current folder.
 # Use update-test-wudsn-clean-install.sh to update this script from the server.
 #
 
@@ -18,7 +19,7 @@ download_executable(){
     then
       wget --no-cache "$1" -O "$2"
     else
-      echo ERROR: Neither curl nor wget are installed.
+      echo "ERROR: Neither curl nor wget are installed."
       exit 1
     fi
   fi
@@ -27,13 +28,14 @@ download_executable(){
 
 # Install the version in ${WUDSN_VERSION}.
 install_wudsn(){
-  echo Installing WUDSN IDE Version ${WUDSN_VERSION}.
+  echo "Installing WUDSN IDE Version ${WUDSN_VERSION} from ${WUDSN_DOWNLOAD}."
   rm -rf "${WUDSN_VERSION}"
   mkdir "${WUDSN_VERSION}"
   pushd "${WUDSN_VERSION}"
 
-  echo Downloading Installer.
-  download_executable "${INSTALLER_URL}" "${WUDSN_EXECUTABLE}"
+  echo "Downloading Installer."
+  download_executable "${INSTALLER_URL}" "${WUDSN_DOWNLOAD}"
+  tar -xzf "${WUDSN_DOWNLOAD}"
 
 # The following call must not be started in a new window, so sudo password inputs work and exits are ignored
   if command -v gnome-terminal &>/dev/null
@@ -49,8 +51,18 @@ install_wudsn(){
 install_wudsn_versions(){
   cd ~/jac || exit
 
-  WUDSN_EXECUTABLE=wudsn.sh
-  INSTALLER_URL=https://github.com/peterdell/wudsn-ide-install/raw/main/${WUDSN_EXECUTABLE}
+  case "${OSTYPE}" in
+    linux-gnu)
+      WUDSN_DOWNLOAD="wudsn.tar.gz"
+      WUDSN_EXECUTABLE="wudsn.sh"      
+      ;;
+    darwin*)
+      WUDSN_DOWNLOAD="wudsn.command.tar.gz"
+      WUDSN_EXECUTABLE="wudsn.command"
+      ;;
+  esac
+
+  INSTALLER_URL="https://github.com/peterdell/wudsn-ide-install/raw/main/${WUDSN_DOWNLOAD}"
 
   rm -rf wudsn
   mkdir wudsn
