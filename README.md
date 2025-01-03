@@ -7,7 +7,7 @@ Make sure the folder path contains no spaces or whitespaces.</br>
 Download the relevant installer version for your operating system.</br>
 To do this, you have to right-click the respective link and choose "Save link as..." from the context menu.
 
-On **Windows** (64-bit Intel), download "wudsn.exe" to the folder and run it. It will download and start the related "wudsn.bat" file.
+On **Windows** (64-bit Intel), download "wudsn.exe" to the folder and run it. It will generate and start the related "wudsn.bat" file. Upon the first start you can select to speedup the start process, by excluding WUDSN IDE from the painfully slow scanning by Microsoft Defender.
 - https://github.com/wudsn/wudsn-ide-install/raw/main/wudsn.exe
   
 On **macOS** (64-bit Intel or ARM/M1), download "wudsn.command.tar.gz" extract its contents to the folder run "wudsn.command".
