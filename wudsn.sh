@@ -331,12 +331,12 @@ install_eclipse(){
     set -e
     
     # Check is codesign is completely installed.
-    if contains "$(locate codesign_allocate)" "launchctl"; then
-     sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist
+    if command -v "codesign_allocate" &> /dev/null; then
+      # Remove code signing information and add it again to prevent issues when changing files in the folder.
+      codesign --remove "${ECLIPSE_APP_FOLDER}"
+      xattr -rd com.apple.quarantine "${ECLIPSE_APP_FOLDER}"
+      codesign --force --deep --sign - "${ECLIPSE_APP_FOLDER}"
     fi
-
-    # Remove code signing to prevent issues when changing files in the folder.
-    codesign --remove "${ECLIPSE_APP_FOLDER}"
   fi
 
   install_wudsn_ide_feature
