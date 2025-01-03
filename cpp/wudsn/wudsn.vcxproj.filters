@@ -27,6 +27,9 @@
     <ClInclude Include="wudsn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="wudsn.bat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="wudsn.cpp">

@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# Test script to install both standard versions on macOS or or Linux.
-# This will delete and recreate the "wudsn" in the current folder.
-# Use update-test-wudsn-clean-install.sh to update this script from the server.
+# Test script to install both standard versions on macOS or on Linux.
+# This will delete and recreate the "wudsn" folder in the current folder.
+# Use "update-test-wudsn-clean-install.sh" to update this script from the server.
 #
 
 # Download executable file from URL $1 to $2.

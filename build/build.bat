@@ -1,11 +1,14 @@
 @echo off
 cd "%~dp0"
 
+
 set MSBUILD="C:\Program Files\Microsoft Visual Studio\2022\Community\Msbuild\Current\Bin\MSBuild.exe"
 set RELEASE_DIR=..\cpp\wudsn
 set RELEASE_NAME=wudsn
 set SLN=%RELEASE_DIR%\%RELEASE_NAME%.sln
 set EXE_FILENAME=%RELEASE_NAME%.exe
+
+xxd.exe -i ..\wudsn.bat %RELEASE_DIR%\wudsn.bat.h
 
 set PLATFORM=x64
 set CONFIGURATION=Release

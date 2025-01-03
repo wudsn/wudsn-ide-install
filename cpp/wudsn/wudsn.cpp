@@ -7,8 +7,10 @@
 
 #include "framework.h"
 #include "wudsn.h"
+#include "wudsn.bat.h"
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <filesystem> 
 #pragma comment(lib, "urlmon.lib")
@@ -68,25 +70,28 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     batFilePath /= batFileName;
 
-    if (!FileExists(batFilePath))
-    {
+    //if (!FileExists(batFilePath))
+    //{
+        std::ofstream script(batFilePath);
+        script.write((const char*)___wudsn_bat, ___wudsn_bat_len);
+        script.close();
 
-       wstring url = L"https://raw.githubusercontent.com/wudsn/wudsn-ide-install/main/wudsn.bat";
-        if (URLDownloadToFile(NULL, url.c_str(), batFilePath.wstring().c_str(), 0, NULL) != S_OK) {
-            wstringstream errorStream;
-            errorStream << "Could not download \"" << url << "\".";
-            ShowErrorMessage(errorStream);
-            return 1;
-        }
+       //wstring url = L"https://raw.githubusercontent.com/wudsn/wudsn-ide-install/main/wudsn.bat";
+       // if (URLDownloadToFile(NULL, url.c_str(), batFilePath.wstring().c_str(), 0, NULL) != S_OK) {
+       //     wstringstream errorStream;
+       //     errorStream << "Could not download \"" << url << "\".";
+       //     ShowErrorMessage(errorStream);
+       //     return 1;
+       // }
 
-        if (!FileExists(batFilePath)) {
+        //if (!FileExists(batFilePath)) {
 
-            std::wstringstream errorStream;
-            errorStream << "The required file \"" << batFileName.wstring() << "\" does not exist in the folder \"" << exeFolderPath.wstring() << "\" .";
-            ShowErrorMessage(errorStream);
-            return 2;
-        }
-    }
+        //    std::wstringstream errorStream;
+        //    errorStream << "The required file \"" << batFileName.wstring() << "\" does not exist in the folder \"" << exeFolderPath.wstring() << "\" .";
+        //    ShowErrorMessage(errorStream);
+        //    return 2;
+        //}
+    //}
 
     wstringstream commandStream;
     commandStream << L"%ComSpec% /C wudsn.bat " << lpCmdLine;
