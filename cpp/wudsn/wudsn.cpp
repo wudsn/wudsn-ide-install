@@ -75,7 +75,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 
     wstringstream commandStream;
-    commandStream << L"%ComSpec% /C " << batFileName.wstring() << lpCmdLine;
+    commandStream << L"%ComSpec% /C " << batFileName.wstring() << " " << lpCmdLine;
     auto command = commandStream.str();
 
     int exitCode = _wsystem(command.c_str());
