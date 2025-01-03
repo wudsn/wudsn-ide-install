@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# WUDSN IDE Installer - Version 2023-03-17 for macOS and Linux, 64-bit.
+# WUDSN IDE Installer - Version 2025-01-03 for macOS and Linux, 64-bit.
 # Visit https://www.wudsn.com for the latest version.
 # Use https://www.shellcheck.net to validate the .sh script source.
 #

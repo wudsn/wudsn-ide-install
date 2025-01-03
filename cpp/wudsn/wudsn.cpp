@@ -1,9 +1,8 @@
 //
-// WUDSN IDE Starter
+// WUDSN IDE Installer
 //
-// Checks if the "wudsn.bat" file exists in the folder where the "wudsn.exe" is located.
-// If the file is missing, it is downloaded automatically from Github.
-// If the file is present (then), it is started using %ComSpec%, passing the parameters from the command line.
+// Creates the "wudsn.bat" file in the folder where the "wudsn.exe" is located.
+// The the "wudsn.bat" file is started using %ComSpec%, passing the parameters from the command line.
 
 #include "framework.h"
 #include "wudsn.h"
@@ -39,10 +38,10 @@ std::wstring GetExecutableFolder()
     }
 }
 
-bool FileExists(const path& filePath) {
-    std::error_code ec; // For noexcept overload usage.
-    return std::filesystem::exists(filePath, ec);
-}
+//bool FileExists(const path& filePath) {
+//    std::error_code ec; // For noexcept overload usage.
+//    return std::filesystem::exists(filePath, ec);
+//}
 
 void ShowErrorMessage(const wstringstream& message) {
     MessageBox(NULL, message.str().c_str(), L"WUDSN IDE", MB_ICONEXCLAMATION || MB_OK);
@@ -70,33 +69,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     batFilePath /= batFileName;
 
-    //if (!FileExists(batFilePath))
-    //{
-        std::ofstream script(batFilePath);
-        script.write((const char*)___wudsn_bat, ___wudsn_bat_len);
-        script.close();
+    std::ofstream script(batFilePath);
+    script.write((const char*)___wudsn_bat, ___wudsn_bat_len);
+    script.close();
 
-       //wstring url = L"https://raw.githubusercontent.com/wudsn/wudsn-ide-install/main/wudsn.bat";
-       // if (URLDownloadToFile(NULL, url.c_str(), batFilePath.wstring().c_str(), 0, NULL) != S_OK) {
-       //     wstringstream errorStream;
-       //     errorStream << "Could not download \"" << url << "\".";
-       //     ShowErrorMessage(errorStream);
-       //     return 1;
-       // }
-
-        //if (!FileExists(batFilePath)) {
-
-        //    std::wstringstream errorStream;
-        //    errorStream << "The required file \"" << batFileName.wstring() << "\" does not exist in the folder \"" << exeFolderPath.wstring() << "\" .";
-        //    ShowErrorMessage(errorStream);
-        //    return 2;
-        //}
-    //}
 
     wstringstream commandStream;
-    commandStream << L"%ComSpec% /C wudsn.bat " << lpCmdLine;
+    commandStream << L"%ComSpec% /C " << batFileName.wstring() << lpCmdLine;
     auto command = commandStream.str();
-   
+
     int exitCode = _wsystem(command.c_str());
     if (exitCode != 0) {
         wstringstream errorStream;
