@@ -16,7 +16,7 @@ rem - Create folder ~/jac
 rem - Shutdown VM image and set read-only attribute in template
 
 echo Creating Clean Virtual Box Image from Template
-set TO=Ubuntu 22.04 (64bit)
+set TO=Ubuntu 24.04 (64bit)
 set FROM=%TO% - Template
 if not exist "%FROM%" (
   chdir
